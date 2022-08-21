@@ -9,7 +9,7 @@
 
 #include "WindowTitleWidget.h"
 
-#include "kdiff3.h"
+#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "options.h"
 
 #include <QAction>

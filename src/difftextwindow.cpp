@@ -9,13 +9,13 @@
 
 #include "difftextwindow.h"
 
+#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
+#include "EXTRACT/1_transitional/SourceData.h" // for SourceData
 #include "FileNameLineEdit.h"
 #include "RLPainter.h"
-#include "SourceData.h" // for SourceData
-#include "Utils.h"      // for Utils
-#include "common.h"     // for getAtomic, max3, min3
+#include "Utils.h"  // for Utils
+#include "common.h" // for getAtomic, max3, min3
 #include "defmac.h"
-#include "kdiff3.h"
 #include "merger.h"
 #include "options.h"
 #include "progress.h"

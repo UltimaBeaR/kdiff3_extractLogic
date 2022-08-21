@@ -6,34 +6,28 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-
-#include "difftextwindow.h"
 #include "DirectoryInfo.h"
+#include "KDiff3App_kdiff3.h"
+#include "Logging.h"
+#include "Utils.h"
+#include "difftextwindow.h"
 #include "directorymergewindow.h"
 #include "fileaccess.h"
-#include "Logging.h"
-#include "kdiff3.h"
 #include "optiondialog.h"
 #include "progress.h"
-#include "Utils.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
 #include "WindowTitleWidget.h"
 #include "smalldialogs.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <list>
 
-#include <QCheckBox>
 #include <QClipboard>
-#include <QComboBox>
 #include <QDialog>
 #include <QDir>
 #include <QEvent> // QKeyEvent, QDropEvent, QInputEvent
-#include <QFile>
 #include <QLayout>
-#include <QLineEdit>
 #include <QMimeData>
 #include <QPointer>
 #include <QProcess>
@@ -42,7 +36,6 @@
 #include <QStatusBar>
 #include <QStringList>
 #include <QTextCodec>
-#include <QUrl>
 
 #include <KLocalizedString>
 #include <KMessageBox>

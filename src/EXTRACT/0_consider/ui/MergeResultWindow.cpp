@@ -9,12 +9,12 @@
 
 #include "MergeResultWindow.h"
 
-#include "defmac.h"
-#include "kdiff3.h"
-#include "options.h"
+#include "KDiff3App_kdiff3.h"
 #include "RLPainter.h"
+#include "Utils.h" // for Utils
+#include "defmac.h"
 #include "guiutils.h"
-#include "Utils.h"             // for Utils
+#include "options.h"
 
 #include <QAction>
 #include <QApplication>

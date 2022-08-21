@@ -8,7 +8,7 @@
 
 
 // application specific includes
-#include "kdiff3.h"
+#include "KDiff3App_kdiff3.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
 #include "RLPainter.h"
@@ -36,7 +36,6 @@
 #include <QDesktopWidget>
 #include <QDir>
 #include <QFileDialog>
-#include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
 #include <QMenu>
@@ -46,7 +45,6 @@
 #include <QPointer>
 #include <QPrintDialog>
 #include <QPrinter>
-#include <QPushButton>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTextEdit>
@@ -54,7 +52,6 @@
 #include <QUrl>
 // include files for KDE
 #include <KCrash>
-#include <KConfig>
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <KStandardAction>

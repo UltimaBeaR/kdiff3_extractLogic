@@ -8,11 +8,11 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Parts WidgetsAddons)
 set(
         kdiff3part_PART_SRCS
         kdiff3_part.cpp
-        kdiff3.cpp
+        EXTRACT/0_consider/ui/KDiff3App_kdiff3.cpp
         DirectoryInfo.cpp
         directorymergewindow.cpp
         merger.cpp
-        pdiff.cpp
+        EXTRACT/0_consider/ui/KDiff3App_pdiff.cpp
         difftextwindow.cpp
         EXTRACT/1_transitional/diff.cpp
         optiondialog.cpp
@@ -32,7 +32,7 @@ set(
         Utils.cpp
         selection.cpp
         ignorelist.cpp
-        SourceData.cpp
+        EXTRACT/1_transitional/SourceData.cpp
         Overview.cpp
         Logging.cpp
         FileNameLineEdit.cpp

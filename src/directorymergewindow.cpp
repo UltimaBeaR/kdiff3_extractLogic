@@ -10,11 +10,11 @@
 #include "directorymergewindow.h"
 
 #include "DirectoryInfo.h"
+#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "MergeFileInfos.h"
 #include "PixMapUtils.h"
 #include "Utils.h"
 #include "guiutils.h"
-#include "kdiff3.h"
 #include "options.h"
 #include "progress.h"
 

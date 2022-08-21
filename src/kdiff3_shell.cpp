@@ -8,7 +8,7 @@
 
 
 #include "kdiff3_shell.h"
-#include "kdiff3.h"
+#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "kdiff3_part.h"
 
 #include <QApplication>

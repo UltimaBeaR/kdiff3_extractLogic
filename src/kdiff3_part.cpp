@@ -8,9 +8,9 @@
 
 #include "kdiff3_part.h"
 
-#include "fileaccess.h"
-#include "kdiff3.h"
+#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "Logging.h"
+#include "fileaccess.h"
 
 #include <QFile>
 #include <QProcess>
