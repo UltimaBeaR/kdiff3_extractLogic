@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "Logging.h"
+#include "EXTRACT/2_final/Logging.h"
 
 Q_LOGGING_CATEGORY(kdiffMain, "org.kde.kdiff3")
 Q_LOGGING_CATEGORY(kdiffFileAccess, "org.kde.kdiff3.fileAccess")
