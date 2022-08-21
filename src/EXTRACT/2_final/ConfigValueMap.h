@@ -9,7 +9,7 @@
 #ifndef CONFIGVALUEMAP_H
 #define CONFIGVALUEMAP_H
 
-#include "common.h"
+#include "EXTRACT/2_final/common.h"
 
 #include <KConfigGroup>
 #include <QColor>

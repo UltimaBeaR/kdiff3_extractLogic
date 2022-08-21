@@ -7,9 +7,9 @@
 
 #include "options.h"
 
-#include "ConfigValueMap.h"
 #include "EXTRACT/1_transitional/diff.h"
-#include "OptionItems.h"
+#include "EXTRACT/2_final/ConfigValueMap.h"
+#include "EXTRACT/2_final/OptionItems.h"
 
 #include <KSharedConfig>
 

@@ -9,7 +9,7 @@
 #ifndef OPTION_DIALOG_H
 #define OPTION_DIALOG_H
 
-#include "options.h"
+#include "EXTRACT/1_transitional/options.h"
 
 #include <QSharedPointer>   // for QSharedPointer
 #include <QStringList>

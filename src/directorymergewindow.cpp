@@ -11,11 +11,11 @@
 
 #include "DirectoryInfo.h"
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
+#include "EXTRACT/1_transitional/options.h"
 #include "MergeFileInfos.h"
 #include "PixMapUtils.h"
 #include "Utils.h"
 #include "guiutils.h"
-#include "options.h"
 #include "progress.h"
 
 #include <algorithm>

@@ -10,7 +10,7 @@
 #define DIRECTORY_MERGE_WINDOW_H
 
 #include "EXTRACT/1_transitional/diff.h" //TotalDiffStatus
-#include "common.h"
+#include "EXTRACT/2_final/common.h"
 #include "fileaccess.h"
 
 #include <QTreeWidget>

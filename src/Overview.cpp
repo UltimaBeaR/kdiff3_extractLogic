@@ -9,7 +9,7 @@
 
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "EXTRACT/1_transitional/diff.h"
-#include "options.h"
+#include "EXTRACT/1_transitional/options.h"
 
 #include <algorithm> // for max
 

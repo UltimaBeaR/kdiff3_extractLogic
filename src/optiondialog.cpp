@@ -6,10 +6,10 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 #include "optiondialog.h"
-#include "OptionItems.h"
+#include "EXTRACT/2_final/OptionItems.h"
 #include "ui_scroller.h"
 
-#include "common.h"
+#include "EXTRACT/2_final/common.h"
 #include "defmac.h"
 #include "smalldialogs.h"
 

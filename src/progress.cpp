@@ -7,7 +7,7 @@
 */
 
 #include "progress.h"
-#include "common.h"
+#include "EXTRACT/2_final/common.h"
 #include "defmac.h"
 
 #include <cmath>

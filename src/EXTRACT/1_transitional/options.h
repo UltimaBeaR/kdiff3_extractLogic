@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+// Илья: в cpp файле есть зависимость на transitional diff.h - это единственное почему options еще не в final
+
 #ifndef OPTIONS_H
 #define OPTIONS_H
 

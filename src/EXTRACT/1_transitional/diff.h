@@ -10,9 +10,9 @@
 #define DIFF_H
 
 #include "EXTRACT/2_final/LineRef.h"
+#include "EXTRACT/2_final/common.h"
 #include "Logging.h"
 #include "SourceData.h"
-#include "common.h"
 #include "fileaccess.h"
 
 #include <QList>

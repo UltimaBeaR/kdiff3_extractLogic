@@ -23,7 +23,7 @@ set(
         gnudiff_analyze.cpp
         gnudiff_io.cpp
         gnudiff_xmalloc.cpp
-        common.cpp
+        EXTRACT/2_final/common.cpp
         smalldialogs.cpp
         progress.cpp
         ProgressProxyExtender.cpp
@@ -37,7 +37,7 @@ set(
         Logging.cpp
         FileNameLineEdit.cpp
         MergeEditLine.cpp
-        Options.cpp
+        EXTRACT/1_transitional/Options.cpp
         CommentParser.cpp
 )
 

@@ -9,7 +9,7 @@
 #ifndef OPTIONITEMS_H
 #define OPTIONITEMS_H
 
-#include "common.h"
+#include "EXTRACT/2_final/common.h"
 
 #include <QComboBox>
 #include <QLabel>
