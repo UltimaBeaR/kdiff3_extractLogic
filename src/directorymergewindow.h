@@ -9,9 +9,9 @@
 #ifndef DIRECTORY_MERGE_WINDOW_H
 #define DIRECTORY_MERGE_WINDOW_H
 
+#include "EXTRACT/1_transitional/diff.h" //TotalDiffStatus
 #include "common.h"
 #include "fileaccess.h"
-#include "diff.h" //TotalDiffStatus
 
 #include <QTreeWidget>
 #include <QEvent>

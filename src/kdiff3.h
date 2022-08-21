@@ -9,9 +9,9 @@
 #ifndef KDIFF3_H
 #define KDIFF3_H
 
-#include "diff.h"
-#include "defmac.h"
+#include "EXTRACT/1_transitional/diff.h"
 #include "combiners.h"
+#include "defmac.h"
 
 #include <boost/signals2.hpp>
 

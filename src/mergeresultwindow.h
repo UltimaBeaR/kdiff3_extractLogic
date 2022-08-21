@@ -9,7 +9,7 @@
 #ifndef MERGERESULTWINDOW_H
 #define MERGERESULTWINDOW_H
 
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 #include "FileNameLineEdit.h"
 #include "MergeEditLine.h"
 #include "Overview.h"

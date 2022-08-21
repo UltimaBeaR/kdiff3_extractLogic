@@ -7,7 +7,7 @@
 */
 
 #ifndef MERGEEDITLINE_H
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 
 #include <QString>
 #include <QVector>

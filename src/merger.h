@@ -9,7 +9,7 @@
 #ifndef MERGER_H
 #define MERGER_H
 
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 
 class Merger
 {

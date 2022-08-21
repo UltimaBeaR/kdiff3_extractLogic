@@ -7,7 +7,7 @@
 */
 #include "Overview.h"
 
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 #include "kdiff3.h"
 #include "options.h"
 

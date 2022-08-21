@@ -10,7 +10,7 @@
 #ifndef DIFFTEXTWINDOW_H
 #define DIFFTEXTWINDOW_H
 
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 
 #include <QLabel>
 #include <QSharedPointer>  // for QSharedPointer

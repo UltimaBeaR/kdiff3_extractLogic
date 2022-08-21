@@ -8,11 +8,11 @@
 
 #include "smalldialogs.h"
 
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 #include "FileNameLineEdit.h"
-#include "options.h"
-#include "kdiff3.h"
 #include "TypeUtils.h"
+#include "kdiff3.h"
+#include "options.h"
 #include "ui_opendialog.h"
 
 #include <QCheckBox>

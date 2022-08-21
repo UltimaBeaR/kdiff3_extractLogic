@@ -13,7 +13,7 @@ set(kdiff3part_PART_SRCS
    merger.cpp
    pdiff.cpp
    difftextwindow.cpp
-   diff.cpp
+        EXTRACT/1_transitional/diff.cpp
    optiondialog.cpp
    mergeresultwindow.cpp
    fileaccess.cpp

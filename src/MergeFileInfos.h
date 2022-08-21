@@ -9,7 +9,7 @@
 #define MERGEFILEINFO_H
 
 #include "DirectoryInfo.h"
-#include "diff.h"
+#include "EXTRACT/1_transitional/diff.h"
 #include "fileaccess.h"
 
 #include <QString>
