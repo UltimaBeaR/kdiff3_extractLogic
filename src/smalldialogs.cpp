@@ -10,8 +10,8 @@
 
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "EXTRACT/1_transitional/diff.h"
+#include "EXTRACT/2_final/TypeUtils.h"
 #include "FileNameLineEdit.h"
-#include "TypeUtils.h"
 #include "options.h"
 #include "ui_opendialog.h"
 

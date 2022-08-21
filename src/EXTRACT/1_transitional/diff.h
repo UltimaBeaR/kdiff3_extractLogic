@@ -9,11 +9,11 @@
 #ifndef DIFF_H
 #define DIFF_H
 
+#include "EXTRACT/2_final/LineRef.h"
+#include "Logging.h"
+#include "SourceData.h"
 #include "common.h"
 #include "fileaccess.h"
-#include "LineRef.h"
-#include "SourceData.h"
-#include "Logging.h"
 
 #include <QList>
 #include <QVector>

@@ -8,8 +8,8 @@
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
 
-#include "LineRef.h"       // for LineRef
-#include "TypeUtils.h"     // for QtNumberType
+#include "EXTRACT/2_final/LineRef.h"   // for LineRef
+#include "EXTRACT/2_final/TypeUtils.h" // for QtNumberType
 
 #include <QString>         // for QString
 #include <QPixmap>

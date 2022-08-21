@@ -7,7 +7,7 @@
 
 #include "CommentParser.h"
 
-#include "TypeUtils.h"
+#include "EXTRACT/2_final/TypeUtils.h"
 
 #include <QChar>
 #include <QRegularExpression>

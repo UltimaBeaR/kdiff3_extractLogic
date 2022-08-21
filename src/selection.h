@@ -8,7 +8,7 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 
-#include "LineRef.h"
+#include "EXTRACT/2_final/LineRef.h"
 
 #include <algorithm>  // for max, min
 

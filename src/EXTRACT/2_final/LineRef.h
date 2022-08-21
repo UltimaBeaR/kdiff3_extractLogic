@@ -7,7 +7,7 @@
 #ifndef LINEREF_H
 #define LINEREF_H
 
-#include "TypeUtils.h"
+#include "EXTRACT/2_final/TypeUtils.h"
 
 #include <stdlib.h>
 #include <type_traits>

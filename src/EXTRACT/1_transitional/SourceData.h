@@ -9,9 +9,9 @@
 #ifndef SOURCEDATA_H
 #define SOURCEDATA_H
 
-#include "options.h"
+#include "EXTRACT/2_final/LineRef.h"
 #include "fileaccess.h"
-#include "LineRef.h"
+#include "options.h"
 
 #include <boost/signals2.hpp>
 

@@ -10,7 +10,7 @@
   SPDX-License-Identifier: GPL-2.0-or-later
  */
 #include "CvsIgnoreList.h"
-#include "TypeUtils.h"
+#include "EXTRACT/2_final/TypeUtils.h"
 
 #include <QDir>
 #include <QTextStream>
