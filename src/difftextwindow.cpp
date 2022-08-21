@@ -1932,7 +1932,7 @@ void DiffTextWindowFrame::setupConnections(const KDiff3App* app)
 {
     chk_connect(this, &DiffTextWindowFrame::fileNameChanged, app, &KDiff3App::slotFileNameChanged);
     chk_connect(this, &DiffTextWindowFrame::encodingChanged, app, &KDiff3App::slotEncodingChanged);
-    d->mSourceData->setupConnections();
+    d->mSourceData->setupConnections(KDiff3App::encodingChanged);
 }
 
 // Search for the first visible line (search loop needed when no line exists for this file.)

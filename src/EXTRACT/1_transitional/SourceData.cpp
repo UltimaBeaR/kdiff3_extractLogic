@@ -32,14 +32,6 @@ Optimizations: Skip unneeded steps.
 
 #include "EXTRACT/1_transitional/CommentParser.h"
 
-
-
-// Илья: это единственная зависимость которая блокирует перенос вообще всех файлов из transitional в final. Других зависимостей внешних больше нет.
-// Нужно разбивать KDiff3App на части видимо
-#include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
-
-
-
 #include "EXTRACT/1_transitional/diff.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/utils/Utils.h"
@@ -54,10 +46,10 @@ Optimizations: Skip unneeded steps.
 
 #include <KLocalizedString>
 
-void SourceData::setupConnections()
+void SourceData::setupConnections(boost::signals2::signal<void (QTextCodec*)> &encodingChanged)
 {
 #ifndef AUTOTEST
-    connections.push_back(KDiff3App::encodingChanged.connect(boost::bind(&SourceData::setEncoding, this, boost::placeholders::_1)));
+    connections.push_back(encodingChanged.connect(boost::bind(&SourceData::setEncoding, this, boost::placeholders::_1)));
 #endif
 }
 

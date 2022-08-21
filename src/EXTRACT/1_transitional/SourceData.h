@@ -24,7 +24,11 @@ class LineData;
 class SourceData
 {
   public:
-    void setupConnections();
+
+    // Илья: Я тут поменял - передаю сигнал по ссылке, до этого ничего не передавалось и внутри тянулось напрямую из KDiff3App статическое поле с этим событием (или сигналом, хз че эт).
+    // теперь в месте вызова просто это событие передается сюда в параметр. Так я убрался от зависимости тут от KDiff3App, но не уверен что все будет правильно работать, т.к. немного забыл C++
+    void setupConnections(boost::signals2::signal<void (QTextCodec*)> &encodingChanged);
+
     void setOptions(const QSharedPointer<Options> &pOptions);
 
     Q_REQUIRED_RESULT LineRef getSizeLines() const;
