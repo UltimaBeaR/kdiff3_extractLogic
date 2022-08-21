@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "options.h"
+#include "EXTRACT/1_transitional/options.h"
 
 #include "EXTRACT/1_transitional/diff.h"
 #include "EXTRACT/2_final/ConfigValueMap.h"

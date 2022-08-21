@@ -11,11 +11,11 @@
 #include "KDiff3App_kdiff3.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
+#include "EXTRACT/1_transitional/Utils.h"
 #include "EXTRACT/1_transitional/fileaccess.h"
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/ui/progress.h"
 #include "RLPainter.h"
-#include "Utils.h"
 #include "WindowTitleWidget.h"
 #include "difftextwindow.h"
 #include "directorymergewindow.h"

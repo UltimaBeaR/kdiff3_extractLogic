@@ -14,8 +14,8 @@
 #ifndef GNUDIFF_DIFF_H
 #define GNUDIFF_DIFF_H
 
+#include "EXTRACT/1_transitional/Utils.h"
 #include "EXTRACT/2_final/LineRef.h"
-#include "Utils.h"
 
 #include <stdint.h>
 #include <sys/stat.h>

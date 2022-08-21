@@ -20,16 +20,16 @@ set(
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
         EXTRACT/1_transitional/fileaccess.cpp
         DefaultFileAccessJobHandler.cpp
-        gnudiff_analyze.cpp
-        gnudiff_io.cpp
-        gnudiff_xmalloc.cpp
+        EXTRACT/1_transitional/gnudiff/gnudiff_analyze.cpp
+        EXTRACT/1_transitional/gnudiff/gnudiff_io.cpp
+        EXTRACT/1_transitional/gnudiff/gnudiff_xmalloc.cpp
         EXTRACT/2_final/common.cpp
         smalldialogs.cpp
         EXTRACT/2_final/ui/progress.cpp
         ProgressProxyExtender.cpp
         PixMapUtils.cpp
         MergeFileInfos.cpp
-        Utils.cpp
+        EXTRACT/1_transitional/Utils.cpp
         selection.cpp
         ignorelist.cpp
         EXTRACT/1_transitional/SourceData.cpp

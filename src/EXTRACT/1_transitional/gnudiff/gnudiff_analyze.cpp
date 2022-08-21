@@ -27,7 +27,7 @@
 
 #define GDIFF_MAIN
 
-#include "gnudiff_diff.h"
+#include "EXTRACT/1_transitional/gnudiff/gnudiff_diff.h"
 
 #include <algorithm>       // for max, min
 #include <stdlib.h>

@@ -11,7 +11,7 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "gnudiff_diff.h"
+#include "EXTRACT/1_transitional/gnudiff/gnudiff_diff.h"
 #include <stdlib.h>
 #include <type_traits>
 

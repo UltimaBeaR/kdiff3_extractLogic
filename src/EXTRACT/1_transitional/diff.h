@@ -12,8 +12,8 @@
 #include "EXTRACT/2_final/LineRef.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/common.h"
-#include "SourceData.h"
-#include "fileaccess.h"
+#include "EXTRACT/1_transitional/SourceData.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
 
 #include <QList>
 #include <QVector>
