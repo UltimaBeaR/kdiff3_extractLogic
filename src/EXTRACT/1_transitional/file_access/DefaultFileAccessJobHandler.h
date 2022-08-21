@@ -6,10 +6,12 @@
  *
  */
 
+// Илья: Осталась только зависимость в transitional на FileAccessJobHandler, остальное все в final
+
 #ifndef DEFAULTFILEACCESSJOBHANDLER_H
 #define DEFAULTFILEACCESSJOBHANDLER_H
 
-#include "EXTRACT/1_transitional/FileAccessJobHandler.h"
+#include "FileAccessJobHandler.h"
 
 #include <QObject>
 #include <QString>

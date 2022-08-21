@@ -9,8 +9,8 @@
 
 #include "MergeResultWindow.h"
 
-#include "EXTRACT/1_transitional/Utils.h" // for Utils
 #include "EXTRACT/1_transitional/options.h"
+#include "EXTRACT/1_transitional/utils/Utils.h" // for Utils
 #include "EXTRACT/2_final/defmac.h"
 #include "KDiff3App_kdiff3.h"
 #include "RLPainter.h"

@@ -6,7 +6,7 @@
  * 
  */
 
-#include "EXTRACT/1_transitional/DefaultFileAccessJobHandler.h"
+#include "DefaultFileAccessJobHandler.h"
 
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/defmac.h"

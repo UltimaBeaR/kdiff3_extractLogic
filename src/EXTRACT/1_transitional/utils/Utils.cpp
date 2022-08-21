@@ -5,9 +5,12 @@
  * SPDX-FileCopyrightText: 2018-2020 Michael Reeves reeves.87@gmail.com
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
-#include "EXTRACT/1_transitional/Utils.h"
 
-#include "EXTRACT/1_transitional/fileaccess.h"
+// Илья: ссылка на fileaccess, а оттуда идет ссылка обратно сюда. Скорее всего надо разбить этот и тот файлы на более мелкие сущности и этот кросреференс должен пропасть.
+
+#include "Utils.h"
+
+#include "EXTRACT/1_transitional/file_access/fileaccess.h"
 
 #include <KLocalizedString>
 

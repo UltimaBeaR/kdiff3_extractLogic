@@ -9,7 +9,7 @@
 #ifndef CVSIGNORELIST_H
 #define CVSIGNORELIST_H
 
-#include "EXTRACT/1_transitional/fileaccess.h"
+#include "fileaccess.h"
 
 #include "IgnoreList.h"
 
@@ -19,7 +19,6 @@
 class CvsIgnoreList: public IgnoreList
 {
   private:
-    friend class CvsIgnoreListTest;
     inline const char* getVarName() const override { return "CVSIGNORE"; }
     inline const QString getIgnoreName() const override { return QStringLiteral(".cvsignore"); }
 };

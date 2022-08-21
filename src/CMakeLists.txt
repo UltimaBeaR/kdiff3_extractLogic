@@ -18,8 +18,8 @@ set(
         optiondialog.cpp
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
-        EXTRACT/1_transitional/fileaccess.cpp
-        EXTRACT/1_transitional/DefaultFileAccessJobHandler.cpp
+        EXTRACT/1_transitional/file_access/fileaccess.cpp
+        EXTRACT/1_transitional/file_access/DefaultFileAccessJobHandler.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_analyze.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_io.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_xmalloc.cpp
@@ -29,9 +29,9 @@ set(
         EXTRACT/2_final/ui/ProgressProxyExtender.cpp
         PixMapUtils.cpp
         MergeFileInfos.cpp
-        EXTRACT/1_transitional/Utils.cpp
+        EXTRACT/1_transitional/utils/Utils.cpp
         selection.cpp
-        ignorelist.cpp
+        EXTRACT/1_transitional/file_access/ignorelist.cpp
         EXTRACT/1_transitional/SourceData.cpp
         Overview.cpp
         EXTRACT/2_final/Logging.cpp

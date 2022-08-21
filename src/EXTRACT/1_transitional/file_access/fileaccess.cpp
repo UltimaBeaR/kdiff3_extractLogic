@@ -5,16 +5,18 @@
  * SPDX-FileCopyrightText: 2018-2020 Michael Reeves reeves.87@gmail.com
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
-#include "EXTRACT/1_transitional/fileaccess.h"
+#include "fileaccess.h"
 
+// Илья: крос ссылки отсюда на cvsignorelist и из зависимости cvsignorelist - ignorelist ссылка сюда. Вроде зависимости не разрулить, соответственно нужно рассматривать это все вместе пачкой
 #include "CvsIgnoreList.h"
+
 #include <qglobal.h>
 #ifndef AUTOTEST
 #include "DefaultFileAccessJobHandler.h"
 #endif
+#include "EXTRACT/1_transitional/utils/Utils.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/ui/progress.h"
-#include "EXTRACT/1_transitional/Utils.h"
 
 #include <cstdlib>
 #include <sys/stat.h>
