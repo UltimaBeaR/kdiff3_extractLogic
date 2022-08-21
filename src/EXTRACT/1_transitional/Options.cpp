@@ -7,7 +7,9 @@
 
 #include "EXTRACT/1_transitional/options.h"
 
+// Илья: это последняя зависимость в transitional (из diff.cpp идет циркулярная зависимость сюда, надо попробовать разделить)
 #include "EXTRACT/1_transitional/diff.h"
+
 #include "EXTRACT/2_final/ConfigValueMap.h"
 #include "EXTRACT/2_final/OptionItems.h"
 

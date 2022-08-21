@@ -11,7 +11,6 @@
 
 #include <QChar>
 #include <QRegularExpression>
-#include <QSharedPointer>
 #include <QString>
 
 void DefaultCommentParser::processChar(const QString &line, const QChar &inChar)

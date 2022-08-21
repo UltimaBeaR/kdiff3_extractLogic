@@ -30,8 +30,16 @@ Optimizations: Skip unneeded steps.
 */
 #include "EXTRACT/1_transitional/SourceData.h"
 
-#include "CommentParser.h"
+#include "EXTRACT/1_transitional/CommentParser.h"
+
+
+
+// Илья: это единственная зависимость которая блокирует перенос вообще всех файлов из transitional в final. Других зависимостей внешних больше нет.
+// Нужно разбивать KDiff3App на части видимо
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
+
+
+
 #include "EXTRACT/1_transitional/diff.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/utils/Utils.h"

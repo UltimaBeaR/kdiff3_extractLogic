@@ -39,7 +39,7 @@ set(
         FileNameLineEdit.cpp
         MergeEditLine.cpp
         EXTRACT/1_transitional/Options.cpp
-        CommentParser.cpp
+        EXTRACT/1_transitional/CommentParser.cpp
 )
 
 ki18n_wrap_ui(kdiff3part_PART_SRCS
