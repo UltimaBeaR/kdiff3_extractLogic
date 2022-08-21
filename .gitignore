@@ -29,3 +29,8 @@ perf.data*
 *.BASE.*
 *.LOCAL.*
 *.REMOTE.*
+
+
+# Добавил, т.к. при открытии проекта в clion генерировались эти файлы
+.idea/
+cmake-build-debug/
