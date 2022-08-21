@@ -6,11 +6,11 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "EXTRACT/1_transitional/diff.h"
+#include "EXTRACT/2_final/diff.h"
 
 #include "EXTRACT/2_final/gnudiff/gnudiff_diff.h"
-#include "EXTRACT/1_transitional/options.h"
 #include "EXTRACT/2_final/ui/progress.h"
+#include "EXTRACT/2_final/options.h"
 
 #include <cstdlib>
 #include <ctype.h>

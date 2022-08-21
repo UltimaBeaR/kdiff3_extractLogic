@@ -28,13 +28,13 @@ Order of operation:
 
 Optimizations: Skip unneeded steps.
 */
-#include "EXTRACT/1_transitional/SourceData.h"
+#include "EXTRACT/2_final/SourceData.h"
 
-#include "EXTRACT/1_transitional/CommentParser.h"
+#include "EXTRACT/2_final/CommentParser.h"
 
-#include "EXTRACT/1_transitional/diff.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/utils/Utils.h"
+#include "EXTRACT/2_final/diff.h"
 
 #include <QProcess>
 #include <QScopedPointer>

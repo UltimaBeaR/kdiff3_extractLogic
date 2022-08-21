@@ -14,7 +14,7 @@ set(
         merger.cpp
         EXTRACT/0_consider/ui/KDiff3App_pdiff.cpp
         difftextwindow.cpp
-        EXTRACT/1_transitional/diff.cpp
+        EXTRACT/2_final/diff.cpp
         optiondialog.cpp
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
@@ -33,13 +33,13 @@ set(
         EXTRACT/2_final/utils/Utils_urlToString.cpp
         selection.cpp
         EXTRACT/2_final/file_access/ignorelist.cpp
-        EXTRACT/1_transitional/SourceData.cpp
+        EXTRACT/2_final/SourceData.cpp
         Overview.cpp
         EXTRACT/2_final/Logging.cpp
         FileNameLineEdit.cpp
         MergeEditLine.cpp
-        EXTRACT/1_transitional/Options.cpp
-        EXTRACT/1_transitional/CommentParser.cpp
+        EXTRACT/2_final/Options.cpp
+        EXTRACT/2_final/CommentParser.cpp
 )
 
 ki18n_wrap_ui(kdiff3part_PART_SRCS

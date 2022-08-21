@@ -10,10 +10,10 @@
 #include "difftextwindow.h"
 
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
-#include "EXTRACT/1_transitional/SourceData.h" // for SourceData
-#include "EXTRACT/1_transitional/options.h"
-#include "EXTRACT/2_final/common.h" // for getAtomic, max3, min3
+#include "EXTRACT/2_final/SourceData.h" // for SourceData
+#include "EXTRACT/2_final/common.h"     // for getAtomic, max3, min3
 #include "EXTRACT/2_final/defmac.h"
+#include "EXTRACT/2_final/options.h"
 #include "EXTRACT/2_final/ui/progress.h"
 #include "EXTRACT/2_final/utils/Utils.h" // for Utils
 #include "EXTRACT/2_final/utils/Utils_urlToString.h"

@@ -9,7 +9,7 @@
 #ifndef WINDOWTITLEWIDGET_H
 #define WINDOWTITLEWIDGET_H
 
-#include "EXTRACT/1_transitional/diff.h"
+#include "EXTRACT/2_final/diff.h"
 #include "FileNameLineEdit.h"
 #include "MergeEditLine.h"
 #include "Overview.h"

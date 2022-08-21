@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "CommentParser.h"
+#include "EXTRACT/2_final/CommentParser.h"
 
 #include "EXTRACT/2_final/TypeUtils.h"
 

@@ -11,7 +11,7 @@
 
 #include "DirectoryInfo.h"
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
-#include "EXTRACT/1_transitional/options.h"
+#include "EXTRACT/2_final/options.h"
 #include "EXTRACT/2_final/ui/progress.h"
 #include "EXTRACT/2_final/utils/Utils.h"
 #include "MergeFileInfos.h"
