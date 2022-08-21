@@ -19,14 +19,14 @@ set(
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
         EXTRACT/1_transitional/fileaccess.cpp
-        DefaultFileAccessJobHandler.cpp
+        EXTRACT/1_transitional/DefaultFileAccessJobHandler.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_analyze.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_io.cpp
         EXTRACT/1_transitional/gnudiff/gnudiff_xmalloc.cpp
         EXTRACT/2_final/common.cpp
         smalldialogs.cpp
         EXTRACT/2_final/ui/progress.cpp
-        ProgressProxyExtender.cpp
+        EXTRACT/2_final/ui/ProgressProxyExtender.cpp
         PixMapUtils.cpp
         MergeFileInfos.cpp
         EXTRACT/1_transitional/Utils.cpp

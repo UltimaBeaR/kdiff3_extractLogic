@@ -14,7 +14,7 @@
 #endif
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/ui/progress.h"
-#include "Utils.h"
+#include "EXTRACT/1_transitional/Utils.h"
 
 #include <cstdlib>
 #include <sys/stat.h>

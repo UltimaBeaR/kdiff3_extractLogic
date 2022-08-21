@@ -6,12 +6,12 @@
  * 
  */
 
-#include "DefaultFileAccessJobHandler.h"
+#include "EXTRACT/1_transitional/DefaultFileAccessJobHandler.h"
 
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/defmac.h"
+#include "EXTRACT/2_final/ui/ProgressProxyExtender.h"
 #include "EXTRACT/2_final/ui/progress.h"
-#include "ProgressProxyExtender.h"
 
 #include <KJob>
 #include <KIO/CopyJob>

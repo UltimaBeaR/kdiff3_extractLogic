@@ -9,7 +9,7 @@
 #ifndef DEFAULTFILEACCESSJOBHANDLER_H
 #define DEFAULTFILEACCESSJOBHANDLER_H
 
-#include "FileAccessJobHandler.h"
+#include "EXTRACT/1_transitional/FileAccessJobHandler.h"
 
 #include <QObject>
 #include <QString>
