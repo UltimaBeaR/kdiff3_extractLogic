@@ -62,7 +62,7 @@ KDiff3Shell::KDiff3Shell(bool bCompleteInit)
         // itself can't do anything useful
         KMessageBox::error(this, i18n("Could not initialize the KDiff3 part.\n"
                                       "This usually happens due to an installation problem. "
-                                      "Please read the README-file in the source package for details."));
+                                      "Please read the README.md-file in the source package for details."));
         //kapp->quit();
 
         ::exit(-1); //kapp->quit() doesn't work here yet.
