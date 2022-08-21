@@ -6,6 +6,7 @@
 */
 
 #ifndef FILENAMELINEEDIT_H
+#define FILENAMELINEEDIT_H
 
 #include <QLineEdit>
 

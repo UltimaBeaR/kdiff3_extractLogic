@@ -10,7 +10,12 @@
 // application specific includes
 #include "kdiff3.h"
 
+#include "EXTRACT/0_consider/ui/MergeResultWindow.h"
+#include "RLPainter.h"
+#include "Utils.h"
+#include "WindowTitleWidget.h"
 #include "defmac.h"
+#include "difftextwindow.h"
 #include "directorymergewindow.h"
 #include "fileaccess.h"
 #include "guiutils.h"
@@ -19,10 +24,6 @@
 #include "optiondialog.h"
 #include "progress.h"
 #include "smalldialogs.h"
-#include "difftextwindow.h"
-#include "mergeresultwindow.h"
-#include "RLPainter.h"
-#include "Utils.h"
 
 #ifndef Q_OS_WIN
 #include <unistd.h>

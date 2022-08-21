@@ -17,7 +17,8 @@
 #include "progress.h"
 #include "Utils.h"
 
-#include "mergeresultwindow.h"
+#include "EXTRACT/0_consider/ui/MergeResultWindow.h"
+#include "WindowTitleWidget.h"
 #include "smalldialogs.h"
 
 #include <algorithm>
