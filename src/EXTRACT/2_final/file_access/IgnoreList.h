@@ -12,7 +12,7 @@
 #ifndef IGNORELIST_H
 #define IGNORELIST_H
 
-#include "fileaccess.h"
+#include "EXTRACT/2_final/file_access/fileaccess.h"
 
 #include <QString>
 #include <QStringList>

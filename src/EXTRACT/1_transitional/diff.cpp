@@ -8,7 +8,7 @@
 
 #include "EXTRACT/1_transitional/diff.h"
 
-#include "EXTRACT/1_transitional/gnudiff/gnudiff_diff.h"
+#include "EXTRACT/2_final/gnudiff/gnudiff_diff.h"
 #include "EXTRACT/1_transitional/options.h"
 #include "EXTRACT/2_final/ui/progress.h"
 

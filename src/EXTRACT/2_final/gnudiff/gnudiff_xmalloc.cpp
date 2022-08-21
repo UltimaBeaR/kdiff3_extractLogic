@@ -19,7 +19,8 @@
 #define EXIT_FAILURE 1
 #endif
 
-#include "EXTRACT/1_transitional/gnudiff/gnudiff_diff.h"
+#include "EXTRACT/2_final/gnudiff/gnudiff_diff.h"
+
 /* If non NULL, call this function when memory is exhausted. */
 void (*xalloc_fail_func)() = nullptr;
 

@@ -10,7 +10,7 @@
 #define DIFF_H
 
 #include "EXTRACT/1_transitional/SourceData.h"
-#include "EXTRACT/1_transitional/file_access/fileaccess.h"
+#include "EXTRACT/2_final/file_access/fileaccess.h"
 #include "EXTRACT/2_final/LineRef.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/common.h"

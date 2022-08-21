@@ -6,9 +6,9 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#include "EXTRACT/1_transitional/utils/Utils_urlToString.h"
+#include "Utils_urlToString.h"
 
-#include "EXTRACT/1_transitional/file_access/fileaccess.h"
+#include "EXTRACT/2_final/file_access/fileaccess.h"
 
 #include <QHash>
 #include <QRegularExpression>
