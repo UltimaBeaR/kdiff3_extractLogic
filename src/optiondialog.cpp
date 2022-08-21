@@ -10,7 +10,7 @@
 #include "ui_scroller.h"
 
 #include "EXTRACT/2_final/common.h"
-#include "defmac.h"
+#include "EXTRACT/2_final/defmac.h"
 #include "smalldialogs.h"
 
 #include <map>

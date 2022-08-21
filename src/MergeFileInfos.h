@@ -10,7 +10,7 @@
 
 #include "DirectoryInfo.h"
 #include "EXTRACT/1_transitional/diff.h"
-#include "fileaccess.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
 
 #include <QString>
 

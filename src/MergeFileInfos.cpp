@@ -10,9 +10,9 @@
 #include "MergeFileInfos.h"
 
 #include "DirectoryInfo.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "directorymergewindow.h"
-#include "fileaccess.h"
-#include "progress.h"
 
 #include <QString>
 

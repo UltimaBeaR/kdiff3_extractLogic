@@ -9,7 +9,7 @@
 #ifndef CVSIGNORELIST_H
 #define CVSIGNORELIST_H
 
-#include "fileaccess.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
 
 #include "IgnoreList.h"
 

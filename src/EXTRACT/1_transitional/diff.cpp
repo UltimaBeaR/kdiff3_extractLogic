@@ -8,10 +8,10 @@
 
 #include "diff.h"
 
+#include "EXTRACT/2_final/ui/progress.h"
 #include "gnudiff_diff.h"
 #include "merger.h"
 #include "options.h"
-#include "progress.h"
 
 #include <cstdlib>
 #include <ctype.h>

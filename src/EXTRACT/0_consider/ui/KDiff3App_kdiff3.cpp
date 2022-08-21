@@ -11,18 +11,18 @@
 #include "KDiff3App_kdiff3.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
+#include "EXTRACT/2_final/defmac.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "RLPainter.h"
 #include "Utils.h"
 #include "WindowTitleWidget.h"
-#include "defmac.h"
 #include "difftextwindow.h"
 #include "directorymergewindow.h"
-#include "fileaccess.h"
 #include "guiutils.h"
 #include "kdiff3_part.h"
 #include "kdiff3_shell.h"
 #include "optiondialog.h"
-#include "progress.h"
 #include "smalldialogs.h"
 
 #ifndef Q_OS_WIN

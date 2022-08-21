@@ -8,9 +8,9 @@
 
 #include "DefaultFileAccessJobHandler.h"
 
-#include "defmac.h"
-#include "Logging.h"
-#include "progress.h"
+#include "EXTRACT/2_final/Logging.h"
+#include "EXTRACT/2_final/defmac.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "ProgressProxyExtender.h"
 
 #include <KJob>

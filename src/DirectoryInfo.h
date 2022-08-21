@@ -7,8 +7,8 @@
 #ifndef DIRECTORYINFO_H
 #define DIRECTORYINFO_H
 
+#include "EXTRACT/1_transitional/fileaccess.h"
 #include "EXTRACT/1_transitional/options.h"
-#include "fileaccess.h"
 
 class DirectoryInfo
 {

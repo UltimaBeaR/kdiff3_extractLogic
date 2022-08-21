@@ -10,8 +10,8 @@
 #define KDIFF3_H
 
 #include "EXTRACT/1_transitional/diff.h"
+#include "EXTRACT/2_final/defmac.h"
 #include "combiners.h"
-#include "defmac.h"
 
 #include <boost/signals2.hpp>
 

@@ -9,7 +9,7 @@
 #ifndef PROGRESSPROXYEXTENDER_H
 #define PROGRESSPROXYEXTENDER_H
 
-#include "progress.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include <QString>
 
 class KJob;

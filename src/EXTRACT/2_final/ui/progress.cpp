@@ -8,9 +8,7 @@
 
 #include "progress.h"
 #include "EXTRACT/2_final/common.h"
-#include "defmac.h"
-
-#include <cmath>
+#include "EXTRACT/2_final/defmac.h"
 
 #include <QApplication>
 #include <QEventLoop>

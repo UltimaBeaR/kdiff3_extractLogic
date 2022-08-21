@@ -10,7 +10,7 @@
 #include "UTF8BOMCodec.h"
 #include "version.h"
 
-#include "Logging.h"
+#include "EXTRACT/2_final/Logging.h"
 
 #include <stdio.h>// for fileno, stderr
 #include <stdlib.h>// for exit

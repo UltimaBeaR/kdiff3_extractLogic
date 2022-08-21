@@ -13,12 +13,12 @@
 #include "EXTRACT/1_transitional/SourceData.h" // for SourceData
 #include "EXTRACT/1_transitional/options.h"
 #include "EXTRACT/2_final/common.h" // for getAtomic, max3, min3
+#include "EXTRACT/2_final/defmac.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "FileNameLineEdit.h"
 #include "RLPainter.h"
 #include "Utils.h" // for Utils
-#include "defmac.h"
 #include "merger.h"
-#include "progress.h"
 #include "selection.h"
 
 #include <algorithm>

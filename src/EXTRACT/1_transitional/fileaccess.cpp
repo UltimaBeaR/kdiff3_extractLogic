@@ -8,15 +8,13 @@
 #include "fileaccess.h"
 
 #include "CvsIgnoreList.h"
-#include "EXTRACT/2_final/common.h"
 #include <qglobal.h>
 #ifndef AUTOTEST
 #include "DefaultFileAccessJobHandler.h"
 #endif
-#include "FileAccessJobHandler.h"
-#include "Logging.h"
+#include "EXTRACT/2_final/Logging.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "Utils.h"
-#include "progress.h"
 
 #include <cstdlib>
 #include <sys/stat.h>

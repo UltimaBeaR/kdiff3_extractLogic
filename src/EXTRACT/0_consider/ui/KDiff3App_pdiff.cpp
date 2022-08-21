@@ -7,14 +7,14 @@
 */
 
 #include "DirectoryInfo.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
+#include "EXTRACT/2_final/Logging.h"
+#include "EXTRACT/2_final/ui/progress.h"
 #include "KDiff3App_kdiff3.h"
-#include "Logging.h"
 #include "Utils.h"
 #include "difftextwindow.h"
 #include "directorymergewindow.h"
-#include "fileaccess.h"
 #include "optiondialog.h"
-#include "progress.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
 #include "WindowTitleWidget.h"

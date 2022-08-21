@@ -7,7 +7,7 @@
 */
 #include "Utils.h"
 
-#include "fileaccess.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
 
 #include <KLocalizedString>
 

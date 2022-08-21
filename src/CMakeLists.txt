@@ -18,14 +18,14 @@ set(
         optiondialog.cpp
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
-        fileaccess.cpp
+        EXTRACT/1_transitional/fileaccess.cpp
         DefaultFileAccessJobHandler.cpp
         gnudiff_analyze.cpp
         gnudiff_io.cpp
         gnudiff_xmalloc.cpp
         EXTRACT/2_final/common.cpp
         smalldialogs.cpp
-        progress.cpp
+        EXTRACT/2_final/ui/progress.cpp
         ProgressProxyExtender.cpp
         PixMapUtils.cpp
         MergeFileInfos.cpp
@@ -34,7 +34,7 @@ set(
         ignorelist.cpp
         EXTRACT/1_transitional/SourceData.cpp
         Overview.cpp
-        Logging.cpp
+        EXTRACT/2_final/Logging.cpp
         FileNameLineEdit.cpp
         MergeEditLine.cpp
         EXTRACT/1_transitional/Options.cpp

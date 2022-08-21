@@ -6,8 +6,8 @@
 */
 #include "FileNameLineEdit.h"
 
-#include "fileaccess.h"
-#include "Logging.h"
+#include "EXTRACT/1_transitional/fileaccess.h"
+#include "EXTRACT/2_final/Logging.h"
 
 #include <QDropEvent>
 #include <QDragEnterEvent>

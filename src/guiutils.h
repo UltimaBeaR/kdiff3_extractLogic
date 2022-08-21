@@ -9,7 +9,7 @@
 #ifndef GUIUTILS_H
 #define GUIUTILS_H
 
-#include "defmac.h"
+#include "EXTRACT/2_final/defmac.h"
 #include <QObject>
 #include <kactioncollection.h>
 
