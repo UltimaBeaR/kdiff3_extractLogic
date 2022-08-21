@@ -29,7 +29,8 @@ set(
         EXTRACT/2_final/ui/ProgressProxyExtender.cpp
         PixMapUtils.cpp
         MergeFileInfos.cpp
-        EXTRACT/1_transitional/utils/Utils.cpp
+        EXTRACT/2_final/utils/Utils.cpp
+        EXTRACT/1_transitional/utils/Utils_urlToString.cpp
         selection.cpp
         EXTRACT/1_transitional/file_access/ignorelist.cpp
         EXTRACT/1_transitional/SourceData.cpp

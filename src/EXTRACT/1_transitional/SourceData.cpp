@@ -33,8 +33,8 @@ Optimizations: Skip unneeded steps.
 #include "CommentParser.h"
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "EXTRACT/1_transitional/diff.h"
-#include "EXTRACT/1_transitional/utils/Utils.h"
 #include "EXTRACT/2_final/Logging.h"
+#include "EXTRACT/2_final/utils/Utils.h"
 
 #include <QProcess>
 #include <QScopedPointer>

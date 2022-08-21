@@ -12,9 +12,9 @@
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
 #include "EXTRACT/1_transitional/file_access/fileaccess.h"
-#include "EXTRACT/1_transitional/utils/Utils.h"
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/ui/progress.h"
+#include "EXTRACT/2_final/utils/Utils.h"
 #include "RLPainter.h"
 #include "WindowTitleWidget.h"
 #include "difftextwindow.h"

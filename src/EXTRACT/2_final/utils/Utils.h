@@ -1,0 +1,51 @@
+/*
+ * KDiff3 - Text Diff And Merge Tool
+ *
+ * SPDX-FileCopyrightText: 2018-2020 Michael Reeves reeves.87@gmail.com
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ */
+
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <QChar>
+#include <QFontMetrics>
+#include <QString>
+#include <QStringList>
+
+namespace Utils {
+
+bool wildcardMultiMatch(const QString& wildcard, const QString& testString, bool bCaseSensitive);
+QString getArguments(QString cmd, QString& program, QStringList& args);
+inline bool isEndOfLine(QChar c)
+{
+    return c == '\n' || c == '\r' || c == '\x0b';
+}
+
+// Where possible use QTextLayout in place of these functions especially when dealing with non-latin scripts.
+inline int getHorizontalAdvance(const QFontMetrics& metrics, const QString& s, int len = -1)
+{
+// Warning: The Qt API used here is not accurate for some non-latin characters.
+#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
+    return metrics.width(s, len);
+#else
+    return metrics.horizontalAdvance(s, len);
+#endif
+}
+
+inline int getHorizontalAdvance(const QFontMetrics& metrics, const QChar& c)
+{
+// Warning: The Qt API used here is not accurate for some non-latin characters.
+#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
+    return metrics.width(c);
+#else
+    return metrics.horizontalAdvance(c);
+#endif
+}
+
+void calcTokenPos(const QString& s, int posOnScreen, int& pos1, int& pos2);
+QString calcHistoryLead(const QString& s);
+
+} // namespace Utils
+
+#endif

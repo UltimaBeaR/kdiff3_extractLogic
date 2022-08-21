@@ -12,10 +12,11 @@
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "EXTRACT/1_transitional/SourceData.h" // for SourceData
 #include "EXTRACT/1_transitional/options.h"
-#include "EXTRACT/1_transitional/utils/Utils.h" // for Utils
-#include "EXTRACT/2_final/common.h"             // for getAtomic, max3, min3
+#include "EXTRACT/1_transitional/utils/Utils_urlToString.h"
+#include "EXTRACT/2_final/common.h" // for getAtomic, max3, min3
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/ui/progress.h"
+#include "EXTRACT/2_final/utils/Utils.h" // for Utils
 #include "FileNameLineEdit.h"
 #include "RLPainter.h"
 #include "merger.h"

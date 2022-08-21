@@ -1,24 +1,22 @@
 /*
  * KDiff3 - Text Diff And Merge Tool
- * 
+ *
  * SPDX-FileCopyrightText: 2002-2011 Joachim Eibl, joachim.eibl at gmx.de
  * SPDX-FileCopyrightText: 2018-2020 Michael Reeves reeves.87@gmail.com
  * SPDX-License-Identifier: GPL-2.0-or-later
-*/
+ */
 
-// Илья: ссылка на fileaccess, а оттуда идет ссылка обратно сюда. Скорее всего надо разбить этот и тот файлы на более мелкие сущности и этот кросреференс должен пропасть.
-
-#include "Utils.h"
-
-#include "EXTRACT/1_transitional/file_access/fileaccess.h"
+#include "EXTRACT/2_final/utils/Utils.h"
 
 #include <KLocalizedString>
 
-#include <QString>
-#include <QStringList>
 #include <QHash>
 #include <QRegExp>
 #include <QRegularExpression>
+#include <QString>
+#include <QStringList>
+
+namespace Utils {
 
 /* Split the command line into arguments.
  * Normally split at white space separators except when quoting with " or '.
@@ -31,7 +29,7 @@
  * Eg. > "\\" <            => >\<
  * Eg. >"c:\sed" 's/a/\' /g'<  => >c:\sed<, >s/a/' /g<
  */
-QString Utils::getArguments(QString cmd, QString& program, QStringList& args)
+QString getArguments(QString cmd, QString& program, QStringList& args)
 {
     program = QString();
     args.clear();
@@ -52,8 +50,8 @@ QString Utils::getArguments(QString cmd, QString& program, QStringList& args)
                 if(bSkip)
                 {
                     bSkip = false;
-                    //Don't emulate bash here we are not talking to it.
-                    //For us all quotes are the same.
+                    // Don't emulate bash here we are not talking to it.
+                    // For us all quotes are the same.
                     if(cmd[i] == '\\' || cmd[i] == '\'' || cmd[i] == '"')
                     {
                         cmd.remove(i - 1, 1); // remove the backslash '\'
@@ -96,7 +94,7 @@ QString Utils::getArguments(QString cmd, QString& program, QStringList& args)
     return QString();
 }
 
-bool Utils::wildcardMultiMatch(const QString& wildcard, const QString& testString, bool bCaseSensitive)
+bool wildcardMultiMatch(const QString& wildcard, const QString& testString, bool bCaseSensitive)
 {
     static QHash<QString, QRegExp> s_patternMap;
 
@@ -118,18 +116,17 @@ bool Utils::wildcardMultiMatch(const QString& wildcard, const QString& testStrin
     return false;
 }
 
-//TODO: Only used by calcTokenPos.
-bool Utils::isCTokenChar(QChar c)
+// TODO: Only used by calcTokenPos.
+bool isCTokenChar(QChar c)
 {
     return (c == '_') ||
            (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
            (c >= '0' && c <= '9');
 }
 
-
-//TODO: Needed? Only user of isCTokenChar.
+// TODO: Needed? Only user of isCTokenChar.
 /// Calculate where a token starts and ends, given the x-position on screen.
-void Utils::calcTokenPos(const QString& s, int posOnScreen, int& pos1, int& pos2)
+void calcTokenPos(const QString& s, int posOnScreen, int& pos1, int& pos2)
 {
     int pos = std::max(0, posOnScreen);
     if(pos >= (int)s.length())
@@ -153,33 +150,18 @@ void Utils::calcTokenPos(const QString& s, int posOnScreen, int& pos1, int& pos2
     }
 }
 
-QString Utils::calcHistoryLead(const QString& s)
+QString calcHistoryLead(const QString& s)
 {
     // Return the start of the line until the first white char after the first non white char.
     int i = s.indexOf(QRegularExpression("\\S"));
     if(i == -1)
         return QString("");
-    
+
     i = s.indexOf(QRegularExpression("\\s"), i);
     if(Q_UNLIKELY(i == -1))
-        return s;// Very unlikely
-    
+        return s; // Very unlikely
+
     return s.left(i);
 }
 
-/*
-    QUrl::toLocalFile does some special handling for locally visable windows network drives.
-    If QUrl::isLocal however it returns false we get an empty string back.
-*/
-QString Utils::urlToString(const QUrl &url)
-{
-    if(!FileAccess::isLocal(url))
-        return url.toString();
-
-    QString result = url.toLocalFile();
-    if(result.isEmpty())
-        return url.path();
-
-    return result;
-}
-
+} // namespace Utils
