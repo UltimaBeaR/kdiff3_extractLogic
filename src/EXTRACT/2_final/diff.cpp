@@ -686,6 +686,10 @@ void DiffList::runDiff(const QVector<LineData>* p1, const qint32 index1, LineRef
     pp.setCurrent(1);
 }
 
+// Непосредственно дифф.
+// p1, size1 - это данные 1го файла
+// p2, size2 - данные 2го файла
+// diffList - список диффов которые мутируются в итоге.
 void ManualDiffHelpList::runDiff(const QVector<LineData>* p1, LineRef size1, const QVector<LineData>* p2, LineRef size2, DiffList& diffList,
                                  e_SrcSelector winIdx1, e_SrcSelector winIdx2,
                                  const QSharedPointer<Options> &pOptions)

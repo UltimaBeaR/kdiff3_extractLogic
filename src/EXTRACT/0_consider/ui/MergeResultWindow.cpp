@@ -433,6 +433,7 @@ bool MergeResultWindow::sameKindCheck(const MergeLine& ml1, const MergeLine& ml2
            (!ml1.bDelta && !ml2.bDelta));
 }
 
+// Как я понял тут непосредственно мерж происходит
 void MergeResultWindow::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly)
 {
    if(!bConflictsOnly)

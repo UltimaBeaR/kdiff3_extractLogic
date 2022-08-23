@@ -51,8 +51,24 @@ void addWidget(L* layout, W* widget)
     layout->addWidget(widget);
 }
 
+// Диффы по сути происходят тут. На вход 3 еще не считанных файла, но у них уже есть имена(пути). В переменных m_sd1, m_sd2, m_sd3
 void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFlags)
 {
+    qInfo() << "============== mainInit() ===============";
+
+    qInfo() << qPrintable(m_sd1->getFilename());
+    qInfo() << qPrintable(m_sd2->getFilename());
+    qInfo() << qPrintable(m_sd3->getFilename());
+
+    qInfo() << "=============================";
+
+
+
+
+
+
+
+
     ProgressProxy pp;
     QStringList errors;
     // When doing a full analysis in the directory-comparison, then the statistics-results
@@ -121,16 +137,32 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         pp.setInformation(i18n("Loading A"));
         qCInfo(kdiffMain) << i18n("Loading A: %1", m_sd1->getFilename());
 
+        // Чтение файла 1
         if(bUseCurrentEncoding)
             m_sd1->readAndPreprocess(m_sd1->getEncoding(), false);
         else
             m_sd1->readAndPreprocess(m_pOptions->m_pEncodingA, m_pOptions->m_bAutoDetectUnicodeA);
+
+
+
+
+
+        qInfo() << "*****************";
+        qInfo() << qPrintable(m_sd1->getText());
+
+
+
+
+
+
+
 
         pp.step();
 
         pp.setInformation(i18n("Loading B"));
         qCInfo(kdiffMain) << i18n("Loading B: %1", m_sd2->getFilename());
 
+        // Чтение файла 2
         if(bUseCurrentEncoding)
             m_sd2->readAndPreprocess(m_sd2->getEncoding(), false);
         else
@@ -153,6 +185,8 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
     if(errors.isEmpty())
     {
         // Run the diff.
+
+        // Кейс когда сравниваются 2 файла. Дифф делается один (между 2мя файлами) в этом случае
         if(m_sd3->isEmpty())
         {
             pTotalDiffStatus->setBinaryEqualAB(m_sd1->isBinaryEqualWith(m_sd2));
@@ -182,6 +216,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
                 pp.step();
             }
         }
+        // Кейс когда сравниваются 3 файла
         else
         {
             if(bLoadFiles)
@@ -189,6 +224,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
                 pp.setInformation(i18n("Loading C"));
                 qCInfo(kdiffMain) << i18n("Loading C: %1", m_sd3->getFilename());
 
+                // Чтение файла 3
                 if(bUseCurrentEncoding)
                     m_sd3->readAndPreprocess(m_sd3->getEncoding(), false);
                 else
@@ -204,6 +240,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
             pp.setInformation(i18n("Diff: A <-> B"));
             qCInfo(kdiffMain) << i18n("Diff: A <-> B");
 
+            // Дифф между 1 и 2
             if(m_sd1->isText() && m_sd2->isText())
             {
                 m_manualDiffHelpList.runDiff(m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(), m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(), m_diffList12, e_SrcSelector::A, e_SrcSelector::B,
@@ -217,6 +254,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
             pp.setInformation(i18n("Diff: A <-> C"));
             qCInfo(kdiffMain) << i18n("Diff: A <-> C");
 
+            // Дифф между 1 и 3
             if(m_sd1->isText() && m_sd3->isText())
             {
                 m_manualDiffHelpList.runDiff(m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(), m_sd3->getLineDataForDiff(), m_sd3->getSizeLines(), m_diffList13, e_SrcSelector::A, e_SrcSelector::C,
@@ -233,6 +271,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
             pp.setInformation(i18n("Diff: B <-> C"));
             qCInfo(kdiffMain) << i18n("Diff: B <-> C");
 
+            // Дифф между 2 и 3
             if(m_sd2->isText() && m_sd3->isText())
             {
                 m_manualDiffHelpList.runDiff(m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(), m_sd3->getLineDataForDiff(), m_sd3->getSizeLines(), m_diffList23, e_SrcSelector::B, e_SrcSelector::C,
@@ -370,6 +409,11 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
     m_bOutputModified = bVisibleMergeResultWindow;
 
+    // TODO: можно попробовать пойти от противного и изучить сначала код мержа и какие данные ему требуются - сначала
+    // вытаскиваю наружу логику мержа из этого окошка ебучего и делаю ее независимым модулем/объектом.
+    // Потом уже имея это и знаю какие там конкретно данные нужны для мержа - я смогу этот метод (mainInit) разделить на то что мне нужно а что тут лишнее.
+    //
+    // Мерж происходит там внутри - в "окошке"
     m_pMergeResultWindow->init(
         m_sd1->getLineDataForDisplay(), m_sd1->getSizeLines(),
         m_sd2->getLineDataForDisplay(), m_sd2->getSizeLines(),

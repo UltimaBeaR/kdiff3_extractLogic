@@ -427,17 +427,22 @@ public Q_SLOTS:
 
     TotalDiffStatus *m_totalDiffStatus = new TotalDiffStatus();
 
+    // Илья: это сами исходные файлы
     QSharedPointer<SourceData> m_sd1 = QSharedPointer<SourceData>::create();
     QSharedPointer<SourceData> m_sd2 = QSharedPointer<SourceData>::create();
     QSharedPointer<SourceData> m_sd3 = QSharedPointer<SourceData>::create();
 
+    // Илья: это походу выходное имя файла куда скидывается результат (он вроде не считывается, только перезаписывается)
     QString m_outputFilename;
+
     bool m_bDefaultFilename;
 
+    // Илья: это вроде собранные вариации диффов между 1 2 и 3 исходными файлами. Заполняются вроде после вызова диффа
     DiffList m_diffList12;
     DiffList m_diffList23;
     DiffList m_diffList13;
 
+    // Илья: Возможно это какие то временные данные нужные в процессе создания диффов
     QSharedPointer<DiffBufferInfo> m_diffBufferInfo = QSharedPointer<DiffBufferInfo>::create();
     Diff3LineList m_diff3LineList;
     Diff3LineVector m_diff3LineVector;
