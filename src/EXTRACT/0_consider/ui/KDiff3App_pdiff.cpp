@@ -16,8 +16,9 @@
 #include "directorymergewindow.h"
 #include "optiondialog.h"
 
+#include "EXTRACT/my/MergeDataObj.h"
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
-#include "EXTRACT/my/NewMresw.h"
+#include "EXTRACT/my/MergeDataObj.h"
 #include "WindowTitleWidget.h"
 #include "smalldialogs.h"
 
@@ -422,13 +423,6 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         &m_diff3LineList,
         pTotalDiffStatus, bAutoSolve);
 
-    m_newMresw->init(
-        m_sd1->getLineDataForDisplay(), m_sd1->getSizeLines(),
-        m_sd2->getLineDataForDisplay(), m_sd2->getSizeLines(),
-        m_bTripleDiff ? m_sd3->getLineDataForDisplay() : nullptr, m_sd3->getSizeLines(),
-        &m_diff3LineList,
-        pTotalDiffStatus, bAutoSolve);
-
 
 
 
@@ -483,11 +477,6 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
 
 
-    bool bSuccess = m_newMresw->saveDocument(m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
-
-
-
-    qInfo() << "RESULT MERGE_____ " << bSuccess << " conflicts: " << m_newMresw->getNrOfUnsolvedConflicts();
 }
 
 void KDiff3App::setLockPainting(bool bLock)
@@ -699,13 +688,10 @@ void KDiff3App::initView()
     m_pMergeResultWindowTitle = new WindowTitleWidget(m_pOptionDialog->getOptions());
     pMergeVLayout->addWidget(m_pMergeResultWindowTitle);
 
-    m_pMergeResultWindow = new MergeResultWindow(m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
+    m_pMergeDataObj = new MergeDataObj();
+    m_pMergeResultWindow = new MergeResultWindow(m_pMergeDataObj, m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
 
 
-
-
-
-    m_newMresw = new NewMresw(m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
 
 
 

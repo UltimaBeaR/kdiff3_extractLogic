@@ -33,6 +33,56 @@ class KToggleAction;
 
 class KDiff3App;
 
+
+
+
+class MergeDataObj;
+
+
+
+
+
+// saveDocument() вызывается по кнопке сохранить - там поидее считываются все важные данные которые формируются при мерже. Ну или само содержимое файла, а оно уже менятся исходя из нужных данных
+// Однако перед тем как делать сохранение там надо пофиксить все мерж конфликты. Это делается.... через ui
+//
+// getNrOfUnsolvedConflicts() - получить кол-во конфликтов. Не дает сохранить документ пока они есть
+//
+// В init() происходит инциализация и внутри него сам мерж
+
+
+
+
+// Думаю можно начать исследовать приватные переменные и смотреть какие где юзаются и зачем.
+// и для каждой написать - это связано с данными или UI
+// В итоге все что про данные оставить а для UI удалить и исходя из этого будет видно какие методы зависят только от UI - их удалить.
+// А те что зависят от данных и от UI - рефакторить (так чтобы из итогового окошка вызывать эти зарефакторенные методы, которые уже будут только от данных зависеть)
+//
+// Хорошая тактика тут будет - сделать сначала копию этого класса (но для MergeResultWindow) и засунуть туда ТОЛЬКО данные, без методов (для этого надо четко понять что данные а что нет)
+// как минимум - m_mergeLineList точно туда. Дальше - заменить использование переменных с данными во всем MergeResultWindow на этот класс (его поля публичные - эти данные должны быть публичными).
+// А затем постепенно переносить методы которые относятся только к данным внутрь этого своего класса и убирать из окошка эти методы.
+// А те методы которые не получается перетащить, т.к. там зависимости на UI и события UI - их рефакторить.
+// В итоге у меня основная логика будет сосредоточена в этом классе + видны будут использования из окошка. Там будут разные грязные использования переменных напрямую
+// если пойму как этого избежать - буду вытаскивать в методы такое без зависимостей на UI.
+
+
+
+
+// Выделить все что нужно для операции merge - входные и выходные данные. Оставить их тут и убрать зависимость на UI (но можно исопльзовать внешний KDiff3App)
+// далее заюзать этот класс как посредник вместо аналогичного кода в исходном MergeResultWindow
+// таким образом логика мержа останется тут + я смогу проверить что все работае ткак раньше и буду хорошо видеть зависимости.
+//
+// Такое же упражнение потом проделать для KDiff3App и тут заиспользовать потом вместо KDiff3App этот новый класс с логикой, т.к. тут поидее ничего кроме логики оттуда вероятно не будет.
+
+
+
+
+
+
+
+
+
+
+
 // Илья: вынес это, т.к. там внутри есть MergeResultWindow::slotAutoSolve() в котором есть логика мержа.
 // Нужно эту логику потом вынести из UI части
 //
@@ -43,7 +93,7 @@ class MergeResultWindow: public QWidget
  public:
    static QScrollBar* mVScrollBar;
 
-   MergeResultWindow(QWidget* pParent, const QSharedPointer<Options>& pOptions, QStatusBar* pStatusBar);
+   MergeResultWindow(MergeDataObj* pMergeDataObj, QWidget* pParent, const QSharedPointer<Options>& pOptions, QStatusBar* pStatusBar);
 
    void init(
        const QVector<LineData>* pLineDataA, LineRef sizeA,
@@ -66,8 +116,16 @@ class MergeResultWindow: public QWidget
    void connectActions() const;
    void reset();
 
+   // ДАННЫЕ + UI
+   // Сначала проверяет статусы всякие и кидает ошибки в виде UI алертов если что-то не так
+   // Если все ок то проходится по данным из m_mergeLineList и пишет текстовое представление этой штуки в файл
    bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
+
+   // ДАННЫЕ
+   // проходится по данным m_mergeLineList и считает кол-во конфликтов
    int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
+
+
    void choose(e_SrcSelector selector);
    void chooseGlobal(e_SrcSelector selector, bool bConflictsOnly, bool bWhiteSpaceOnly);
 
@@ -174,8 +232,20 @@ class MergeResultWindow: public QWidget
    LineRef m_sizeB = 0;
    LineRef m_sizeC = 0;
 
+
+
+
+
+   MergeDataObj* m_pMergeDataObj = nullptr;
+
+
+
+   // Эти штуки ставятся при создании уже готовые - берутся как я понимаю как результат сделанных перед мержем диффов
    const Diff3LineList* m_pDiff3LineList = nullptr;
    TotalDiffStatus* m_pTotalDiffStatus = nullptr;
+
+
+
 
    int m_delayedDrawTimer = 0;
    e_OverviewMode mOverviewMode;
@@ -193,7 +263,16 @@ class MergeResultWindow: public QWidget
    typedef std::map<QString, HistoryMapEntry> HistoryMap;
    void collectHistoryInformation(e_SrcSelector src, Diff3LineList::const_iterator& iHistoryBegin, Diff3LineList::const_iterator& iHistoryEnd, HistoryMap& historyMap, std::list<HistoryMap::iterator>& hitList);
 
+
+
+   // Похоже на данные.
+   // Используется в получении кол-ва конфликтов
+   // Используется при сохранении итогового файла.
+   // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
    MergeLineList m_mergeLineList;
+
+
+
    MergeLineList::iterator m_currentMergeLineIt;
    bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
    {
@@ -261,6 +340,10 @@ class MergeResultWindow: public QWidget
    bool m_bModified = false;
    void setModified(bool bModified = true);
 
+
+
+
+   // По названиям похоже что эта пачка полей - UI
    int m_scrollDeltaX = 0;
    int m_scrollDeltaY = 0;
    int m_cursorXPos = 0;
@@ -271,6 +354,11 @@ class MergeResultWindow: public QWidget
    QTimer m_cursorTimer;
    bool m_bCursorUpdate = false;
    QStatusBar* m_pStatusBar;
+
+
+
+
+
 
    Selection m_selection;
 

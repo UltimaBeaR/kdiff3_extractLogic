@@ -16,6 +16,9 @@
 #include "RLPainter.h"
 #include "guiutils.h"
 
+
+#include "EXTRACT/my/MergeDataObj.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -51,11 +54,16 @@ QPointer<QAction> MergeResultWindow::chooseBForUnsolvedWhiteSpaceConflicts;
 QPointer<QAction> MergeResultWindow::chooseCForUnsolvedWhiteSpaceConflicts;
 
 MergeResultWindow::MergeResultWindow(
-   QWidget* pParent,
+    MergeDataObj* pMergeDataObj,
+    QWidget* pParent,
    const QSharedPointer<Options>& pOptions,
    QStatusBar* pStatusBar)
    : QWidget(pParent)
 {
+    m_pMergeDataObj = pMergeDataObj;
+
+
+
    setObjectName("MergeResultWindow");
    setFocusPolicy(Qt::ClickFocus);
 
