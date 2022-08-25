@@ -39,6 +39,7 @@ class FindDialog;
 class DiffTextWindow;
 class DiffTextWindowFrame;
 class MergeResultWindow;
+class NewMresw;
 class WindowTitleWidget;
 
 class QStatusBar;
@@ -413,6 +414,8 @@ public Q_SLOTS:
     QSplitter* m_pDiffWindowSplitter = nullptr;
 
     MergeResultWindow* m_pMergeResultWindow = nullptr;
+    NewMresw* m_newMresw = nullptr;
+
     WindowTitleWidget* m_pMergeResultWindowTitle;
     static bool m_bTripleDiff;
 

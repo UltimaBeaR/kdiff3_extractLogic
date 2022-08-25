@@ -301,6 +301,10 @@ bool NewMresw::sameKindCheck(const MergeLine& ml1, const MergeLine& ml2)
 // Как я понял тут непосредственно мерж происходит
 void NewMresw::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly)
 {
+    qInfo() << "NewMresw: " << bAutoSolve << " ";
+
+
+
     if(!bConflictsOnly)
     {
         if(m_bModified)
@@ -509,7 +513,21 @@ void NewMresw::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConfl
     setModified(false);
 
     m_currentMergeLineIt = m_mergeLineList.begin();
-    slotGoTop();
+
+
+
+
+
+
+
+    // Илья: я убрал, т.к. падало когда не было чето инициализировано - вроде это ui штука
+    //slotGoTop();
+
+
+
+
+
+
 
     Q_EMIT updateAvailabilities();
     update();

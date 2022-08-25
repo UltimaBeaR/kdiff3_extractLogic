@@ -17,6 +17,7 @@
 #include "optiondialog.h"
 
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
+#include "EXTRACT/my/NewMresw.h"
 #include "WindowTitleWidget.h"
 #include "smalldialogs.h"
 
@@ -420,7 +421,21 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         m_bTripleDiff ? m_sd3->getLineDataForDisplay() : nullptr, m_sd3->getSizeLines(),
         &m_diff3LineList,
         pTotalDiffStatus, bAutoSolve);
+
+    m_newMresw->init(
+        m_sd1->getLineDataForDisplay(), m_sd1->getSizeLines(),
+        m_sd2->getLineDataForDisplay(), m_sd2->getSizeLines(),
+        m_bTripleDiff ? m_sd3->getLineDataForDisplay() : nullptr, m_sd3->getSizeLines(),
+        &m_diff3LineList,
+        pTotalDiffStatus, bAutoSolve);
+
     m_pMergeResultWindowTitle->setFileName(m_outputFilename.isEmpty() ? QString("unnamed.txt") : m_outputFilename);
+
+
+
+
+
+
 
     if(bGUI)
     {
@@ -656,6 +671,18 @@ void KDiff3App::initView()
     pMergeVLayout->addWidget(m_pMergeResultWindowTitle);
 
     m_pMergeResultWindow = new MergeResultWindow(m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
+
+
+
+
+
+    m_newMresw = new NewMresw(m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
+
+
+
+
+
+
     pMergeVLayout->addWidget(m_pMergeResultWindow, 1);
 
     MergeResultWindow::mVScrollBar = new QScrollBar(Qt::Vertical, m_pMergeWindowFrame);
