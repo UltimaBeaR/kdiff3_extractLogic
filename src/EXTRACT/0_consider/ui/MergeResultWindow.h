@@ -35,6 +35,8 @@ class KDiff3App;
 
 // Илья: вынес это, т.к. там внутри есть MergeResultWindow::slotAutoSolve() в котором есть логика мержа.
 // Нужно эту логику потом вынести из UI части
+//
+// Это окошко с результатами мержа - часть основного UI. Это окошко снизу где мерж вручную меняется и резолвится.
 class MergeResultWindow: public QWidget
 {
    Q_OBJECT
@@ -286,10 +288,5 @@ class MergeResultWindow: public QWidget
  private Q_SLOTS:
    void slotCursorUpdate();
 };
-
-class QLineEdit;
-class QTextCodec;
-class QComboBox;
-class QLabel;
 
 #endif

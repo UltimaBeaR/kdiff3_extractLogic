@@ -519,24 +519,6 @@ LineRef DiffTextWindow::convertDiff3LineIdxToLine(int d3lIdx)
         return d3lIdx;
 }
 
-/** Returns a line number where the linerange [line, line+nofLines] can
-    be displayed best. If it fits into the currently visible range then
-    the returned value is the current firstLine.
-*/
-int getBestFirstLine(int line, int nofLines, int firstLine, int visibleLines)
-{
-    int newFirstLine = firstLine;
-    if(line < firstLine || line + nofLines + 2 > firstLine + visibleLines)
-    {
-        if(nofLines > visibleLines || nofLines <= (2 * visibleLines / 3 - 1))
-            newFirstLine = line - visibleLines / 3;
-        else
-            newFirstLine = line - (visibleLines - nofLines);
-    }
-
-    return newFirstLine;
-}
-
 void DiffTextWindow::setFastSelectorRange(int line1, int nofLines)
 {
     d->m_fastSelectorLine1 = line1;

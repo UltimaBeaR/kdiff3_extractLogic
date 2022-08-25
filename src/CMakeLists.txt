@@ -18,6 +18,7 @@ set(
         optiondialog.cpp
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
+        EXTRACT/my/NewMresw.cpp
         EXTRACT/2_final/file_access/fileaccess.cpp
         EXTRACT/2_final/file_access/DefaultFileAccessJobHandler.cpp
         EXTRACT/2_final/gnudiff/gnudiff_analyze.cpp
@@ -63,7 +64,7 @@ set(kdiff3_SRCS
         main.cpp
         kdiff3_shell.cpp
         ${kdiff3part_PART_SRCS}
-        )
+        EXTRACT/my/NewMresw.cpp)
 
 #cann't use add_subdirectory because it changes the scope.
 include(icons/CMakeLists.txt)

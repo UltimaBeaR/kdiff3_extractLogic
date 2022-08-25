@@ -1456,6 +1456,132 @@ bool Diff3Line::fineDiff(bool inBTextsTotalEqual, const e_SrcSelector selector, 
     return bTextsTotalEqual;
 }
 
+// Calculate the merge information for the given Diff3Line.
+// Results will be stored in mergeDetails, bConflict, bLineRemoved and src.
+void Diff3Line::mergeOneLine(
+    e_MergeDetails& mergeDetails, bool& bConflict,
+    bool& bLineRemoved, e_SrcSelector& src, bool bTwoInputs) const
+{
+    mergeDetails = e_MergeDetails::eDefault;
+    bConflict = false;
+    bLineRemoved = false;
+    src = e_SrcSelector::None;
+
+    if(bTwoInputs) // Only two input files
+    {
+        if(getLineA().isValid() && getLineB().isValid())
+        {
+            if(pFineAB == nullptr)
+            {
+                mergeDetails = e_MergeDetails::eNoChange;
+                src = e_SrcSelector::A;
+            }
+            else
+            {
+                mergeDetails = e_MergeDetails::eBChanged;
+                bConflict = true;
+            }
+        }
+        else
+        {
+            mergeDetails = e_MergeDetails::eBDeleted;
+            bConflict = true;
+        }
+        return;
+    }
+
+    // A is base.
+    if(getLineA().isValid() && getLineB().isValid() && getLineC().isValid())
+    {
+        if(pFineAB == nullptr && pFineBC == nullptr && pFineCA == nullptr)
+        {
+            mergeDetails = e_MergeDetails::eNoChange;
+            src = e_SrcSelector::A;
+        }
+        else if(pFineAB == nullptr && pFineBC != nullptr && pFineCA != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eCChanged;
+            src = e_SrcSelector::C;
+        }
+        else if(pFineAB != nullptr && pFineBC != nullptr && pFineCA == nullptr)
+        {
+            mergeDetails = e_MergeDetails::eBChanged;
+            src = e_SrcSelector::B;
+        }
+        else if(pFineAB != nullptr && pFineBC == nullptr && pFineCA != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eBCChangedAndEqual;
+            src = e_SrcSelector::C;
+        }
+        else if(pFineAB != nullptr && pFineBC != nullptr && pFineCA != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eBCChanged;
+            bConflict = true;
+        }
+        else
+            Q_ASSERT(true);
+    }
+    else if(getLineA().isValid() && getLineB().isValid() && !getLineC().isValid())
+    {
+        if(pFineAB != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eBChanged_CDeleted;
+            bConflict = true;
+        }
+        else
+        {
+            mergeDetails = e_MergeDetails::eCDeleted;
+            bLineRemoved = true;
+            src = e_SrcSelector::C;
+        }
+    }
+    else if(getLineA().isValid() && !getLineB().isValid() && getLineC().isValid())
+    {
+        if(pFineCA != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eCChanged_BDeleted;
+            bConflict = true;
+        }
+        else
+        {
+            mergeDetails = e_MergeDetails::eBDeleted;
+            bLineRemoved = true;
+            src = e_SrcSelector::B;
+        }
+    }
+    else if(!getLineA().isValid() && getLineB().isValid() && getLineC().isValid())
+    {
+        if(pFineBC != nullptr)
+        {
+            mergeDetails = e_MergeDetails::eBCAdded;
+            bConflict = true;
+        }
+        else // B==C
+        {
+            mergeDetails = e_MergeDetails::eBCAddedAndEqual;
+            src = e_SrcSelector::C;
+        }
+    }
+    else if(!getLineA().isValid() && !getLineB().isValid() && getLineC().isValid())
+    {
+        mergeDetails = e_MergeDetails::eCAdded;
+        src = e_SrcSelector::C;
+    }
+    else if(!getLineA().isValid() && getLineB().isValid() && !getLineC().isValid())
+    {
+        mergeDetails = e_MergeDetails::eBAdded;
+        src = e_SrcSelector::B;
+    }
+    else if(getLineA().isValid() && !getLineB().isValid() && !getLineC().isValid())
+    {
+        mergeDetails = e_MergeDetails::eBCDeleted;
+        bLineRemoved = true;
+        src = e_SrcSelector::C;
+    }
+    else
+        Q_ASSERT(true);
+}
+
 void Diff3Line::getLineInfo(const e_SrcSelector winIdx, const bool isTriple, LineRef& lineIdx,
                             DiffList*& pFineDiff1, DiffList*& pFineDiff2, // return values
                             ChangeFlags& changed, ChangeFlags& changed2) const
@@ -1602,4 +1728,102 @@ void Diff3LineList::findHistoryRange(const QRegExp& historyStart, bool bThreeFil
             break; // End of the history
         }
     }
+}
+
+/** Returns a line number where the linerange [line, line+nofLines] can
+    be displayed best. If it fits into the currently visible range then
+    the returned value is the current firstLine.
+*/
+int getBestFirstLine(int line, int nofLines, int firstLine, int visibleLines)
+{
+    int newFirstLine = firstLine;
+    if(line < firstLine || line + nofLines + 2 > firstLine + visibleLines)
+    {
+        if(nofLines > visibleLines || nofLines <= (2 * visibleLines / 3 - 1))
+            newFirstLine = line - visibleLines / 3;
+        else
+            newFirstLine = line - (visibleLines - nofLines);
+    }
+
+    return newFirstLine;
+}
+
+bool findParenthesesGroups(const QString& s, QStringList& sl)
+{
+    sl.clear();
+    int i = 0;
+    std::list<int> startPosStack;
+    int length = s.length();
+    for(i = 0; i < length; ++i)
+    {
+        if(s[i] == '\\' && i + 1 < length && (s[i + 1] == '\\' || s[i + 1] == '(' || s[i + 1] == ')'))
+        {
+            ++i;
+            continue;
+        }
+        if(s[i] == '(')
+        {
+            startPosStack.push_back(i);
+        }
+        else if(s[i] == ')')
+        {
+            if(startPosStack.empty())
+                return false; // Parentheses don't match
+            int startPos = startPosStack.back();
+            startPosStack.pop_back();
+            sl.push_back(s.mid(startPos + 1, i - startPos - 1));
+        }
+    }
+    return startPosStack.empty(); // false if parentheses don't match
+}
+
+QString calcHistorySortKey(const QString& keyOrder, QRegExp& matchedRegExpr, const QStringList& parenthesesGroupList)
+{
+    const QStringList keyOrderList = keyOrder.split(',');
+    QString key;
+
+    for(const QString& keyIt : keyOrderList)
+    {
+        if(keyIt.isEmpty())
+            continue;
+        bool bOk = false;
+        int groupIdx = keyIt.toInt(&bOk);
+        if(!bOk || groupIdx < 0 || groupIdx > parenthesesGroupList.size())
+            continue;
+        QString s = matchedRegExpr.cap(groupIdx);
+        if(groupIdx == 0)
+        {
+            key += s + ' ';
+            continue;
+        }
+
+        QString groupRegExp = parenthesesGroupList[groupIdx - 1];
+        if(groupRegExp.indexOf('|') < 0 || groupRegExp.indexOf('(') >= 0)
+        {
+            bOk = false;
+            int i = s.toInt(&bOk);
+            if(bOk && i >= 0 && i < 10000)
+            {
+                s += QString(4 - s.size(), '0'); // This should help for correct sorting of numbers.
+            }
+            key += s + ' ';
+        }
+        else
+        {
+            // Assume that the groupRegExp consists of something like "Jan|Feb|Mar|Apr"
+            // s is the string that managed to match.
+            // Now we want to know at which position it occurred. e.g. Jan=0, Feb=1, Mar=2, etc.
+            QStringList sl = groupRegExp.split('|');
+            int idx = sl.indexOf(s);
+            if(idx >= 0)
+            {
+                QString sIdx;
+                sIdx.setNum(idx);
+                Q_ASSERT(sIdx.size() <= 2);
+                sIdx += QString(2 - sIdx.size(), '0'); // Up to 99 words in the groupRegExp (more than 12 aren't expected)
+                key += sIdx + ' ';
+            }
+        }
+    }
+    return key;
 }
