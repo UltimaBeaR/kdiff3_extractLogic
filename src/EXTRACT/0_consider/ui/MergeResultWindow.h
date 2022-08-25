@@ -14,6 +14,11 @@
 #include "FileNameLineEdit.h"
 #include "Overview.h"
 
+
+
+#include "EXTRACT/my/MergeDataObj.h"
+
+
 #include "selection.h"
 
 #include <boost/signals2.hpp>
@@ -32,11 +37,6 @@ class KActionCollection;
 class KToggleAction;
 
 class KDiff3App;
-
-
-
-
-class MergeDataObj;
 
 
 
@@ -108,7 +108,7 @@ class MergeResultWindow: public QWidget
 
    inline void clearMergeList()
    {
-       m_mergeLineList.clear();
+       m_pMergeDataObj->m_mergeLineList.clear();
    }
 
    static void initActions(KActionCollection* ac);
@@ -118,11 +118,11 @@ class MergeResultWindow: public QWidget
 
    // ДАННЫЕ + UI
    // Сначала проверяет статусы всякие и кидает ошибки в виде UI алертов если что-то не так
-   // Если все ок то проходится по данным из m_mergeLineList и пишет текстовое представление этой штуки в файл
+   // Если все ок то проходится по данным из m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и пишет текстовое представление этой штуки в файл
    bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
 
    // ДАННЫЕ
-   // проходится по данным m_mergeLineList и считает кол-во конфликтов
+   // проходится по данным m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и считает кол-во конфликтов
    int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
 
 
@@ -265,11 +265,7 @@ class MergeResultWindow: public QWidget
 
 
 
-   // Похоже на данные.
-   // Используется в получении кол-ва конфликтов
-   // Используется при сохранении итогового файла.
-   // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
-   MergeLineList m_mergeLineList;
+
 
 
 
@@ -277,9 +273,9 @@ class MergeResultWindow: public QWidget
    bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
    {
        if(bIncrement)
-           return i != m_mergeLineList.end();
+           return i != m_pMergeDataObj->m_mergeLineList.end();
        else
-           return i != m_mergeLineList.begin();
+           return i != m_pMergeDataObj->m_mergeLineList.begin();
    }
 
    int m_currentPos;
