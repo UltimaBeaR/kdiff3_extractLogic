@@ -1,16 +1,9 @@
 #ifndef KDIFF3_NEWMRESW_H
 #define KDIFF3_NEWMRESW_H
 
-
-
-
-
-
-
-
+#include "EXTRACT/2_final/MergeEditLine.h"
 #include "EXTRACT/2_final/diff.h"
 #include "FileNameLineEdit.h"
-#include "MergeEditLine.h"
 #include "Overview.h"
 
 #include "selection.h"

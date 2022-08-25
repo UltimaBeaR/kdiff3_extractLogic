@@ -38,7 +38,7 @@ set(
         Overview.cpp
         EXTRACT/2_final/Logging.cpp
         FileNameLineEdit.cpp
-        MergeEditLine.cpp
+        EXTRACT/2_final/MergeEditLine.cpp
         EXTRACT/2_final/Options.cpp
         EXTRACT/2_final/CommentParser.cpp
 )
