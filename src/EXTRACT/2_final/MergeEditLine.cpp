@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "MergeEditLine.h"
+#include "EXTRACT/2_final/MergeEditLine.h"
 
 QString MergeEditLine::getString(const QVector<LineData>* pLineDataA, const QVector<LineData>* pLineDataB, const QVector<LineData>* pLineDataC) const
 {

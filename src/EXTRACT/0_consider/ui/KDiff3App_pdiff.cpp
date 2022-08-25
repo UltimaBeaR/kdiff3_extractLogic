@@ -429,6 +429,13 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         &m_diff3LineList,
         pTotalDiffStatus, bAutoSolve);
 
+
+
+
+
+
+
+
     m_pMergeResultWindowTitle->setFileName(m_outputFilename.isEmpty() ? QString("unnamed.txt") : m_outputFilename);
 
 
@@ -459,6 +466,28 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         m_bLoadFiles = bLoadFiles;
         postRecalcWordWrap();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    bool bSuccess = m_newMresw->saveDocument(m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
+
+
+
+    qInfo() << "RESULT MERGE_____ " << bSuccess << " conflicts: " << m_newMresw->getNrOfUnsolvedConflicts();
 }
 
 void KDiff3App::setLockPainting(bool bLock)

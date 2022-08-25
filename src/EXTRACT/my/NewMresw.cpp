@@ -301,7 +301,7 @@ bool NewMresw::sameKindCheck(const MergeLine& ml1, const MergeLine& ml2)
 // Как я понял тут непосредственно мерж происходит
 void NewMresw::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly)
 {
-    qInfo() << "NewMresw: " << bAutoSolve << " ";
+    qInfo() << "NewMresw::merge: bAutoSolve=" << bAutoSolve << " ";
 
 
 

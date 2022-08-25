@@ -25,6 +25,26 @@ class KToggleAction;
 
 class KDiff3App;
 
+
+
+// saveDocument() вызывается по кнопке сохранить - там поидее считываются все важные данные которые формируются при мерже. Ну или само содержимое файла, а оно уже менятся исходя из нужных данных
+// Однако перед тем как делать сохранение там надо пофиксить все мерж конфликты. Это делается.... через ui
+//
+// getNrOfUnsolvedConflicts() - получить кол-во конфликтов. Не дает сохранить документ пока они есть
+//
+// В init() происходит инциализация и внутри него сам мерж
+
+
+
+
+// Думаю можно начать исследовать приватные переменные и смотреть какие где юзаются и зачем.
+// и для каждой написать - это связано с данными или UI
+// В итоге все что про данные оставить а для UI удалить и исходя из этого будет видно какие методы зависят только от UI - их удалить.
+// А те что зависят от данных и от UI - рефакторить (так чтобы из итогового окошка вызывать эти зарефакторенные методы, которые уже будут только от данных зависеть)
+
+
+
+
 // Выделить все что нужно для операции merge - входные и выходные данные. Оставить их тут и убрать зависимость на UI (но можно исопльзовать внешний KDiff3App)
 // далее заюзать этот класс как посредник вместо аналогичного кода в исходном MergeResultWindow
 // таким образом логика мержа останется тут + я смогу проверить что все работае ткак раньше и буду хорошо видеть зависимости.
@@ -59,8 +79,16 @@ class NewMresw: public QWidget
     void connectActions() const;
     void reset();
 
+    // ДАННЫЕ + UI
+    // Сначала проверяет статусы всякие и кидает ошибки в виде UI алертов если что-то не так
+    // Если все ок то проходится по данным из m_mergeLineList и пишет текстовое представление этой штуки в файл
     bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
+
+    // ДАННЫЕ
+    // проходится по данным m_mergeLineList и считает кол-во конфликтов
     int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
+
+
     void choose(e_SrcSelector selector);
     void chooseGlobal(e_SrcSelector selector, bool bConflictsOnly, bool bWhiteSpaceOnly);
 
@@ -186,7 +214,14 @@ class NewMresw: public QWidget
     typedef std::map<QString, HistoryMapEntry> HistoryMap;
     void collectHistoryInformation(e_SrcSelector src, Diff3LineList::const_iterator& iHistoryBegin, Diff3LineList::const_iterator& iHistoryEnd, HistoryMap& historyMap, std::list<HistoryMap::iterator>& hitList);
 
+    // Похоже на данные.
+    // Используется в получении кол-ва конфликтов
+    // Используется при сохранении итогового файла.
+    // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
     MergeLineList m_mergeLineList;
+    
+
+
     MergeLineList::iterator m_currentMergeLineIt;
     bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
     {
