@@ -59,21 +59,19 @@ class MergeDataObj
     // Проходится по данным m_mergeLineList и считает кол-во конфликтов
     int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
 
-
-
-
-
-
     void choose(e_SrcSelector selector);
-
-
 
     void merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly, std::function<void()> callback1, std::function<void()> callback2);
 
+    // Получить строку по номеру строки в итоговом мерже (либо пустая строка в случае неудачи)
+    QString getString(int lineIdx);
 
+    // Получает итераторы на внутренние данные из номера строки
+    bool calcIteratorFromLineNr(
+        int line,
+        MergeLineList::iterator& mlIt,
+        MergeEditLineList::iterator& melIt);
 
-    // TODO: тут методы которые в окошке были приватными, но тут сделал их публичными чтобы можно было использовать их сейчас напрямую из окошка. Потом сделать тут все приватным
-  public:
     bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
     {
         if(bIncrement)
@@ -82,7 +80,8 @@ class MergeDataObj
             return i != m_mergeLineList.begin();
     }
 
-    // TODO: пока на время переходного рефакторинга сделал все данные публичными, как только закончу с этим - нужно все сделать приватным (когда использования будут только внутри этого класса)
+    // TODO: пока на время переходного рефакторинга сделал все данные публичными (кроме тех что точно используются сейчас только внутри),
+    // как только закончу с этим - нужно все сделать приватным (когда использования будут только внутри этого класса)
   public:
     // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
     MergeLineList m_mergeLineList;

@@ -1496,7 +1496,7 @@ void MergeResultWindow::paintEvent(QPaintEvent*)
    {
        painter.setPen(m_pOptions->m_fgColor);
 
-       QString str = getString(m_cursorYPos);
+       QString str = m_pMergeDataObj->getString(m_cursorYPos);
        QTextLayout textLayout(str, font(), this);
        getTextLayoutForLine(m_cursorYPos, str, textLayout);
        textLayout.drawCursor(&painter, QPointF(0, (m_cursorYPos - m_firstLine) * fontMetrics().lineSpacing()), m_cursorXPos);
@@ -1569,7 +1569,7 @@ void MergeResultWindow::mousePressEvent(QMouseEvent* e)
    int xOffset = getTextXOffset();
 
    LineRef line = convertToLine(e->y());
-   QString s = getString(line);
+   QString s = m_pMergeDataObj->getString(line);
    QTextLayout textLayout(s, font(), this);
    getTextLayoutForLine(line, s, textLayout);
    QtNumberType pos = textLayout.lineAt(0).xToCursor(e->x() - textLayout.position().x());
@@ -1650,7 +1650,7 @@ void MergeResultWindow::mouseDoubleClickEvent(QMouseEvent* e)
    if(e->button() == Qt::LeftButton)
    {
        LineRef line = convertToLine(e->y());
-       QString s = getString(line);
+       QString s = m_pMergeDataObj->getString(line);
        QTextLayout textLayout(s, font(), this);
        getTextLayoutForLine(line, s, textLayout);
        int pos = textLayout.lineAt(0).xToCursor(e->x() - textLayout.position().x());
@@ -1696,7 +1696,7 @@ void MergeResultWindow::mouseReleaseEvent(QMouseEvent* e)
 void MergeResultWindow::mouseMoveEvent(QMouseEvent* e)
 {
    LineRef line = convertToLine(e->y());
-   QString s = getString(line);
+   QString s = m_pMergeDataObj->getString(line);
    QTextLayout textLayout(s, font(), this);
    getTextLayoutForLine(line, s, textLayout);
    int pos = textLayout.lineAt(0).xToCursor(e->x() - textLayout.position().x());
@@ -1788,7 +1788,7 @@ void MergeResultWindow::keyPressEvent(QKeyEvent* e)
    int y = m_cursorYPos;
    MergeLineList::iterator mlIt;
    MergeEditLineList::iterator melIt;
-   if(!calcIteratorFromLineNr(y, mlIt, melIt))
+   if(!m_pMergeDataObj->calcIteratorFromLineNr(y, mlIt, melIt))
    {
        // no data loaded or y out of bounds
        e->ignore();
@@ -1830,7 +1830,7 @@ void MergeResultWindow::keyPressEvent(QKeyEvent* e)
                    setModified();
                    MergeLineList::iterator mlIt1;
                    MergeEditLineList::iterator melIt1;
-                   if(calcIteratorFromLineNr(y + 1, mlIt1, melIt1) && melIt1->isEditableText())
+                   if(m_pMergeDataObj->calcIteratorFromLineNr(y + 1, mlIt1, melIt1) && melIt1->isEditableText())
                    {
                        QString s2 = melIt1->getString(m_pMergeDataObj->m_pldA, m_pMergeDataObj->m_pldB, m_pMergeDataObj->m_pldC);
                        melIt->setString(str + s2);
@@ -1862,7 +1862,7 @@ void MergeResultWindow::keyPressEvent(QKeyEvent* e)
                    setModified();
                    MergeLineList::iterator mlIt1;
                    MergeEditLineList::iterator melIt1;
-                   if(calcIteratorFromLineNr(y - 1, mlIt1, melIt1) && melIt1->isEditableText())
+                   if(m_pMergeDataObj->calcIteratorFromLineNr(y - 1, mlIt1, melIt1) && melIt1->isEditableText())
                    {
                        QString s1 = melIt1->getString(m_pMergeDataObj->m_pldA, m_pMergeDataObj->m_pldB, m_pMergeDataObj->m_pldC);
                        melIt1->setString(s1 + str);
@@ -2090,7 +2090,7 @@ void MergeResultWindow::keyPressEvent(QKeyEvent* e)
 
    y = qBound(0, y, m_nofLines - 1);
 
-   str = calcIteratorFromLineNr(y, mlIt, melIt)
+   str = m_pMergeDataObj->calcIteratorFromLineNr(y, mlIt, melIt)
              ? melIt->getString(m_pMergeDataObj->m_pldA, m_pMergeDataObj->m_pldB, m_pMergeDataObj->m_pldC)
              : QString();
 
@@ -2164,45 +2164,6 @@ void MergeResultWindow::keyPressEvent(QKeyEvent* e)
    }
 }
 
-/**
-* Determine MergeLine and MergeEditLine from line number
-*
-* @param       line
-*              line number to look up
-* @param[out]  mlIt
-*              iterator to merge-line
-*              or m_pMergeDataObj->m_mergeLineList.end() if not available
-* @param[out]  melIt
-*              iterator to MergeEditLine
-*              or mlIt->mergeEditLineList.end() if not available
-*              @warning uninitialized if mlIt is not available!
-* @return      whether line is available;
-*              when true, @p mlIt and @p melIt are set to valid iterators
-*/
-bool MergeResultWindow::calcIteratorFromLineNr(
-   int line,
-   MergeLineList::iterator& mlIt,
-   MergeEditLineList::iterator& melIt)
-{
-   for(mlIt = m_pMergeDataObj->m_mergeLineList.begin(); mlIt != m_pMergeDataObj->m_mergeLineList.end(); ++mlIt)
-   {
-       MergeLine& ml = *mlIt;
-       if(line > ml.mergeEditLineList.size())
-       {
-           line -= ml.mergeEditLineList.size();
-       }
-       else
-       {
-           for(melIt = ml.mergeEditLineList.begin(); melIt != ml.mergeEditLineList.end(); ++melIt)
-           {
-               --line;
-               if(line < 0) return true;
-           }
-       }
-   }
-   return false;
-}
-
 QString MergeResultWindow::getSelection()
 {
    QString selectionString;
@@ -2271,7 +2232,7 @@ bool MergeResultWindow::deleteSelection2(QString& s, int& x, int& y,
        Q_ASSERT(m_selection.isValidFirstLine());
        deleteSelection();
        y = m_cursorYPos;
-       if(!calcIteratorFromLineNr(y, mlIt, melIt))
+       if(!m_pMergeDataObj->calcIteratorFromLineNr(y, mlIt, melIt))
        {
            // deleteSelection() should never remove or empty the first line, so
            // resolving m_cursorYPos shall always succeed
@@ -2395,7 +2356,7 @@ void MergeResultWindow::pasteClipboard(bool bFromSelection)
    int y = m_cursorYPos;
    MergeLineList::iterator mlIt;
    MergeEditLineList::iterator melIt, melItAfter;
-   if (!calcIteratorFromLineNr(y, mlIt, melIt))
+   if (!m_pMergeDataObj->calcIteratorFromLineNr(y, mlIt, melIt))
    {
        return;
    }
@@ -2513,17 +2474,6 @@ bool MergeResultWindow::saveDocument(const QString& fileName, QTextCodec* pEncod
    return true;
 }
 
-QString MergeResultWindow::getString(int lineIdx)
-{
-   MergeLineList::iterator mlIt;
-   MergeEditLineList::iterator melIt;
-   if(!calcIteratorFromLineNr(lineIdx, mlIt, melIt))
-   {
-       return QString();
-   }
-   return melIt->getString(m_pMergeDataObj->m_pldA, m_pMergeDataObj->m_pldB, m_pMergeDataObj->m_pldC);
-}
-
 bool MergeResultWindow::findString(const QString& s, LineRef& d3vLine, int& posInLine, bool bDirDown, bool bCaseSensitive)
 {
    int it = d3vLine;
@@ -2533,7 +2483,7 @@ bool MergeResultWindow::findString(const QString& s, LineRef& d3vLine, int& posI
 
    for(; it != endIt; it += step)
    {
-       QString line = getString(it);
+       QString line = m_pMergeDataObj->getString(it);
        if(!line.isEmpty())
        {
            int pos = line.indexOf(s, startPos, bCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
@@ -2555,7 +2505,7 @@ void MergeResultWindow::setSelection(int firstLine, int startPos, int lastLine, 
    if(lastLine >= getNofLines())
    {
        lastLine = getNofLines() - 1;
-       QString s = getString(lastLine);
+       QString s = m_pMergeDataObj->getString(lastLine);
        endPos = s.length();
    }
    m_selection.reset();

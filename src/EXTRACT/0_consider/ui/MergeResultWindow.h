@@ -141,9 +141,11 @@ class MergeResultWindow : public QWidget
 
 
 
-    // ?
-    // Не понял - там какая то логика, но где она нужна непонятно - надо смотреть места вызова
-    // Это про всю группу коммент
+    // DONE
+    // UI
+    // Тут логика какая-то для проверки чего-то там, но используется из вызова только UI-ного кода. Похоже что это никак с данными вообще не связано, это чисто
+    // утилитарные проверки чтобы сделать что-то глубоко UI-ной
+    // Пока я не сильно понял смысл что там конкретно проверяется, если пойму возможно будут идеи как это в данные перенести, но пока кажется что и без этого можно обойтись.
     bool isDeltaAboveCurrent();
     bool isDeltaBelowCurrent();
     bool isUnsolvedConflictAboveCurrent();
@@ -267,8 +269,9 @@ class MergeResultWindow : public QWidget
     // DONE
     void chooseGlobal(e_SrcSelector selector, bool bConflictsOnly, bool bWhiteSpaceOnly);
 
-    // ?
-    // Пока не понял - там просто переменная возвращается. Будет зависеть от того куда эта переменная принадлежит
+    // DONE
+    // UI
+    // Там просто переменная возвращается. Используется только в UIном коде, так что в UI
     int getNofLines() const;
 
     // DONE
@@ -284,7 +287,9 @@ class MergeResultWindow : public QWidget
     // В общем пока пусть будет тут реализация, но вомзожно я этот метод в данные в итоге в этом виде засуну
     QString getSelection();
 
-    QString getString(int lineIdx);
+    // DONE
+    // UI
+    // Какой то текст в статусе формирует про неразрешенные конфликты
     void showUnsolvedConflictsStatusMessage();
 
     void collectHistoryInformation(e_SrcSelector src, Diff3LineList::const_iterator& iHistoryBegin, Diff3LineList::const_iterator& iHistoryEnd, HistoryMap& historyMap, std::list<HistoryMap::iterator>& hitList);
@@ -292,11 +297,6 @@ class MergeResultWindow : public QWidget
     bool checkOverviewIgnore(MergeLineList::iterator& i);
 
     void go(e_Direction eDir, e_EndPoint eEndPoint);
-
-    bool calcIteratorFromLineNr(
-        int line,
-        MergeLineList::iterator& mlIt,
-        MergeEditLineList::iterator& melIt);
 
     MergeLineList::iterator splitAtDiff3LineIdx(int d3lLineIdx);
 

@@ -433,3 +433,53 @@ bool MergeDataObj::sameKindCheck(const MergeLine& ml1, const MergeLine& ml2)
             (!ml1.bConflict && !ml2.bConflict && ml1.bDelta && ml2.bDelta && ml1.srcSelect == ml2.srcSelect && (ml1.mergeDetails == ml2.mergeDetails || (ml1.mergeDetails != e_MergeDetails::eBCAddedAndEqual && ml2.mergeDetails != e_MergeDetails::eBCAddedAndEqual))) ||
             (!ml1.bDelta && !ml2.bDelta));
 }
+
+QString MergeDataObj::getString(int lineIdx)
+{
+    MergeLineList::iterator mlIt;
+    MergeEditLineList::iterator melIt;
+    if(!calcIteratorFromLineNr(lineIdx, mlIt, melIt))
+    {
+        return QString();
+    }
+    return melIt->getString(m_pldA, m_pldB, m_pldC);
+}
+
+/**
+* Determine MergeLine and MergeEditLine from line number
+*
+* @param       line
+*              line number to look up
+* @param[out]  mlIt
+*              iterator to merge-line
+*              or m_pMergeDataObj->m_mergeLineList.end() if not available
+* @param[out]  melIt
+*              iterator to MergeEditLine
+*              or mlIt->mergeEditLineList.end() if not available
+*              @warning uninitialized if mlIt is not available!
+* @return      whether line is available;
+*              when true, @p mlIt and @p melIt are set to valid iterators
+ */
+bool MergeDataObj::calcIteratorFromLineNr(
+    int line,
+    MergeLineList::iterator& mlIt,
+    MergeEditLineList::iterator& melIt)
+{
+    for(mlIt = m_mergeLineList.begin(); mlIt != m_mergeLineList.end(); ++mlIt)
+    {
+        MergeLine& ml = *mlIt;
+        if(line > ml.mergeEditLineList.size())
+        {
+            line -= ml.mergeEditLineList.size();
+        }
+        else
+        {
+            for(melIt = ml.mergeEditLineList.begin(); melIt != ml.mergeEditLineList.end(); ++melIt)
+            {
+                --line;
+                if(line < 0) return true;
+            }
+        }
+    }
+    return false;
+}
