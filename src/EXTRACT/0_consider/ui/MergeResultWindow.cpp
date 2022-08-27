@@ -60,10 +60,6 @@ MergeResultWindow::MergeResultWindow(
    QStatusBar* pStatusBar)
    : QWidget(pParent)
 {
-    m_pMergeDataObj = pMergeDataObj;
-
-
-
    setObjectName("MergeResultWindow");
    setFocusPolicy(Qt::ClickFocus);
 
@@ -75,11 +71,10 @@ MergeResultWindow::MergeResultWindow(
 
    m_pOptions = pOptions;
 
-   // TODO: будет мемори лик, т.к. не удаляю
    m_pMyOptions = new MyOptions();
-
    pOptions->copyToMyOptions(*m_pMyOptions);
 
+   m_pMergeDataObj = pMergeDataObj;
    m_pMergeDataObj->init_setOptions(m_pMyOptions);
 
    setUpdatesEnabled(false);
@@ -91,6 +86,11 @@ MergeResultWindow::MergeResultWindow(
 
    setMinimumSize(QSize(20, 20));
    setFont(m_pOptions->m_font);
+}
+
+MergeResultWindow::~MergeResultWindow()
+{
+    delete m_pMyOptions;
 }
 
 void MergeResultWindow::init(
@@ -641,7 +641,7 @@ void MergeResultWindow::go(e_Direction eDir, e_EndPoint eEndPoint)
        else
            i = --m_pMergeDataObj->m_mergeLineList.end(); // last mergeline
 
-       while(isItAtEnd(eDir == eUp, i) && !i->bDelta)
+       while(m_pMergeDataObj->isItAtEnd(eDir == eUp, i) && !i->bDelta)
        {
            if(eDir == eUp)
                ++i; // search downwards
@@ -649,7 +649,7 @@ void MergeResultWindow::go(e_Direction eDir, e_EndPoint eEndPoint)
                --i; // search upwards
        }
    }
-   else if(eEndPoint == eDelta && isItAtEnd(eDir != eUp, i))
+   else if(eEndPoint == eDelta && m_pMergeDataObj->isItAtEnd(eDir != eUp, i))
    {
        do
        {
@@ -657,9 +657,9 @@ void MergeResultWindow::go(e_Direction eDir, e_EndPoint eEndPoint)
                --i;
            else
                ++i;
-       } while(isItAtEnd(eDir != eUp, i) && (!i->bDelta || checkOverviewIgnore(i) || (bSkipWhiteConflicts && i->bWhiteSpaceConflict)));
+       } while(m_pMergeDataObj->isItAtEnd(eDir != eUp, i) && (!i->bDelta || checkOverviewIgnore(i) || (bSkipWhiteConflicts && i->bWhiteSpaceConflict)));
    }
-   else if(eEndPoint == eConflict && isItAtEnd(eDir != eUp, i))
+   else if(eEndPoint == eConflict && m_pMergeDataObj->isItAtEnd(eDir != eUp, i))
    {
        do
        {
@@ -667,9 +667,9 @@ void MergeResultWindow::go(e_Direction eDir, e_EndPoint eEndPoint)
                --i;
            else
                ++i;
-       } while(isItAtEnd(eDir != eUp, i) && (!i->bConflict || (bSkipWhiteConflicts && i->bWhiteSpaceConflict)));
+       } while(m_pMergeDataObj->isItAtEnd(eDir != eUp, i) && (!i->bConflict || (bSkipWhiteConflicts && i->bWhiteSpaceConflict)));
    }
-   else if(isItAtEnd(eDir != eUp, i) && eEndPoint == eUnsolvedConflict)
+   else if(m_pMergeDataObj->isItAtEnd(eDir != eUp, i) && eEndPoint == eUnsolvedConflict)
    {
        do
        {
@@ -677,7 +677,7 @@ void MergeResultWindow::go(e_Direction eDir, e_EndPoint eEndPoint)
                --i;
            else
                ++i;
-       } while(isItAtEnd(eDir != eUp, i) && !i->mergeEditLineList.begin()->isConflict());
+       } while(m_pMergeDataObj->isItAtEnd(eDir != eUp, i) && !i->mergeEditLineList.begin()->isConflict());
    }
 
    if(isVisible())

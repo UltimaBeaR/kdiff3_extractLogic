@@ -122,7 +122,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
     }
 
     //insure merge result window never has stale iterators.
-    if(m_pMergeResultWindow) m_pMergeResultWindow->clearMergeList();
+    if(m_pMergeResultWindow) m_pMergeResultWindow->m_pMergeDataObj->clearMergeList();
     m_diff3LineList.clear();
     m_diff3LineVector.clear();
 

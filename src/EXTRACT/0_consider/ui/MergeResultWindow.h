@@ -91,13 +91,25 @@ class MergeResultWindow: public QWidget
 {
    Q_OBJECT
  public:
-
+   // Объект данных который я сделал - там содержится все завязанное на данных вытащенное из этого классса с окошком
    MergeDataObj* m_pMergeDataObj = nullptr;
+
+
+
+
 
    static QScrollBar* mVScrollBar;
 
+   // DONE
+   // Отсюда в данные передаются только опции - они копируются в виде части содержащей только данные и передаются в выделенный объект для работы с данными
    MergeResultWindow(MergeDataObj* pMergeDataObj, QWidget* pParent, const QSharedPointer<Options>& pOptions, QStatusBar* pStatusBar);
 
+   // DONE
+   // Я его сам завел чтобы удалять выделенную память
+   ~MergeResultWindow();
+
+   // DONE
+   // Инициализация данных вызывается там внутри из выделенного объекта
    void init(
        const QVector<LineData>* pLineDataA, LineRef sizeA,
        const QVector<LineData>* pLineDataB, LineRef sizeB,
@@ -109,19 +121,16 @@ class MergeResultWindow: public QWidget
 
    void setupConnections(const KDiff3App* app);
 
-   inline void clearMergeList()
-   {
-       m_pMergeDataObj->m_mergeLineList.clear();
-   }
-
    static void initActions(KActionCollection* ac);
 
    void connectActions() const;
+
+   // DONT
+   // Выделал ресет данных в отдельный объект (используетя внутри)
    void reset();
 
-   // ДАННЫЕ + UI
-   // Сначала проверяет статусы всякие и кидает ошибки в виде UI алертов если что-то не так
-   // Если все ок то проходится по данным из m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и пишет текстовое представление этой штуки в файл
+   // DONE
+   // Выделил данные в отдельный объект а UI часть и само сохранение файла на диск оставил тут, в окошке
    bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
 
 
@@ -248,13 +257,6 @@ class MergeResultWindow: public QWidget
 
 
    MergeLineList::iterator m_currentMergeLineIt;
-   bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
-   {
-       if(bIncrement)
-           return i != m_pMergeDataObj->m_mergeLineList.end();
-       else
-           return i != m_pMergeDataObj->m_mergeLineList.begin();
-   }
 
    int m_currentPos;
    bool checkOverviewIgnore(MergeLineList::iterator& i);

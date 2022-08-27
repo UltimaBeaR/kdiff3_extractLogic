@@ -48,11 +48,26 @@ class MergeDataObj
 
     void reset();
 
+    inline void clearMergeList()
+    {
+        m_mergeLineList.clear();
+    }
+
     // Выдает представление m_mergeLineList в виде итогового файла (смерженный файл) в виде out буффера.
     bool getOutFileData(QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle, void* &out_pBuffer, qint64 &out_bufferLength);
 
     // Проходится по данным m_mergeLineList и считает кол-во конфликтов
     int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
+
+    // TODO: тут методы которые в окошке были приватными, но тут сделал их публичными чтобы можно было использовать их сейчас напрямую из окошка. Потом сделать тут все приватным
+  public:
+    bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
+    {
+        if(bIncrement)
+            return i != m_mergeLineList.end();
+        else
+            return i != m_mergeLineList.begin();
+    }
 
     // TODO: пока на время переходного рефакторинга сделал все данные публичными, как только закончу с этим - нужно все сделать приватным (когда использования будут только внутри этого класса)
   public:
