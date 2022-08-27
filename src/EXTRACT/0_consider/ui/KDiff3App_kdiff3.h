@@ -133,9 +133,6 @@ class KDiff3App : public QSplitter
         and the recent file list to the configuration file */
     void saveOptions(KSharedConfigPtr);
 
-    /** read general Options again and initialize all variables like the recent file list */
-    void readOptions(KSharedConfigPtr);
-
     // Finish initialisation (virtual, so that it can be called from the shell too.)
     virtual void completeInit(const QString& fn1 = QString(), const QString& fn2 = QString(), const QString& fn3 = QString());
 
@@ -309,7 +306,6 @@ public Q_SLOTS:
   protected:
     void setLockPainting(bool bLock);
     void createCaption();
-    void initDirectoryMergeActions();
     /** sets up the statusbar for the main window by initialzing a statuslabel. */
     void initStatusBar();
 

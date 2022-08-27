@@ -10,4 +10,4 @@ class MyOptions
     int m_whiteSpace3FileMergeDefault = 0;
 };
 
-#endif // KDIFF3_MERGEDATAOBJ_H
+#endif // KDIFF3_MYOPTIONS_H

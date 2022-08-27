@@ -1,4 +1,4 @@
-#include "EXTRACT/my/MyOptions.h"
+#include "MyOptions.h"
 
 MyOptions::MyOptions()
 {

@@ -19,6 +19,7 @@ set(
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
         EXTRACT/my/MyOptions.cpp
+        EXTRACT/my/MainDataObj.cpp
         EXTRACT/my/MergeDataObj.cpp
         EXTRACT/2_final/file_access/fileaccess.cpp
         EXTRACT/2_final/file_access/DefaultFileAccessJobHandler.cpp
