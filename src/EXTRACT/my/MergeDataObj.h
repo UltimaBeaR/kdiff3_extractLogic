@@ -68,7 +68,7 @@ class MergeDataObj
 
 
 
-
+    void merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly, std::function<void()> callback1, std::function<void()> callback2);
 
 
 
@@ -102,6 +102,8 @@ class MergeDataObj
     MergeLineList::iterator m_currentMergeLineIt;
   private:
     const MyOptions* m_pMyOptions;
+
+    static bool sameKindCheck(const MergeLine& ml1, const MergeLine& ml2);
 };
 
 #endif // KDIFF3_MERGEDATAOBJ_H

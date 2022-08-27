@@ -134,7 +134,10 @@ class MergeResultWindow: public QWidget
    bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
 
 
+   // DONE
    void choose(e_SrcSelector selector);
+
+
    void chooseGlobal(e_SrcSelector selector, bool bConflictsOnly, bool bWhiteSpaceOnly);
 
    int getMaxTextWidth();         // width of longest text line
@@ -217,7 +220,9 @@ class MergeResultWindow: public QWidget
    void noRelevantChangesDetected();
 
  private:
+   // DONE
    void merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly = false, bool bWhiteSpaceOnly = false);
+
    QString getString(int lineIdx);
    void showUnsolvedConflictsStatusMessage();
 
@@ -239,7 +244,6 @@ class MergeResultWindow: public QWidget
    QString m_persistentStatusMessage;
 
  private:
-   static bool sameKindCheck(const MergeLine& ml1, const MergeLine& ml2);
    struct HistoryMapEntry {
        MergeEditLineList mellA;
        MergeEditLineList mellB;

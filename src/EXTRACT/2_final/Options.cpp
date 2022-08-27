@@ -21,7 +21,8 @@
 
 void Options::copyToMyOptions(MyOptions &myOptions)
 {
-    return;
+    myOptions.m_whiteSpace2FileMergeDefault = m_whiteSpace2FileMergeDefault;
+    myOptions.m_whiteSpace3FileMergeDefault = m_whiteSpace3FileMergeDefault;
 }
 
 void Options::init()

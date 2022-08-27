@@ -303,235 +303,51 @@ void MergeResultWindow::reset()
     }
 }
 
-bool MergeResultWindow::sameKindCheck(const MergeLine& ml1, const MergeLine& ml2)
-{
-   if(ml1.bConflict && ml2.bConflict)
-   {
-       // Both lines have conflicts: If one is only a white space conflict and
-       // the other one is a real conflict, then this line returns false.
-       return ml1.id3l->isEqualAC() == ml2.id3l->isEqualAC() && ml1.id3l->isEqualAB() == ml2.id3l->isEqualAB();
-   }
-   else
-       return (
-           (!ml1.bConflict && !ml2.bConflict && ml1.bDelta && ml2.bDelta && ml1.srcSelect == ml2.srcSelect && (ml1.mergeDetails == ml2.mergeDetails || (ml1.mergeDetails != e_MergeDetails::eBCAddedAndEqual && ml2.mergeDetails != e_MergeDetails::eBCAddedAndEqual))) ||
-           (!ml1.bDelta && !ml2.bDelta));
-}
-
 // Как я понял тут непосредственно мерж происходит
 void MergeResultWindow::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bConflictsOnly, bool bWhiteSpaceOnly)
 {
-   if(!bConflictsOnly)
-   {
-       if(m_bModified)
-       {
-           int result = KMessageBox::warningYesNo(this,
-                                                  i18n("The output has been modified.\n"
-                                                       "If you continue your changes will be lost."),
-                                                  i18n("Warning"),
-                                                  KStandardGuiItem::cont(),
-                                                  KStandardGuiItem::cancel());
-           if(result == KMessageBox::No)
-               return;
-       }
+    if(!bConflictsOnly)
+    {
+        if(m_bModified)
+        {
+            int result = KMessageBox::warningYesNo(this,
+                                                   i18n("The output has been modified.\n"
+                                                        "If you continue your changes will be lost."),
+                                                   i18n("Warning"),
+                                                   KStandardGuiItem::cont(),
+                                                   KStandardGuiItem::cancel());
+            if(result == KMessageBox::No)
+                return;
+        }
+    }
 
-       m_pMergeDataObj->m_mergeLineList.clear();
+    m_pMergeDataObj->merge(
+        bAutoSolve, defaultSelector, bConflictsOnly, bWhiteSpaceOnly,
+        [this]() {
+            if(m_pOptions->m_bRunHistoryAutoMergeOnMergeStart)
+                slotMergeHistory();
+            if(m_pOptions->m_bRunRegExpAutoMergeOnMergeStart)
+                slotRegExpAutoMerge();
+            if(m_pMergeDataObj->m_pldC != nullptr && !doRelevantChangesExist())
+                Q_EMIT noRelevantChangesDetected();
+        },
 
-       int lineIdx = 0;
-       Diff3LineList::const_iterator it;
-       for(it = m_pMergeDataObj->m_pDiff3LineList->begin(); it != m_pMergeDataObj->m_pDiff3LineList->end(); ++it, ++lineIdx)
-       {
-           const Diff3Line& d = *it;
+        [this]() {
+            m_cursorXPos = 0;
+            m_cursorOldXPixelPos = 0;
+            m_cursorYPos = 0;
+            m_maxTextWidth = -1;
 
-           MergeLine ml;
-           bool bLineRemoved;
-           d.mergeOneLine(ml.mergeDetails, ml.bConflict, bLineRemoved, ml.srcSelect, m_pMergeDataObj->m_pldC == nullptr);
+            // m_firstLine = 0; // Must not set line/column without scrolling there
+            // m_horizScrollOffset = 0;
 
-           // Automatic solving for only whitespace changes.
-           if(ml.bConflict &&
-              ((m_pMergeDataObj->m_pldC == nullptr && (d.isEqualAB() || (d.isWhiteLine(e_SrcSelector::A) && d.isWhiteLine(e_SrcSelector::B)))) ||
-               (m_pMergeDataObj->m_pldC != nullptr && ((d.isEqualAB() && d.isEqualAC()) || (d.isWhiteLine(e_SrcSelector::A) && d.isWhiteLine(e_SrcSelector::B) && d.isWhiteLine(e_SrcSelector::C))))))
-           {
-               ml.bWhiteSpaceConflict = true;
-           }
+            setModified(false);
+        });
 
-           ml.d3lLineIdx = lineIdx;
-           ml.bDelta = ml.srcSelect != e_SrcSelector::A;
-           ml.id3l = it;
-           ml.srcRangeLength = 1;
+    slotGoTop();
 
-           MergeLine* back = m_pMergeDataObj->m_mergeLineList.empty() ? nullptr : &m_pMergeDataObj->m_mergeLineList.back();
-
-           bool bSame = back != nullptr && sameKindCheck(ml, *back);
-           if(bSame)
-           {
-               ++back->srcRangeLength;
-               if(back->bWhiteSpaceConflict && !ml.bWhiteSpaceConflict)
-                   back->bWhiteSpaceConflict = false;
-           }
-           else
-           {
-               m_pMergeDataObj->m_mergeLineList.push_back(ml);
-           }
-
-           if(!ml.bConflict)
-           {
-               MergeLine& tmpBack = m_pMergeDataObj->m_mergeLineList.back();
-               MergeEditLine mel(ml.id3l);
-               mel.setSource(ml.srcSelect, bLineRemoved);
-               tmpBack.mergeEditLineList.push_back(mel);
-           }
-           else if(back == nullptr || !back->bConflict || !bSame)
-           {
-               MergeLine& tmpBack = m_pMergeDataObj->m_mergeLineList.back();
-               MergeEditLine mel(ml.id3l);
-               mel.setConflict();
-               tmpBack.mergeEditLineList.push_back(mel);
-           }
-       }
-   }
-
-   bool bSolveWhiteSpaceConflicts = false;
-   if(bAutoSolve) // when true, then the other params are not used and we can change them here. (see all invocations of merge())
-   {
-       if(m_pMergeDataObj->m_pldC == nullptr && m_pOptions->m_whiteSpace2FileMergeDefault != (int)e_SrcSelector::None) // Only two inputs
-       {
-           Q_ASSERT(m_pOptions->m_whiteSpace2FileMergeDefault <= (int)e_SrcSelector::Max && m_pOptions->m_whiteSpace2FileMergeDefault >= (int)e_SrcSelector::Min);
-           defaultSelector = (e_SrcSelector)m_pOptions->m_whiteSpace2FileMergeDefault;
-           bWhiteSpaceOnly = true;
-           bSolveWhiteSpaceConflicts = true;
-       }
-       else if(m_pMergeDataObj->m_pldC != nullptr && m_pOptions->m_whiteSpace3FileMergeDefault != (int)e_SrcSelector::None)
-       {
-           Q_ASSERT(m_pOptions->m_whiteSpace3FileMergeDefault <= (int)e_SrcSelector::Max && m_pOptions->m_whiteSpace2FileMergeDefault >= (int)e_SrcSelector::Min);
-           defaultSelector = (e_SrcSelector)m_pOptions->m_whiteSpace3FileMergeDefault;
-           bWhiteSpaceOnly = true;
-           bSolveWhiteSpaceConflicts = true;
-       }
-   }
-
-   if(!bAutoSolve || bSolveWhiteSpaceConflicts)
-   {
-       // Change all auto selections
-       MergeLineList::iterator mlIt;
-       for(mlIt = m_pMergeDataObj->m_mergeLineList.begin(); mlIt != m_pMergeDataObj->m_mergeLineList.end(); ++mlIt)
-       {
-           MergeLine& ml = *mlIt;
-           bool bConflict = ml.mergeEditLineList.empty() || ml.mergeEditLineList.begin()->isConflict();
-           if(ml.bDelta && (!bConflictsOnly || bConflict) && (!bWhiteSpaceOnly || ml.bWhiteSpaceConflict))
-           {
-               ml.mergeEditLineList.clear();
-               if(defaultSelector == e_SrcSelector::Invalid && ml.bDelta)
-               {
-                   MergeEditLine mel(ml.id3l);
-
-                   mel.setConflict();
-                   ml.bConflict = true;
-                   ml.mergeEditLineList.push_back(mel);
-               }
-               else
-               {
-                   Diff3LineList::const_iterator d3llit = ml.id3l;
-                   int j;
-
-                   for(j = 0; j < ml.srcRangeLength; ++j)
-                   {
-                       MergeEditLine mel(d3llit);
-                       mel.setSource(defaultSelector, false);
-
-                       LineRef srcLine = defaultSelector == e_SrcSelector::A ? d3llit->getLineA() : defaultSelector == e_SrcSelector::B ? d3llit->getLineB() : defaultSelector == e_SrcSelector::C ? d3llit->getLineC() : LineRef();
-
-                       if(srcLine.isValid())
-                       {
-                           ml.mergeEditLineList.push_back(mel);
-                       }
-
-                       ++d3llit;
-                   }
-
-                   if(ml.mergeEditLineList.empty()) // Make a line nevertheless
-                   {
-                       MergeEditLine mel(ml.id3l);
-                       mel.setRemoved(defaultSelector);
-                       ml.mergeEditLineList.push_back(mel);
-                   }
-               }
-           }
-       }
-   }
-
-   MergeLineList::iterator mlIt;
-   for(mlIt = m_pMergeDataObj->m_mergeLineList.begin(); mlIt != m_pMergeDataObj->m_mergeLineList.end(); ++mlIt)
-   {
-       MergeLine& ml = *mlIt;
-       // Remove all lines that are empty, because no src lines are there.
-
-       LineRef oldSrcLine;
-       e_SrcSelector oldSrc = e_SrcSelector::Invalid;
-       MergeEditLineList::iterator melIt;
-       for(melIt = ml.mergeEditLineList.begin(); melIt != ml.mergeEditLineList.end();)
-       {
-           MergeEditLine& mel = *melIt;
-           e_SrcSelector melsrc = mel.src();
-
-           LineRef srcLine = mel.isRemoved() ? LineRef() : melsrc == e_SrcSelector::A ? mel.id3l()->getLineA() : melsrc == e_SrcSelector::B ? mel.id3l()->getLineB() : melsrc == e_SrcSelector::C ? mel.id3l()->getLineC() : LineRef();
-
-           // At least one line remains because oldSrc != melsrc for first line in list
-           // Other empty lines will be removed
-           if(!srcLine.isValid() && !oldSrcLine.isValid() && oldSrc == melsrc)
-               melIt = ml.mergeEditLineList.erase(melIt);
-           else
-               ++melIt;
-
-           oldSrcLine = srcLine;
-           oldSrc = melsrc;
-       }
-   }
-
-   if(bAutoSolve && !bConflictsOnly)
-   {
-       if(m_pOptions->m_bRunHistoryAutoMergeOnMergeStart)
-           slotMergeHistory();
-       if(m_pOptions->m_bRunRegExpAutoMergeOnMergeStart)
-           slotRegExpAutoMerge();
-       if(m_pMergeDataObj->m_pldC != nullptr && !doRelevantChangesExist())
-           Q_EMIT noRelevantChangesDetected();
-   }
-
-   int nrOfSolvedConflicts = 0;
-   int nrOfUnsolvedConflicts = 0;
-   int nrOfWhiteSpaceConflicts = 0;
-
-   MergeLineList::iterator i;
-   for(i = m_pMergeDataObj->m_mergeLineList.begin(); i != m_pMergeDataObj->m_mergeLineList.end(); ++i)
-   {
-       if(i->bConflict)
-           ++nrOfUnsolvedConflicts;
-       else if(i->bDelta)
-           ++nrOfSolvedConflicts;
-
-       if(i->bWhiteSpaceConflict)
-           ++nrOfWhiteSpaceConflicts;
-   }
-
-   m_pMergeDataObj->m_pTotalDiffStatus->setUnsolvedConflicts(nrOfUnsolvedConflicts);
-   m_pMergeDataObj->m_pTotalDiffStatus->setSolvedConflicts(nrOfSolvedConflicts);
-   m_pMergeDataObj->m_pTotalDiffStatus->setWhitespaceConflicts(nrOfWhiteSpaceConflicts);
-
-   m_cursorXPos = 0;
-   m_cursorOldXPixelPos = 0;
-   m_cursorYPos = 0;
-   m_maxTextWidth = -1;
-
-   //m_firstLine = 0; // Must not set line/column without scrolling there
-   //m_horizScrollOffset = 0;
-
-   setModified(false);
-
-   m_pMergeDataObj->m_currentMergeLineIt = m_pMergeDataObj->m_mergeLineList.begin();
-   slotGoTop();
-
-   Q_EMIT updateAvailabilities();
-   update();
+    Q_EMIT updateAvailabilities();
+    update();
 }
 
 void MergeResultWindow::setFirstLine(QtNumberType firstLine)
