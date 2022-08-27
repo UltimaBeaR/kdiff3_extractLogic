@@ -5,6 +5,7 @@
 // Потом в итоге нужно будет поубирать ненужное
 // --------------------------------------------------------------------
 
+#include "EXTRACT/my/MyOptions.h"
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/diff.h"
 #include "combiners.h"
@@ -53,8 +54,7 @@ class KActionCollection;
 class MainDataObj
 {
   public:
-    MainDataObj();
-
+    MainDataObj(MyOptions* pMyOptions);
 
     // Данные пока в public пока в процессе рефакторинга потом перенести в private что нужно
   public:
@@ -80,6 +80,8 @@ class MainDataObj
     Diff3LineList m_diff3LineList;
     Diff3LineVector m_diff3LineVector;
     ManualDiffHelpList m_manualDiffHelpList;
+  private:
+    MyOptions* m_pMyOptions;
 };
 
 #endif // KDIFF3_MAINDATAOBJ_H

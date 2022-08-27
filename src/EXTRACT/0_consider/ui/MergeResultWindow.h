@@ -79,7 +79,7 @@ class MergeResultWindow : public QWidget
   public:
     // DONE
     // Отсюда в данные передаются только опции - они копируются в виде части содержащей только данные и передаются в выделенный объект для работы с данными
-    MergeResultWindow(MergeDataObj* pMergeDataObj, QWidget* pParent, const QSharedPointer<Options>& pOptions, QStatusBar* pStatusBar);
+    MergeResultWindow(MergeDataObj* pMergeDataObj, QWidget* pParent, const QSharedPointer<Options>& pOptions, MyOptions* pMyOptions, QStatusBar* pStatusBar);
 
     // DONE
     // Я его сам завел чтобы удалять выделенную память

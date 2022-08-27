@@ -31,6 +31,8 @@ class KDiff3App;
 
 // --------------------------------------------------------------------
 
+class MyOptions;
+
 class MergeDataObj
 {
     // Использование - сначала инициализация - Создание, init_setOptions(), init()
@@ -113,7 +115,7 @@ class MergeDataObj
     // ПОХОЖЕ что это что-то типа текущей строки с которой идет работа.
     MergeLineList::iterator m_currentMergeLineIt;
   private:
-    const MyOptions* m_pMyOptions;
+    MyOptions* m_pMyOptions;
 
     static bool sameKindCheck(const MergeLine& ml1, const MergeLine& ml2);
 };

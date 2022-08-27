@@ -69,6 +69,7 @@
 
 // --------------------------------------------------------------------
 
-MainDataObj::MainDataObj()
+MainDataObj::MainDataObj(MyOptions* pMyOptions)
 {
+    m_pMyOptions = pMyOptions;
 }

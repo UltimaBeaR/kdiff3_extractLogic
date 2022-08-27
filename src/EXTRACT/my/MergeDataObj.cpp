@@ -36,13 +36,15 @@
 
 // --------------------------------------------------------------------
 
+#include "EXTRACT/my/MyOptions.h"
+
 MergeDataObj::MergeDataObj()
 {
 }
 
 void MergeDataObj::init_setOptions(const MyOptions* pMyOptions)
 {
-    m_pMyOptions = pMyOptions;
+    m_pMyOptions = (MyOptions*)pMyOptions;
 }
 
 void MergeDataObj::init(
@@ -291,17 +293,17 @@ void MergeDataObj::merge(bool bAutoSolve, e_SrcSelector defaultSelector, bool bC
     bool bSolveWhiteSpaceConflicts = false;
     if(bAutoSolve) // when true, then the other params are not used and we can change them here. (see all invocations of merge())
     {
-        if(m_pldC == nullptr && m_pMyOptions->m_whiteSpace2FileMergeDefault != (int)e_SrcSelector::None) // Only two inputs
+        if(m_pldC == nullptr && m_pMyOptions->getWhiteSpace2FileMergeDefault() != (int)e_SrcSelector::None) // Only two inputs
         {
-            Q_ASSERT(m_pMyOptions->m_whiteSpace2FileMergeDefault <= (int)e_SrcSelector::Max && m_pMyOptions->m_whiteSpace2FileMergeDefault >= (int)e_SrcSelector::Min);
-            defaultSelector = (e_SrcSelector)m_pMyOptions->m_whiteSpace2FileMergeDefault;
+            Q_ASSERT(m_pMyOptions->getWhiteSpace2FileMergeDefault() <= (int)e_SrcSelector::Max && m_pMyOptions->getWhiteSpace2FileMergeDefault() >= (int)e_SrcSelector::Min);
+            defaultSelector = (e_SrcSelector)m_pMyOptions->getWhiteSpace2FileMergeDefault();
             bWhiteSpaceOnly = true;
             bSolveWhiteSpaceConflicts = true;
         }
-        else if(m_pldC != nullptr && m_pMyOptions->m_whiteSpace3FileMergeDefault != (int)e_SrcSelector::None)
+        else if(m_pldC != nullptr && m_pMyOptions->getWhiteSpace3FileMergeDefault() != (int)e_SrcSelector::None)
         {
-            Q_ASSERT(m_pMyOptions->m_whiteSpace3FileMergeDefault <= (int)e_SrcSelector::Max && m_pMyOptions->m_whiteSpace2FileMergeDefault >= (int)e_SrcSelector::Min);
-            defaultSelector = (e_SrcSelector)m_pMyOptions->m_whiteSpace3FileMergeDefault;
+            Q_ASSERT(m_pMyOptions->getWhiteSpace3FileMergeDefault() <= (int)e_SrcSelector::Max && m_pMyOptions->getWhiteSpace2FileMergeDefault() >= (int)e_SrcSelector::Min);
+            defaultSelector = (e_SrcSelector)m_pMyOptions->getWhiteSpace3FileMergeDefault();
             bWhiteSpaceOnly = true;
             bSolveWhiteSpaceConflicts = true;
         }

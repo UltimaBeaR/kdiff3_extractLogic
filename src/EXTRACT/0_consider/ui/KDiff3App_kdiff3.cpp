@@ -120,8 +120,6 @@ bool KDiff3App::isDirComparison() const
 KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3Part)
     : QSplitter(pParent) //previously KMainWindow
 {
-    m_pMainDataObj = new MainDataObj();
-
     setObjectName(name);
     m_pKDiff3Part = pKDiff3Part;
     m_pKDiff3Shell = qobject_cast<KParts::MainWindow*>(pParent);
@@ -150,6 +148,9 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
 
     // This is just a convenience variable to make code that accesses options more readable
     m_pOptions = m_pOptionDialog->getOptions();
+    m_pMyOptions = new MyOptions(m_pOptions);
+
+    m_pMainDataObj = new MainDataObj(m_pMyOptions);
 
     m_pOptionDialog->readOptions(KSharedConfig::openConfig());
 
@@ -200,6 +201,24 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
             exit(1);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+    // TODO: непонятно как тут это вытащить в кусок данных, т.к. это все очень тесно переплетено со всякими консольными аргументами и прочим что явно не относится к данным.
+    // Видимо надо как то зарефакторить и превратить это в набор параметров и сделать что то типа метода init() у объекта данных куда передавать эти параметры так чтобы вся логика описанная
+    // тут выполнялась так же
+    //
+    // Еще тут про сравнение директорий что-то. В итоге мне эта логика не нужжна, однако тут тесно оно переплетено все и в том числе SourceData используется для проверок папка или нет
+    // Но возможно получится как то разделить
+
 
     m_pMainDataObj->m_sd1->setOptions(m_pOptions);
     m_pMainDataObj->m_sd2->setOptions(m_pOptions);
@@ -293,6 +312,15 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
     {
         m_pMainDataObj->m_bDefaultFilename = false;
     }
+
+
+
+
+
+
+
+
+
     g_pProgressDialog->setStayHidden(m_bAutoMode);
 
     ///////////////////////////////////////////////////////////////////

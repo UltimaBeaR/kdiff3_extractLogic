@@ -9,6 +9,8 @@
 #ifndef KDIFF3_H
 #define KDIFF3_H
 
+#include "EXTRACT/my/MyOptions.h"
+
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/diff.h"
 #include "combiners.h"
@@ -119,6 +121,9 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(InitFlags);
 
 class KDiff3App : public QSplitter
 {
+    // Сначала вызывается конструктор, потом (не из конструктора) completeInit()
+
+
     Q_OBJECT
 
   public:
@@ -336,6 +341,16 @@ public Q_SLOTS:
     bool canCut();
     bool canCopy();
 
+
+
+
+
+
+
+// ДАННЫЕ
+
+  private:
+
     bool mInitCalled = false;
     /** the configuration object of the application */
     //KConfig *config;
@@ -434,6 +449,7 @@ public Q_SLOTS:
 
     OptionDialog* m_pOptionDialog = nullptr;
     QSharedPointer<Options> m_pOptions = nullptr;
+    MyOptions* m_pMyOptions = nullptr;
     FindDialog* m_pFindDialog = nullptr;
 
     bool m_bFinishMainInit = false;
@@ -441,7 +457,10 @@ public Q_SLOTS:
 
     KDiff3Part* m_pKDiff3Part = nullptr;
     KParts::MainWindow* m_pKDiff3Shell = nullptr;
+
+    // Это флаг из командной строки что нужно сохранить и выйти если нету конфликтов видимо (есть еще что то такое в опциях и тоже проверяется вместе с этим флагом)
     bool m_bAutoFlag = false;
+
     bool m_bAutoMode = false;
     bool m_bRecalcWordWrapPosted = false;
 

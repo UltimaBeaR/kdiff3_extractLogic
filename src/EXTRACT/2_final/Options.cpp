@@ -7,8 +7,6 @@
 
 #include "EXTRACT/2_final/options.h"
 
-#include "EXTRACT/my/MyOptions.h"
-
 // Илья: это последняя зависимость в transitional (из diff.cpp идет циркулярная зависимость сюда, надо попробовать разделить)
 #include "EXTRACT/2_final/diff.h"
 
@@ -18,12 +16,6 @@
 #include <KSharedConfig>
 
 #define KDIFF3_CONFIG_GROUP "KDiff3 Options"
-
-void Options::copyToMyOptions(MyOptions &myOptions)
-{
-    myOptions.m_whiteSpace2FileMergeDefault = m_whiteSpace2FileMergeDefault;
-    myOptions.m_whiteSpace3FileMergeDefault = m_whiteSpace3FileMergeDefault;
-}
 
 void Options::init()
 {

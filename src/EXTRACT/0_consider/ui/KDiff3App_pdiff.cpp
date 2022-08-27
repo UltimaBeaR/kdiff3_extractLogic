@@ -690,7 +690,7 @@ void KDiff3App::initView()
     m_pMergeResultWindowTitle = new WindowTitleWidget(m_pOptionDialog->getOptions());
     pMergeVLayout->addWidget(m_pMergeResultWindowTitle);
 
-    m_pMergeResultWindow = new MergeResultWindow(new MergeDataObj(), m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
+    m_pMergeResultWindow = new MergeResultWindow(new MergeDataObj(), m_pMergeWindowFrame, m_pOptionDialog->getOptions(), m_pMyOptions, statusBar());
 
     pMergeVLayout->addWidget(m_pMergeResultWindow, 1);
 

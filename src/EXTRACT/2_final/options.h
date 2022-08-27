@@ -11,8 +11,6 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#include "EXTRACT/my/MyOptions.h"
-
 #include <KSharedConfig>
 
 #include <list>
@@ -42,9 +40,6 @@ enum e_LineEndStyle
 class Options
 {
 public:
-    // Конвертирует в MyOptions (просто копирует отсюда туда нужные поля)
-    void copyToMyOptions(MyOptions &myOptions);
-
     void init();
 
     void apply();

@@ -16,7 +16,7 @@
 #include "RLPainter.h"
 #include "guiutils.h"
 
-
+#include "EXTRACT/my/MyOptions.h"
 #include "EXTRACT/my/MergeDataObj.h"
 
 #include <QAction>
@@ -57,6 +57,7 @@ MergeResultWindow::MergeResultWindow(
     MergeDataObj* pMergeDataObj,
     QWidget* pParent,
    const QSharedPointer<Options>& pOptions,
+    MyOptions* pMyOptions,
    QStatusBar* pStatusBar)
    : QWidget(pParent)
 {
@@ -70,9 +71,7 @@ MergeResultWindow::MergeResultWindow(
        chk_connect(m_pStatusBar, &QStatusBar::messageChanged, this, &MergeResultWindow::slotStatusMessageChanged);
 
    m_pOptions = pOptions;
-
-   m_pMyOptions = new MyOptions();
-   pOptions->copyToMyOptions(*m_pMyOptions);
+   m_pMyOptions = pMyOptions;
 
    m_pMergeDataObj = pMergeDataObj;
    m_pMergeDataObj->init_setOptions(m_pMyOptions);
