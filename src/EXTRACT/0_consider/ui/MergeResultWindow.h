@@ -223,22 +223,7 @@ class MergeResultWindow: public QWidget
    static QPointer<QAction> chooseCForUnsolvedWhiteSpaceConflicts;
 
    QSharedPointer<Options> m_pOptions = nullptr;
-
-   const QVector<LineData>* m_pldA = nullptr;
-   const QVector<LineData>* m_pldB = nullptr;
-   const QVector<LineData>* m_pldC = nullptr;
-   LineRef m_sizeA = 0;
-   LineRef m_sizeB = 0;
-   LineRef m_sizeC = 0;
-
-
-
-   // Эти штуки ставятся при создании уже готовые - берутся как я понимаю как результат сделанных перед мержем диффов
-   const Diff3LineList* m_pDiff3LineList = nullptr;
-   TotalDiffStatus* m_pTotalDiffStatus = nullptr;
-
-
-
+   MyOptions* m_pMyOptions;
 
    int m_delayedDrawTimer = 0;
    e_OverviewMode mOverviewMode;

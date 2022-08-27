@@ -31,43 +31,46 @@ class KDiff3App;
 
 // --------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
 class MergeDataObj
 {
   public:
     MergeDataObj();
 
-    // Похоже на данные.
-    // Используется в получении кол-ва конфликтов
-    // Используется при сохранении итогового файла.
+    // Вызываю только в конструкторе создания MergeResultWindow - там единственное что нужно оттуда это эти опции, все остальное UI-ное.
+    void init_setOptions(const MyOptions* pMyOptions);
+
+    void init(
+        const QVector<LineData>* pLineDataA, LineRef sizeA,
+        const QVector<LineData>* pLineDataB, LineRef sizeB,
+        const QVector<LineData>* pLineDataC, LineRef sizeC,
+        const Diff3LineList* pDiff3LineList,
+        TotalDiffStatus* pTotalDiffStatus);
+
+    void reset();
+
+    // Выдает представление m_mergeLineList в виде итогового файла (смерженный файл) в виде out буффера.
+    bool getOutFileData(QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle, void* &out_pBuffer, qint64 &out_bufferLength);
+
+    // Проходится по данным m_mergeLineList и считает кол-во конфликтов
+    int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
+
+    // TODO: пока на время переходного рефакторинга сделал все данные публичными, как только закончу с этим - нужно все сделать приватным (когда использования будут только внутри этого класса)
+  public:
     // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
     MergeLineList m_mergeLineList;
 
+    const QVector<LineData>* m_pldA = nullptr;
+    const QVector<LineData>* m_pldB = nullptr;
+    const QVector<LineData>* m_pldC = nullptr;
+    LineRef m_sizeA = 0;
+    LineRef m_sizeB = 0;
+    LineRef m_sizeC = 0;
 
-
-
-
-    // ДАННЫЕ
-    // проходится по данным m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и считает кол-во конфликтов
-    int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
+    // Эти штуки ставятся при создании уже готовые - берутся как я понимаю как результат сделанных перед мержем диффов
+    const Diff3LineList* m_pDiff3LineList = nullptr;
+    TotalDiffStatus* m_pTotalDiffStatus = nullptr;
+  private:
+    const MyOptions* m_pMyOptions;
 };
-
-
-
-
-
-
-
 
 #endif // KDIFF3_MERGEDATAOBJ_H

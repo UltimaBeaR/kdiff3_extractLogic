@@ -18,6 +18,7 @@ set(
         optiondialog.cpp
         WindowTitleWidget.cpp
         EXTRACT/0_consider/ui/MergeResultWindow.cpp
+        EXTRACT/my/MyOptions.cpp
         EXTRACT/my/MergeDataObj.cpp
         EXTRACT/2_final/file_access/fileaccess.cpp
         EXTRACT/2_final/file_access/DefaultFileAccessJobHandler.cpp
@@ -63,8 +64,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Parts WidgetsAddons Conf
 set(kdiff3_SRCS
         main.cpp
         kdiff3_shell.cpp
-        ${kdiff3part_PART_SRCS}
-        EXTRACT/my/MergeDataObj.cpp)
+        ${kdiff3part_PART_SRCS})
 
 #cann't use add_subdirectory because it changes the scope.
 include(icons/CMakeLists.txt)
