@@ -1,5 +1,9 @@
 #include "EXTRACT/my/MergeDataObj.h"
 
+// Эти инклюды взял с окошка (не факт что они все нужны) просто чтобы потом не париться при реализации.
+// Потом в итоге нужно будет поубирать ненужное (сейчас убирать не надо, даже если оно не используется - в процессе рефакторинга что то может начать использоваться)
+// --------------------------------------------------------------------
+
 #include "EXTRACT/0_consider/ui/KDiff3App_kdiff3.h"
 #include "EXTRACT/2_final/defmac.h"
 #include "EXTRACT/2_final/options.h"
@@ -29,6 +33,8 @@
 #include <KActionCollection>
 #include <KLocalizedString>
 #include <KMessageBox>
+
+// --------------------------------------------------------------------
 
 MergeDataObj::MergeDataObj()
 {
@@ -146,4 +152,78 @@ int MergeDataObj::getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts)
     }
 
     return nrOfUnsolvedConflicts;
+}
+
+void MergeDataObj::choose(e_SrcSelector selector)
+{
+    // Эту проверку повторяю, т.к. в окошке она есть, но между проверкой и основным кодом есть ui-ная штука, по этому тут дублирую (на случай вызова не из того метода, чтобы стейт был валидным)
+    if(m_currentMergeLineIt == m_mergeLineList.end())
+        return;
+
+
+
+    // First find range for which this change works.
+    MergeLine& ml = *m_currentMergeLineIt;
+
+    MergeEditLineList::iterator melIt;
+
+    // Now check if selector is active for this range already.
+    bool bActive = false;
+
+    // Remove unneeded lines in the range.
+    for(melIt = ml.mergeEditLineList.begin(); melIt != ml.mergeEditLineList.end();)
+    {
+        MergeEditLine& mel = *melIt;
+        if(mel.src() == selector)
+            bActive = true;
+
+        if(mel.src() == selector || !mel.isEditableText() || mel.isModified())
+            melIt = ml.mergeEditLineList.erase(melIt);
+        else
+            ++melIt;
+    }
+
+    if(!bActive) // Selected source wasn't active.
+    {            // Append the lines from selected source here at rangeEnd.
+        Diff3LineList::const_iterator d3llit = ml.id3l;
+        int j;
+
+        for(j = 0; j < ml.srcRangeLength; ++j)
+        {
+            MergeEditLine mel(d3llit);
+            mel.setSource(selector, false);
+            ml.mergeEditLineList.push_back(mel);
+
+            ++d3llit;
+        }
+    }
+
+    if(!ml.mergeEditLineList.empty())
+    {
+        // Remove all lines that are empty, because no src lines are there.
+        for(melIt = ml.mergeEditLineList.begin(); melIt != ml.mergeEditLineList.end();)
+        {
+            MergeEditLine& mel = *melIt;
+
+            LineRef srcLine = mel.src() == e_SrcSelector::A ? mel.id3l()->getLineA() : mel.src() == e_SrcSelector::B ? mel.id3l()->getLineB() : mel.src() == e_SrcSelector::C ? mel.id3l()->getLineC() : LineRef();
+
+            if(!srcLine.isValid())
+                melIt = ml.mergeEditLineList.erase(melIt);
+            else
+                ++melIt;
+        }
+    }
+
+    if(ml.mergeEditLineList.empty())
+    {
+        // Insert a dummy line:
+        MergeEditLine mel(ml.id3l);
+
+        if(bActive)
+            mel.setConflict(); // All src entries deleted => conflict
+        else
+            mel.setRemoved(selector); // No lines in corresponding src found.
+
+        ml.mergeEditLineList.push_back(mel);
+    }
 }

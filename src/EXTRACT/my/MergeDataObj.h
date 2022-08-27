@@ -59,6 +59,19 @@ class MergeDataObj
     // Проходится по данным m_mergeLineList и считает кол-во конфликтов
     int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
 
+
+
+
+
+
+    void choose(e_SrcSelector selector);
+
+
+
+
+
+
+
     // TODO: тут методы которые в окошке были приватными, но тут сделал их публичными чтобы можно было использовать их сейчас напрямую из окошка. Потом сделать тут все приватным
   public:
     bool isItAtEnd(bool bIncrement, MergeLineList::iterator i)
@@ -84,6 +97,9 @@ class MergeDataObj
     // Эти штуки ставятся при создании уже готовые - берутся как я понимаю как результат сделанных перед мержем диффов
     const Diff3LineList* m_pDiff3LineList = nullptr;
     TotalDiffStatus* m_pTotalDiffStatus = nullptr;
+
+    // ПОХОЖЕ что это что-то типа текущей строки с которой идет работа.
+    MergeLineList::iterator m_currentMergeLineIt;
   private:
     const MyOptions* m_pMyOptions;
 };

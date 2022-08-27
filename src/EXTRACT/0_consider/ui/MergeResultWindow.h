@@ -251,13 +251,6 @@ class MergeResultWindow: public QWidget
    void collectHistoryInformation(e_SrcSelector src, Diff3LineList::const_iterator& iHistoryBegin, Diff3LineList::const_iterator& iHistoryEnd, HistoryMap& historyMap, std::list<HistoryMap::iterator>& hitList);
 
 
-
-
-
-
-
-   MergeLineList::iterator m_currentMergeLineIt;
-
    int m_currentPos;
    bool checkOverviewIgnore(MergeLineList::iterator& i);
 
