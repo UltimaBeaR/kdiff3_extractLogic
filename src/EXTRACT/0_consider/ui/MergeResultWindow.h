@@ -92,7 +92,6 @@ class MergeResultWindow : public QWidget
         eDelta,
         eConflict,
         eUnsolvedConflict,
-        eLine,
         eEnd
     };
 
@@ -121,14 +120,21 @@ class MergeResultWindow : public QWidget
     // Выделил данные в отдельный объект а UI часть и само сохранение файла на диск оставил тут, в окошке
     bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
 
-    // ?
-    void setupConnections(const KDiff3App* app);
-
-    // ?
+    // DONE
+    // UI
+    // Тут создаются некие экшоны и соединяются с обработчиками (слоты)
+    // Нихрена я не понял что такое экшены, хоть и гуглил.
+    // Но т.к. их можно так же подвязать как и сигналы к обработчикам - видимо это что-то типа событий
+    static void initActions(KActionCollection* ac);
     void connectActions() const;
 
-    // ?
-    static void initActions(KActionCollection* ac);
+    // DONE
+    // UI
+    // Там настраиваются обработчики событий (слоты и сигналы) из KDiff3App в это окошко и обратно
+    // То есть по сути KDiff3App и это окошко связываются тут через события и обработчики событий
+    void setupConnections(const KDiff3App* app);
+
+
 
     // DONE
     void choose(e_SrcSelector selector);
@@ -278,8 +284,6 @@ class MergeResultWindow : public QWidget
     // В общем пока пусть будет тут реализация, но вомзожно я этот метод в данные в итоге в этом виде засуну
     QString getSelection();
 
-    e_OverviewMode getOverviewMode();
-
     QString getString(int lineIdx);
     void showUnsolvedConflictsStatusMessage();
 
@@ -358,8 +362,6 @@ class MergeResultWindow : public QWidget
     int m_delayedDrawTimer = 0;
     e_OverviewMode mOverviewMode;
     QString m_persistentStatusMessage;
-
-    int m_currentPos;
 
     QPixmap m_pixmap;
     LineRef m_firstLine = 0;

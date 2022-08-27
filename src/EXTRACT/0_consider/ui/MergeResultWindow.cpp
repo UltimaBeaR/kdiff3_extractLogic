@@ -421,11 +421,6 @@ void MergeResultWindow::resizeEvent(QResizeEvent* e)
    Q_EMIT resizeSignal();
 }
 
-e_OverviewMode MergeResultWindow::getOverviewMode()
-{
-   return mOverviewMode;
-}
-
 void MergeResultWindow::setOverviewMode(e_OverviewMode eOverviewMode)
 {
    mOverviewMode = eOverviewMode;
