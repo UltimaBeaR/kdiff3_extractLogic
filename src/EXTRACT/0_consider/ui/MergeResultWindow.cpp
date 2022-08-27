@@ -1408,7 +1408,6 @@ void MergeResultWindow::setPaintingAllowed(bool bPaintingAllowed)
        update();
 }
 
-// Тут отрисовывается содержимое текстового окошко с результатами мержа
 void MergeResultWindow::paintEvent(QPaintEvent*)
 {
    if(m_pMergeDataObj->m_pDiff3LineList == nullptr)

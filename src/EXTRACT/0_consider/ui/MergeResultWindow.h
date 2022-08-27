@@ -292,14 +292,28 @@ class MergeResultWindow : public QWidget
     // Какой то текст в статусе формирует про неразрешенные конфликты
     void showUnsolvedConflictsStatusMessage();
 
+    // ?
+    // Используется в slotMergeHistory() который запускается после/во время мержа (вызывается внутри колбэка мержа по флагу из опций) и также вызывается по какому то глобальному action-у с надписью "Automatically Solve History Conflicts"
     void collectHistoryInformation(e_SrcSelector src, Diff3LineList::const_iterator& iHistoryBegin, Diff3LineList::const_iterator& iHistoryEnd, HistoryMap& historyMap, std::list<HistoryMap::iterator>& hitList);
 
+    // DONE
+    // UI
+    // Используется из перехода к след. конфликту и методов isDeltaAboveCurrent(), isDeltaBelowCurrent() которые тоже UI-ные
     bool checkOverviewIgnore(MergeLineList::iterator& i);
 
+    // DONE
+    // UI
+    // Перейти к следующему конфликту
     void go(e_Direction eDir, e_EndPoint eEndPoint);
 
+    // ?
+    // Непонятно - используется в чем-то связанном с историей и в каком то слоте которые называется slotRegExpAutoMerge() - возможно это какая то отдельная логика мержа дополнительная и стоит
+    // это все тоже в объект данных перетянуть?
     MergeLineList::iterator splitAtDiff3LineIdx(int d3lLineIdx);
 
+    // DONE
+    // UI
+    // Тут отрисовывается содержимое текстового окошко с результатами мержа
     void paintEvent(QPaintEvent* e) override;
 
     // DONE
