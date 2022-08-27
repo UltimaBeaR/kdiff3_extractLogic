@@ -39,3 +39,25 @@
 MergeDataObj::MergeDataObj()
 {
 }
+
+int MergeDataObj::getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts)
+{
+    int nrOfUnsolvedConflicts = 0;
+    if(pNrOfWhiteSpaceConflicts != nullptr)
+        *pNrOfWhiteSpaceConflicts = 0;
+
+    MergeLineList::iterator mlIt = m_mergeLineList.begin();
+    for(mlIt = m_mergeLineList.begin(); mlIt != m_mergeLineList.end(); ++mlIt)
+    {
+        MergeLine& ml = *mlIt;
+        MergeEditLineList::iterator melIt = ml.mergeEditLineList.begin();
+        if(melIt->isConflict())
+        {
+            ++nrOfUnsolvedConflicts;
+            if(ml.bWhiteSpaceConflict && pNrOfWhiteSpaceConflicts != nullptr)
+                ++*pNrOfWhiteSpaceConflicts;
+        }
+    }
+
+    return nrOfUnsolvedConflicts;
+}

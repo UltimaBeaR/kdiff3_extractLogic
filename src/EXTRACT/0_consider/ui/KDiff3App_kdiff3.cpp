@@ -455,7 +455,7 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
                 else
                     KMessageBox::error(this, i18n("Saving failed."));
             }
-            else if(m_pMergeResultWindow->getNrOfUnsolvedConflicts() == 0)
+            else if(m_pMergeResultWindow->m_pMergeDataObj->getNrOfUnsolvedConflicts() == 0)
             {
                 bSuccess = m_pMergeResultWindow->saveDocument(m_pMergeResultWindowTitle->getFileName(), m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
                 if(bSuccess) ::exit(0);

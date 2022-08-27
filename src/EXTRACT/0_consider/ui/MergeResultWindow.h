@@ -91,6 +91,9 @@ class MergeResultWindow: public QWidget
 {
    Q_OBJECT
  public:
+
+   MergeDataObj* m_pMergeDataObj = nullptr;
+
    static QScrollBar* mVScrollBar;
 
    MergeResultWindow(MergeDataObj* pMergeDataObj, QWidget* pParent, const QSharedPointer<Options>& pOptions, QStatusBar* pStatusBar);
@@ -120,10 +123,6 @@ class MergeResultWindow: public QWidget
    // Сначала проверяет статусы всякие и кидает ошибки в виде UI алертов если что-то не так
    // Если все ок то проходится по данным из m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и пишет текстовое представление этой штуки в файл
    bool saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle);
-
-   // ДАННЫЕ
-   // проходится по данным m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и считает кол-во конфликтов
-   int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
 
 
    void choose(e_SrcSelector selector);
@@ -231,12 +230,6 @@ class MergeResultWindow: public QWidget
    LineRef m_sizeA = 0;
    LineRef m_sizeB = 0;
    LineRef m_sizeC = 0;
-
-
-
-
-
-   MergeDataObj* m_pMergeDataObj = nullptr;
 
 
 

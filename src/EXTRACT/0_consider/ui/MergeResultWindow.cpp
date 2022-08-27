@@ -248,7 +248,7 @@ void MergeResultWindow::showUnsolvedConflictsStatusMessage()
    if(m_pStatusBar != nullptr)
    {
        int wsc;
-       int nofUnsolved = getNrOfUnsolvedConflicts(&wsc);
+       int nofUnsolved = m_pMergeDataObj->getNrOfUnsolvedConflicts(&wsc);
 
        m_persistentStatusMessage = i18n("Number of remaining unsolved conflicts: %1 (of which %2 are whitespace)", nofUnsolved, wsc);
 
@@ -852,28 +852,6 @@ void MergeResultWindow::slotSetFastSelectorLine(LineIndex line)
    }
 }
 
-int MergeResultWindow::getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts)
-{
-   int nrOfUnsolvedConflicts = 0;
-   if(pNrOfWhiteSpaceConflicts != nullptr)
-       *pNrOfWhiteSpaceConflicts = 0;
-
-   MergeLineList::iterator mlIt = m_pMergeDataObj->m_mergeLineList.begin();
-   for(mlIt = m_pMergeDataObj->m_mergeLineList.begin(); mlIt != m_pMergeDataObj->m_mergeLineList.end(); ++mlIt)
-   {
-       MergeLine& ml = *mlIt;
-       MergeEditLineList::iterator melIt = ml.mergeEditLineList.begin();
-       if(melIt->isConflict())
-       {
-           ++nrOfUnsolvedConflicts;
-           if(ml.bWhiteSpaceConflict && pNrOfWhiteSpaceConflicts != nullptr)
-               ++*pNrOfWhiteSpaceConflicts;
-       }
-   }
-
-   return nrOfUnsolvedConflicts;
-}
-
 void MergeResultWindow::showNrOfConflicts()
 {
    if(!m_pOptions->m_bShowInfoDialogs)
@@ -906,7 +884,7 @@ void MergeResultWindow::showNrOfConflicts()
            totalInfo += i18n("Files %1 and %2 have equal text.\n", i18n("B"), i18n("C"));
    }
 
-   int nrOfUnsolvedConflicts = getNrOfUnsolvedConflicts();
+   int nrOfUnsolvedConflicts = m_pMergeDataObj->getNrOfUnsolvedConflicts();
 
    KMessageBox::information(this,
                             i18n("Total number of conflicts: %1\n"
@@ -2735,7 +2713,7 @@ void MergeResultWindow::setModified(bool bModified)
 bool MergeResultWindow::saveDocument(const QString& fileName, QTextCodec* pEncoding, e_LineEndStyle eLineEndStyle)
 {
    // Are still conflicts somewhere?
-   if(getNrOfUnsolvedConflicts() > 0)
+   if(m_pMergeDataObj->getNrOfUnsolvedConflicts() > 0)
    {
        KMessageBox::error(this,
                           i18n("Not all conflicts are solved yet.\n"

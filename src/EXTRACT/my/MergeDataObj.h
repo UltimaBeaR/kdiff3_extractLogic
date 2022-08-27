@@ -53,6 +53,14 @@ class MergeDataObj
     // Используется при сохранении итогового файла.
     // По использованию похоже что внутри там что-то типа версии итогово окошка с конфликтами но в виде данных.
     MergeLineList m_mergeLineList;
+
+
+
+
+
+    // ДАННЫЕ
+    // проходится по данным m_pMergeDataObj->m_pMergeDataObj->m_mergeLineList и считает кол-во конфликтов
+    int getNrOfUnsolvedConflicts(int* pNrOfWhiteSpaceConflicts = nullptr);
 };
 
 
