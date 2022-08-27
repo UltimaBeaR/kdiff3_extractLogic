@@ -29,6 +29,9 @@
 #include <KParts/MainWindow>
 #include <KSharedConfig>
 #include <KToggleAction>
+
+class MainDataObj;
+
 // forward declaration of the KDiff3 classes
 class OptionDialog;
 
@@ -409,7 +412,6 @@ public Q_SLOTS:
     DiffTextWindowFrame* m_pDiffTextWindowFrame3 = nullptr;
     QSplitter* m_pDiffWindowSplitter = nullptr;
 
-    MergeDataObj* m_pMergeDataObj = nullptr;
     MergeResultWindow* m_pMergeResultWindow = nullptr;
 
     WindowTitleWidget* m_pMergeResultWindowTitle;
@@ -423,30 +425,6 @@ public Q_SLOTS:
     Overview* m_pOverview = nullptr;
 
     QWidget* m_pCornerWidget = nullptr;
-
-    TotalDiffStatus *m_totalDiffStatus = new TotalDiffStatus();
-
-    // Илья: это сами исходные файлы
-    QSharedPointer<SourceData> m_sd1 = QSharedPointer<SourceData>::create();
-    QSharedPointer<SourceData> m_sd2 = QSharedPointer<SourceData>::create();
-    QSharedPointer<SourceData> m_sd3 = QSharedPointer<SourceData>::create();
-
-    // Илья: это походу выходное имя файла куда скидывается результат (он вроде не считывается, только перезаписывается)
-    QString m_outputFilename;
-
-    bool m_bDefaultFilename;
-
-    // Илья: это вроде собранные вариации диффов между 1 2 и 3 исходными файлами. Заполняются вроде после вызова диффа
-    DiffList m_diffList12;
-    DiffList m_diffList23;
-    DiffList m_diffList13;
-
-    // Илья: Возможно это какие то временные данные нужные в процессе создания диффов
-    QSharedPointer<DiffBufferInfo> m_diffBufferInfo = QSharedPointer<DiffBufferInfo>::create();
-    Diff3LineList m_diff3LineList;
-    Diff3LineVector m_diff3LineVector;
-    //ManualDiffHelpDialog* m_pManualDiffHelpDialog;
-    ManualDiffHelpList m_manualDiffHelpList;
 
     int m_neededLines;
     int m_DTWHeight;
@@ -474,6 +452,8 @@ public Q_SLOTS:
       This list exists solely to auto disconnect boost signals.
     */
     std::list<boost::signals2::scoped_connection> connections;
+
+    MainDataObj* m_pMainDataObj = nullptr;
 };
 
 #endif // KDIFF3_H

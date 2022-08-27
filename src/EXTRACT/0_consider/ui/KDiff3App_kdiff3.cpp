@@ -10,6 +10,8 @@
 // application specific includes
 #include "KDiff3App_kdiff3.h"
 
+#include "EXTRACT/my/MainDataObj.h"
+
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
 #include "EXTRACT/2_final/file_access/fileaccess.h"
 #include "EXTRACT/2_final/defmac.h"
@@ -118,6 +120,8 @@ bool KDiff3App::isDirComparison() const
 KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3Part)
     : QSplitter(pParent) //previously KMainWindow
 {
+    m_pMainDataObj = new MainDataObj();
+
     setObjectName(name);
     m_pKDiff3Part = pKDiff3Part;
     m_pKDiff3Shell = qobject_cast<KParts::MainWindow*>(pParent);
@@ -197,9 +201,9 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
         }
     }
 
-    m_sd1->setOptions(m_pOptions);
-    m_sd2->setOptions(m_pOptions);
-    m_sd3->setOptions(m_pOptions);
+    m_pMainDataObj->m_sd1->setOptions(m_pOptions);
+    m_pMainDataObj->m_sd2->setOptions(m_pOptions);
+    m_pMainDataObj->m_sd3->setOptions(m_pOptions);
 
 #ifdef ENABLE_AUTO
     m_bAutoFlag = hasArgs && KDiff3Shell::getParser()->isSet("auto") && !KDiff3Shell::getParser()->isSet("noauto");
@@ -209,15 +213,15 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
 
     m_bAutoMode = m_bAutoFlag || m_pOptions->m_bAutoSaveAndQuitOnMergeWithoutConflicts;
     if(hasArgs) {
-        m_outputFilename = KDiff3Shell::getParser()->value("output");
+        m_pMainDataObj->m_outputFilename = KDiff3Shell::getParser()->value("output");
 
-        if(m_outputFilename.isEmpty())
-            m_outputFilename = KDiff3Shell::getParser()->value("out");
+        if(m_pMainDataObj->m_outputFilename.isEmpty())
+            m_pMainDataObj->m_outputFilename = KDiff3Shell::getParser()->value("out");
 
-        if(!m_outputFilename.isEmpty())
-            m_outputFilename = FileAccess(m_outputFilename, true).absoluteFilePath();
+        if(!m_pMainDataObj->m_outputFilename.isEmpty())
+            m_pMainDataObj->m_outputFilename = FileAccess(m_pMainDataObj->m_outputFilename, true).absoluteFilePath();
 
-        if(m_bAutoMode && m_outputFilename.isEmpty())
+        if(m_bAutoMode && m_pMainDataObj->m_outputFilename.isEmpty())
         {
             if(m_bAutoFlag)
             {
@@ -226,68 +230,68 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
             m_bAutoMode = false;
         }
 
-        if(m_outputFilename.isEmpty() && KDiff3Shell::getParser()->isSet("merge"))
+        if(m_pMainDataObj->m_outputFilename.isEmpty() && KDiff3Shell::getParser()->isSet("merge"))
         {
-            m_outputFilename = "unnamed.txt";
-            m_bDefaultFilename = true;
+            m_pMainDataObj->m_outputFilename = "unnamed.txt";
+            m_pMainDataObj->m_bDefaultFilename = true;
         }
         else
         {
-            m_bDefaultFilename = false;
+            m_pMainDataObj->m_bDefaultFilename = false;
         }
 
         QStringList args = KDiff3Shell::getParser()->positionalArguments();
 
-        m_sd1->setFilename(KDiff3Shell::getParser()->value("base"));
-        if(m_sd1->isEmpty()) {
-            if(args.count() > 0) m_sd1->setFilename(args[0]); // args->arg(0)
-            if(args.count() > 1) m_sd2->setFilename(args[1]);
-            if(args.count() > 2) m_sd3->setFilename(args[2]);
+        m_pMainDataObj->m_sd1->setFilename(KDiff3Shell::getParser()->value("base"));
+        if(m_pMainDataObj->m_sd1->isEmpty()) {
+            if(args.count() > 0) m_pMainDataObj->m_sd1->setFilename(args[0]); // args->arg(0)
+            if(args.count() > 1) m_pMainDataObj->m_sd2->setFilename(args[1]);
+            if(args.count() > 2) m_pMainDataObj->m_sd3->setFilename(args[2]);
         }
         else
         {
-            if(args.count() > 0) m_sd2->setFilename(args[0]);
-            if(args.count() > 1) m_sd3->setFilename(args[1]);
+            if(args.count() > 0) m_pMainDataObj->m_sd2->setFilename(args[0]);
+            if(args.count() > 1) m_pMainDataObj->m_sd3->setFilename(args[1]);
         }
         //Set m_bDirCompare flag
-        m_bDirCompare = m_sd1->isDir();
+        m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
 
         QStringList aliasList = KDiff3Shell::getParser()->values( "fname" );
         QStringList::Iterator ali = aliasList.begin();
 
         QString an1 = KDiff3Shell::getParser()->value("L1");
         if(!an1.isEmpty()) {
-            m_sd1->setAliasName(an1);
+            m_pMainDataObj->m_sd1->setAliasName(an1);
         }
         else if(ali != aliasList.end())
         {
-            m_sd1->setAliasName(*ali);
+            m_pMainDataObj->m_sd1->setAliasName(*ali);
             ++ali;
         }
 
         QString an2 = KDiff3Shell::getParser()->value("L2");
         if(!an2.isEmpty()) {
-            m_sd2->setAliasName(an2);
+            m_pMainDataObj->m_sd2->setAliasName(an2);
         }
         else if(ali != aliasList.end())
         {
-            m_sd2->setAliasName(*ali);
+            m_pMainDataObj->m_sd2->setAliasName(*ali);
             ++ali;
         }
 
         QString an3 = KDiff3Shell::getParser()->value("L3");
         if(!an3.isEmpty()) {
-            m_sd3->setAliasName(an3);
+            m_pMainDataObj->m_sd3->setAliasName(an3);
         }
         else if(ali != aliasList.end())
         {
-            m_sd3->setAliasName(*ali);
+            m_pMainDataObj->m_sd3->setAliasName(*ali);
             ++ali;
         }
     }
     else
     {
-        m_bDefaultFilename = false;
+        m_pMainDataObj->m_bDefaultFilename = false;
     }
     g_pProgressDialog->setStayHidden(m_bAutoMode);
 
@@ -391,18 +395,18 @@ void KDiff3App::slotFocusChanged(QWidget* old, QWidget* now)
 void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QString& fn3)
 {
     if(!fn1.isEmpty()) {
-        m_sd1->setFilename(fn1);
-        m_bDirCompare = m_sd1->isDir();
+        m_pMainDataObj->m_sd1->setFilename(fn1);
+        m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
     }
     if(!fn2.isEmpty()) {
-        m_sd2->setFilename(fn2);
+        m_pMainDataObj->m_sd2->setFilename(fn2);
     }
     if(!fn3.isEmpty()) {
-        m_sd3->setFilename(fn3);
+        m_pMainDataObj->m_sd3->setFilename(fn3);
     }
 
     //should not happen now.
-    Q_ASSERT(m_bDirCompare == m_sd1->isDir());
+    Q_ASSERT(m_bDirCompare == m_pMainDataObj->m_sd1->isDir());
 
     if(m_bAutoFlag && m_bAutoMode && m_bDirCompare)
     {
@@ -418,38 +422,38 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
         improveFilenames();
         m_pDirectoryMergeSplitter->hide();
 
-        mainInit(m_totalDiffStatus);
+        mainInit(m_pMainDataObj->m_totalDiffStatus);
         if(m_bAutoMode)
         {
             QSharedPointer<SourceData> pSD = nullptr;
-            if(m_sd3->isEmpty()) {
-                if(m_totalDiffStatus->isBinaryEqualAB()) {
-                    pSD = m_sd1;
+            if(m_pMainDataObj->m_sd3->isEmpty()) {
+                if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAB()) {
+                    pSD = m_pMainDataObj->m_sd1;
                 }
             }
             else
             {
-                if(m_totalDiffStatus->isBinaryEqualBC() || m_totalDiffStatus->isBinaryEqualAB())
+                if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualBC() || m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAB())
                 {
                     //if B==C (assume A is old), if A==B then C has changed
-                    pSD = m_sd3;
+                    pSD = m_pMainDataObj->m_sd3;
                 }
-                else if(m_totalDiffStatus->isBinaryEqualAC())
+                else if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAC())
                 {
-                    pSD = m_sd2; // assuming B has changed
+                    pSD = m_pMainDataObj->m_sd2; // assuming B has changed
                 }
             }
 
             if(pSD != nullptr)
             {
                 // Save this file directly, not via the merge result window.
-                FileAccess fa(m_outputFilename);
+                FileAccess fa(m_pMainDataObj->m_outputFilename);
                 if(m_pOptions->m_bDmCreateBakFiles && fa.exists())
                 {
                     fa.createBackup(".orig");
                 }
 
-                bSuccess = pSD->saveNormalDataAs(m_outputFilename);
+                bSuccess = pSD->saveNormalDataAs(m_pMainDataObj->m_outputFilename);
                 if(bSuccess)
                     ::exit(0);
                 else
@@ -500,25 +504,25 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
     if(!m_bDirCompare && m_pKDiff3Shell != nullptr)
     {
         bool bFileOpenError = false;
-        if((!m_sd1->getErrors().isEmpty()) ||
-            (!m_sd2->getErrors().isEmpty()) ||
-            (!m_sd3->getErrors().isEmpty()))
+        if((!m_pMainDataObj->m_sd1->getErrors().isEmpty()) ||
+            (!m_pMainDataObj->m_sd2->getErrors().isEmpty()) ||
+            (!m_pMainDataObj->m_sd3->getErrors().isEmpty()))
         {
             QString text(i18n("Opening of these files failed:"));
             text += "\n\n";
-            if(!m_sd1->getErrors().isEmpty())
-                text += " - " + m_sd1->getAliasName() + '\n' + m_sd1->getErrors().join('\n') + '\n';
-            if(!m_sd2->getErrors().isEmpty())
-                text += " - " + m_sd2->getAliasName() + '\n' + m_sd2->getErrors().join('\n') + '\n';
-            if(!m_sd3->getErrors().isEmpty())
-                text += " - " + m_sd3->getAliasName() + '\n' + m_sd3->getErrors().join('\n') + '\n';
+            if(!m_pMainDataObj->m_sd1->getErrors().isEmpty())
+                text += " - " + m_pMainDataObj->m_sd1->getAliasName() + '\n' + m_pMainDataObj->m_sd1->getErrors().join('\n') + '\n';
+            if(!m_pMainDataObj->m_sd2->getErrors().isEmpty())
+                text += " - " + m_pMainDataObj->m_sd2->getAliasName() + '\n' + m_pMainDataObj->m_sd2->getErrors().join('\n') + '\n';
+            if(!m_pMainDataObj->m_sd3->getErrors().isEmpty())
+                text += " - " + m_pMainDataObj->m_sd3->getAliasName() + '\n' + m_pMainDataObj->m_sd3->getErrors().join('\n') + '\n';
 
             KMessageBox::sorry(this, text, i18n("File open error"));
 
             bFileOpenError = true;
         }
 
-        if(m_sd1->isEmpty() || m_sd2->isEmpty() || bFileOpenError)
+        if(m_pMainDataObj->m_sd1->isEmpty() || m_pMainDataObj->m_sd2->isEmpty() || bFileOpenError)
             slotFileOpen();
     }
     else if(!bSuccess) // Directory open failed
@@ -531,6 +535,8 @@ KDiff3App::~KDiff3App()
 {
     // Prevent spurious focus change signals from Qt from being picked up by KDiff3App during distruction.
     QObject::disconnect(qApp, &QApplication::focusChanged, this, &KDiff3App::slotFocusChanged);
+
+    delete m_pMainDataObj;
 };
 
 /**
@@ -745,7 +751,7 @@ bool KDiff3App::queryClose()
 
 void KDiff3App::slotFileSave()
 {
-    if(m_bDefaultFilename)
+    if(m_pMainDataObj->m_bDefaultFilename)
     {
         slotFileSaveAs();
     }
@@ -753,13 +759,13 @@ void KDiff3App::slotFileSave()
     {
         slotStatusMsg(i18n("Saving file..."));
 
-        bool bSuccess = m_pMergeResultWindow->saveDocument(m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
+        bool bSuccess = m_pMergeResultWindow->saveDocument(m_pMainDataObj->m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
         if(bSuccess)
         {
             m_bFileSaved = true;
             m_bOutputModified = false;
             if(m_bDirCompare)
-                m_pDirectoryMergeWindow->mergeResultSaved(m_outputFilename);
+                m_pDirectoryMergeWindow->mergeResultSaved(m_pMainDataObj->m_outputFilename);
         }
 
         slotStatusMsg(i18n("Ready."));
@@ -772,18 +778,18 @@ void KDiff3App::slotFileSaveAs()
 
     QString s = QFileDialog::getSaveFileUrl(this, i18n("Save As..."), QUrl::fromLocalFile(QDir::currentPath())).url(QUrl::PreferLocalFile);
     if(!s.isEmpty()) {
-        m_outputFilename = s;
-        m_pMergeResultWindowTitle->setFileName(m_outputFilename);
-        bool bSuccess = m_pMergeResultWindow->saveDocument(m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
+        m_pMainDataObj->m_outputFilename = s;
+        m_pMergeResultWindowTitle->setFileName(m_pMainDataObj->m_outputFilename);
+        bool bSuccess = m_pMergeResultWindow->saveDocument(m_pMainDataObj->m_outputFilename, m_pMergeResultWindowTitle->getEncoding(), m_pMergeResultWindowTitle->getLineEndStyle());
         if(bSuccess)
         {
             m_bOutputModified = false;
             if(m_bDirCompare)
-                m_pDirectoryMergeWindow->mergeResultSaved(m_outputFilename);
+                m_pDirectoryMergeWindow->mergeResultSaved(m_pMainDataObj->m_outputFilename);
         }
         //setWindowTitle(url.fileName(),doc->isModified());
 
-        m_bDefaultFilename = false;
+        m_pMainDataObj->m_bDefaultFilename = false;
     }
 
     slotStatusMsg(i18n("Ready."));
@@ -851,7 +857,7 @@ void KDiff3App::slotFilePrint()
         QString topLineText = i18n("Top line");
 
         //int headerWidth = fm.width( m_sd1->getAliasName() + ", "+topLineText+": 01234567" );
-        int headerLines = Utils::getHorizontalAdvance(fm, m_sd1->getAliasName() + ", " + topLineText + ": 01234567") / columnWidth + 1;
+        int headerLines = Utils::getHorizontalAdvance(fm, m_pMainDataObj->m_sd1->getAliasName() + ", " + topLineText + ": 01234567") / columnWidth + 1;
 
         int headerMargin = headerLines * fm.height() + 3; // Text + one horizontal line
         int footerMargin = fm.height() + 3;
@@ -972,17 +978,17 @@ void KDiff3App::slotFilePrint()
                 painter.setClipping(true);
 
                 painter.setPen(m_pOptions->m_colorA);
-                QString headerText1 = m_sd1->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow1->calcTopLineInFile(line) + 1);
+                QString headerText1 = m_pMainDataObj->m_sd1->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow1->calcTopLineInFile(line) + 1);
                 m_pDiffTextWindow1->printWindow(painter, view1, headerText1, line, linesPerPage, m_pOptions->m_fgColor);
 
                 painter.setPen(m_pOptions->m_colorB);
-                QString headerText2 = m_sd2->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow2->calcTopLineInFile(line) + 1);
+                QString headerText2 = m_pMainDataObj->m_sd2->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow2->calcTopLineInFile(line) + 1);
                 m_pDiffTextWindow2->printWindow(painter, view2, headerText2, line, linesPerPage, m_pOptions->m_fgColor);
 
                 if(m_bTripleDiff && m_pDiffTextWindow3 != nullptr)
                 {
                     painter.setPen(m_pOptions->m_colorC);
-                    QString headerText3 = m_sd3->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow3->calcTopLineInFile(line) + 1);
+                    QString headerText3 = m_pMainDataObj->m_sd3->getAliasName() + ", " + topLineText + ": " + QString::number(m_pDiffTextWindow3->calcTopLineInFile(line) + 1);
                     m_pDiffTextWindow3->printWindow(painter, view3, headerText3, line, linesPerPage, m_pOptions->m_fgColor);
                 }
                 painter.setClipping(false);

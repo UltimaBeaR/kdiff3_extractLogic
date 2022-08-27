@@ -6,19 +6,21 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include "KDiff3App_kdiff3.h"
+
+#include "EXTRACT/my/MainDataObj.h"
+
 #include "DirectoryInfo.h"
 #include "EXTRACT/2_final/file_access/fileaccess.h"
 #include "EXTRACT/2_final/Logging.h"
 #include "EXTRACT/2_final/ui/progress.h"
 #include "EXTRACT/2_final/utils/Utils.h"
-#include "KDiff3App_kdiff3.h"
 #include "difftextwindow.h"
 #include "directorymergewindow.h"
 #include "optiondialog.h"
 
 #include "EXTRACT/my/MergeDataObj.h"
 #include "EXTRACT/0_consider/ui/MergeResultWindow.h"
-#include "EXTRACT/my/MergeDataObj.h"
 #include "WindowTitleWidget.h"
 #include "smalldialogs.h"
 
@@ -58,9 +60,9 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 {
     qInfo() << "============== mainInit() ===============";
 
-    qInfo() << qPrintable(m_sd1->getFilename());
-    qInfo() << qPrintable(m_sd2->getFilename());
-    qInfo() << qPrintable(m_sd3->getFilename());
+    qInfo() << qPrintable(m_pMainDataObj->m_sd1->getFilename());
+    qInfo() << qPrintable(m_pMainDataObj->m_sd2->getFilename());
+    qInfo() << qPrintable(m_pMainDataObj->m_sd3->getFilename());
 
     qInfo() << "=============================";
 
@@ -91,10 +93,10 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
     Q_ASSERT(pTotalDiffStatus != nullptr);
     //bool bPreserveCarriageReturn = m_pOptions->m_bPreserveCarriageReturn;
 
-    bool bVisibleMergeResultWindow = !m_outputFilename.isEmpty();
+    bool bVisibleMergeResultWindow = !m_pMainDataObj->m_outputFilename.isEmpty();
 
     //Easier to do here then have all eleven of our call points due the check.
-    if(m_sd1->isEmpty() && m_sd2->isEmpty() && m_sd3->isEmpty())
+    if(m_pMainDataObj->m_sd1->isEmpty() && m_pMainDataObj->m_sd2->isEmpty() && m_pMainDataObj->m_sd3->isEmpty())
         bLoadFiles = false;
 
     if(bGUI)
@@ -123,34 +125,34 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
     //insure merge result window never has stale iterators.
     if(m_pMergeResultWindow) m_pMergeResultWindow->m_pMergeDataObj->clearMergeList();
-    m_diff3LineList.clear();
-    m_diff3LineVector.clear();
+    m_pMainDataObj->m_diff3LineList.clear();
+    m_pMainDataObj->m_diff3LineVector.clear();
 
     if(bLoadFiles)
     {
-        m_manualDiffHelpList.clear();
+        m_pMainDataObj->m_manualDiffHelpList.clear();
 
-        if(m_sd3->isEmpty())
+        if(m_pMainDataObj->m_sd3->isEmpty())
             pp.setMaxNofSteps(4); // Read 2 files, 1 comparison, 1 finediff
         else
             pp.setMaxNofSteps(9); // Read 3 files, 3 comparisons, 3 finediffs
 
         // First get all input data.
         pp.setInformation(i18n("Loading A"));
-        qCInfo(kdiffMain) << i18n("Loading A: %1", m_sd1->getFilename());
+        qCInfo(kdiffMain) << i18n("Loading A: %1", m_pMainDataObj->m_sd1->getFilename());
 
         // Чтение файла 1
         if(bUseCurrentEncoding)
-            m_sd1->readAndPreprocess(m_sd1->getEncoding(), false);
+            m_pMainDataObj->m_sd1->readAndPreprocess(m_pMainDataObj->m_sd1->getEncoding(), false);
         else
-            m_sd1->readAndPreprocess(m_pOptions->m_pEncodingA, m_pOptions->m_bAutoDetectUnicodeA);
+            m_pMainDataObj->m_sd1->readAndPreprocess(m_pOptions->m_pEncodingA, m_pOptions->m_bAutoDetectUnicodeA);
 
 
 
 
 
         qInfo() << "*****************";
-        qInfo() << qPrintable(m_sd1->getText());
+        qInfo() << qPrintable(m_pMainDataObj->m_sd1->getText());
 
 
 
@@ -162,21 +164,21 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         pp.step();
 
         pp.setInformation(i18n("Loading B"));
-        qCInfo(kdiffMain) << i18n("Loading B: %1", m_sd2->getFilename());
+        qCInfo(kdiffMain) << i18n("Loading B: %1", m_pMainDataObj->m_sd2->getFilename());
 
         // Чтение файла 2
         if(bUseCurrentEncoding)
-            m_sd2->readAndPreprocess(m_sd2->getEncoding(), false);
+            m_pMainDataObj->m_sd2->readAndPreprocess(m_pMainDataObj->m_sd2->getEncoding(), false);
         else
-            m_sd2->readAndPreprocess(m_pOptions->m_pEncodingB, m_pOptions->m_bAutoDetectUnicodeB);
+            m_pMainDataObj->m_sd2->readAndPreprocess(m_pOptions->m_pEncodingB, m_pOptions->m_bAutoDetectUnicodeB);
 
         pp.step();
-        errors.append(m_sd1->getErrors());
-        errors.append(m_sd2->getErrors());
+        errors.append(m_pMainDataObj->m_sd1->getErrors());
+        errors.append(m_pMainDataObj->m_sd2->getErrors());
     }
     else
     {
-        if(m_sd3->isEmpty())
+        if(m_pMainDataObj->m_sd3->isEmpty())
             pp.setMaxNofSteps(2); // 1 comparison, 1 finediff
         else
             pp.setMaxNofSteps(6); // 3 comparisons, 3 finediffs
@@ -189,26 +191,26 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         // Run the diff.
 
         // Кейс когда сравниваются 2 файла. Дифф делается один (между 2мя файлами) в этом случае
-        if(m_sd3->isEmpty())
+        if(m_pMainDataObj->m_sd3->isEmpty())
         {
-            pTotalDiffStatus->setBinaryEqualAB(m_sd1->isBinaryEqualWith(m_sd2));
+            pTotalDiffStatus->setBinaryEqualAB(m_pMainDataObj->m_sd1->isBinaryEqualWith(m_pMainDataObj->m_sd2));
 
-            if(m_sd1->isText() && m_sd2->isText())
+            if(m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd2->isText())
             {
                 pp.setInformation(i18n("Diff: A <-> B"));
                 qCInfo(kdiffMain) << i18n("Diff: A <-> B");
-                m_manualDiffHelpList.runDiff(m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(), m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(), m_diffList12, e_SrcSelector::A, e_SrcSelector::B,
+                m_pMainDataObj->m_manualDiffHelpList.runDiff(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd1->getSizeLines(), m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd2->getSizeLines(), m_pMainDataObj->m_diffList12, e_SrcSelector::A, e_SrcSelector::B,
                                              m_pOptionDialog->getOptions());
 
                 pp.step();
 
                 pp.setInformation(i18n("Linediff: A <-> B"));
                 qCInfo(kdiffMain) << i18n("Linediff: A <-> B");
-                m_diff3LineList.calcDiff3LineListUsingAB(&m_diffList12);
-                m_diff3LineList.debugLineCheck(m_sd1->getSizeLines(), e_SrcSelector::A);
+                m_pMainDataObj->m_diff3LineList.calcDiff3LineListUsingAB(&m_pMainDataObj->m_diffList12);
+                m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd1->getSizeLines(), e_SrcSelector::A);
 
-                pTotalDiffStatus->setTextEqualAB(m_diff3LineList.fineDiff(e_SrcSelector::A, m_sd1->getLineDataForDisplay(), m_sd2->getLineDataForDisplay(), eIgnoreFlags));
-                if(m_sd1->getSizeBytes() == 0) pTotalDiffStatus->setTextEqualAB(false);
+                pTotalDiffStatus->setTextEqualAB(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::A, m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd2->getLineDataForDisplay(), eIgnoreFlags));
+                if(m_pMainDataObj->m_sd1->getSizeBytes() == 0) pTotalDiffStatus->setTextEqualAB(false);
 
                 pp.step();
             }
@@ -224,49 +226,49 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
             if(bLoadFiles)
             {
                 pp.setInformation(i18n("Loading C"));
-                qCInfo(kdiffMain) << i18n("Loading C: %1", m_sd3->getFilename());
+                qCInfo(kdiffMain) << i18n("Loading C: %1", m_pMainDataObj->m_sd3->getFilename());
 
                 // Чтение файла 3
                 if(bUseCurrentEncoding)
-                    m_sd3->readAndPreprocess(m_sd3->getEncoding(), false);
+                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pMainDataObj->m_sd3->getEncoding(), false);
                 else
-                    m_sd3->readAndPreprocess(m_pOptions->m_pEncodingC, m_pOptions->m_bAutoDetectUnicodeC);
+                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pOptions->m_pEncodingC, m_pOptions->m_bAutoDetectUnicodeC);
 
                 pp.step();
             }
 
-            pTotalDiffStatus->setBinaryEqualAB(m_sd1->isBinaryEqualWith(m_sd2));
-            pTotalDiffStatus->setBinaryEqualAC(m_sd1->isBinaryEqualWith(m_sd3));
-            pTotalDiffStatus->setBinaryEqualBC(m_sd3->isBinaryEqualWith(m_sd2));
+            pTotalDiffStatus->setBinaryEqualAB(m_pMainDataObj->m_sd1->isBinaryEqualWith(m_pMainDataObj->m_sd2));
+            pTotalDiffStatus->setBinaryEqualAC(m_pMainDataObj->m_sd1->isBinaryEqualWith(m_pMainDataObj->m_sd3));
+            pTotalDiffStatus->setBinaryEqualBC(m_pMainDataObj->m_sd3->isBinaryEqualWith(m_pMainDataObj->m_sd2));
 
             pp.setInformation(i18n("Diff: A <-> B"));
             qCInfo(kdiffMain) << i18n("Diff: A <-> B");
 
             // Дифф между 1 и 2
-            if(m_sd1->isText() && m_sd2->isText())
+            if(m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd2->isText())
             {
-                m_manualDiffHelpList.runDiff(m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(), m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(), m_diffList12, e_SrcSelector::A, e_SrcSelector::B,
+                m_pMainDataObj->m_manualDiffHelpList.runDiff(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd1->getSizeLines(), m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd2->getSizeLines(), m_pMainDataObj->m_diffList12, e_SrcSelector::A, e_SrcSelector::B,
                                              m_pOptionDialog->getOptions());
 
-                m_diff3LineList.calcDiff3LineListUsingAB(&m_diffList12);
+                m_pMainDataObj->m_diff3LineList.calcDiff3LineListUsingAB(&m_pMainDataObj->m_diffList12);
             }
             pp.step();
-            m_diff3LineList.debugLineCheck(m_sd1->getSizeLines(), e_SrcSelector::A);
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd1->getSizeLines(), e_SrcSelector::A);
 
             pp.setInformation(i18n("Diff: A <-> C"));
             qCInfo(kdiffMain) << i18n("Diff: A <-> C");
 
             // Дифф между 1 и 3
-            if(m_sd1->isText() && m_sd3->isText())
+            if(m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd3->isText())
             {
-                m_manualDiffHelpList.runDiff(m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(), m_sd3->getLineDataForDiff(), m_sd3->getSizeLines(), m_diffList13, e_SrcSelector::A, e_SrcSelector::C,
+                m_pMainDataObj->m_manualDiffHelpList.runDiff(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd1->getSizeLines(), m_pMainDataObj->m_sd3->getLineDataForDiff(), m_pMainDataObj->m_sd3->getSizeLines(), m_pMainDataObj->m_diffList13, e_SrcSelector::A, e_SrcSelector::C,
                                              m_pOptionDialog->getOptions());
 
-                m_diff3LineList.calcDiff3LineListUsingAC(&m_diffList13);
+                m_pMainDataObj->m_diff3LineList.calcDiff3LineListUsingAC(&m_pMainDataObj->m_diffList13);
                 //m_diff3LineList.dump();
-                m_diff3LineList.correctManualDiffAlignment(&m_manualDiffHelpList);
+                m_pMainDataObj->m_diff3LineList.correctManualDiffAlignment(&m_pMainDataObj->m_manualDiffHelpList);
                 //m_diff3LineList.dump();
-                m_diff3LineList.calcDiff3LineListTrim(m_sd1->getLineDataForDiff(), m_sd2->getLineDataForDiff(), m_sd3->getLineDataForDiff(), &m_manualDiffHelpList);
+                m_pMainDataObj->m_diff3LineList.calcDiff3LineListTrim(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd3->getLineDataForDiff(), &m_pMainDataObj->m_manualDiffHelpList);
             }
             pp.step();
 
@@ -274,88 +276,88 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
             qCInfo(kdiffMain) << i18n("Diff: B <-> C");
 
             // Дифф между 2 и 3
-            if(m_sd2->isText() && m_sd3->isText())
+            if(m_pMainDataObj->m_sd2->isText() && m_pMainDataObj->m_sd3->isText())
             {
-                m_manualDiffHelpList.runDiff(m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(), m_sd3->getLineDataForDiff(), m_sd3->getSizeLines(), m_diffList23, e_SrcSelector::B, e_SrcSelector::C,
+                m_pMainDataObj->m_manualDiffHelpList.runDiff(m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd2->getSizeLines(), m_pMainDataObj->m_sd3->getLineDataForDiff(), m_pMainDataObj->m_sd3->getSizeLines(), m_pMainDataObj->m_diffList23, e_SrcSelector::B, e_SrcSelector::C,
                                              m_pOptionDialog->getOptions());
                 if(m_pOptions->m_bDiff3AlignBC)
                 {
-                    m_diff3LineList.calcDiff3LineListUsingBC(&m_diffList23);
-                    m_diff3LineList.correctManualDiffAlignment(&m_manualDiffHelpList);
-                    m_diff3LineList.calcDiff3LineListTrim(m_sd1->getLineDataForDiff(), m_sd2->getLineDataForDiff(), m_sd3->getLineDataForDiff(), &m_manualDiffHelpList);
+                    m_pMainDataObj->m_diff3LineList.calcDiff3LineListUsingBC(&m_pMainDataObj->m_diffList23);
+                    m_pMainDataObj->m_diff3LineList.correctManualDiffAlignment(&m_pMainDataObj->m_manualDiffHelpList);
+                    m_pMainDataObj->m_diff3LineList.calcDiff3LineListTrim(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd3->getLineDataForDiff(), &m_pMainDataObj->m_manualDiffHelpList);
                 }
             }
             pp.step();
 
-            m_diff3LineList.debugLineCheck(m_sd1->getSizeLines(), e_SrcSelector::A);
-            m_diff3LineList.debugLineCheck(m_sd2->getSizeLines(), e_SrcSelector::B);
-            m_diff3LineList.debugLineCheck(m_sd3->getSizeLines(), e_SrcSelector::C);
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd1->getSizeLines(), e_SrcSelector::A);
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd2->getSizeLines(), e_SrcSelector::B);
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd3->getSizeLines(), e_SrcSelector::C);
 
             pp.setInformation(i18n("Linediff: A <-> B"));
             qCInfo(kdiffMain) << i18n("Linediff: A <-> B");
-            if(m_sd1->hasData() && m_sd2->hasData() && m_sd1->isText() && m_sd2->isText())
-                pTotalDiffStatus->setTextEqualAB(m_diff3LineList.fineDiff(e_SrcSelector::A, m_sd1->getLineDataForDisplay(), m_sd2->getLineDataForDisplay(), eIgnoreFlags));
+            if(m_pMainDataObj->m_sd1->hasData() && m_pMainDataObj->m_sd2->hasData() && m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd2->isText())
+                pTotalDiffStatus->setTextEqualAB(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::A, m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd2->getLineDataForDisplay(), eIgnoreFlags));
             pp.step();
 
             pp.setInformation(i18n("Linediff: B <-> C"));
             qCInfo(kdiffMain) << i18n("Linediff: B <-> C");
-            if(m_sd2->hasData() && m_sd3->hasData() && m_sd2->isText() && m_sd3->isText())
-                pTotalDiffStatus->setTextEqualBC(m_diff3LineList.fineDiff(e_SrcSelector::B, m_sd2->getLineDataForDisplay(), m_sd3->getLineDataForDisplay(), eIgnoreFlags));
+            if(m_pMainDataObj->m_sd2->hasData() && m_pMainDataObj->m_sd3->hasData() && m_pMainDataObj->m_sd2->isText() && m_pMainDataObj->m_sd3->isText())
+                pTotalDiffStatus->setTextEqualBC(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::B, m_pMainDataObj->m_sd2->getLineDataForDisplay(), m_pMainDataObj->m_sd3->getLineDataForDisplay(), eIgnoreFlags));
             pp.step();
 
             pp.setInformation(i18n("Linediff: A <-> C"));
             qCInfo(kdiffMain) << i18n("Linediff: A <-> C");
-            if(m_sd1->hasData() && m_sd3->hasData() && m_sd1->isText() && m_sd3->isText())
-                pTotalDiffStatus->setTextEqualAC(m_diff3LineList.fineDiff(e_SrcSelector::C, m_sd3->getLineDataForDisplay(), m_sd1->getLineDataForDisplay(), eIgnoreFlags));
-            m_diff3LineList.debugLineCheck(m_sd2->getSizeLines(), e_SrcSelector::B);
-            m_diff3LineList.debugLineCheck(m_sd3->getSizeLines(), e_SrcSelector::C);
+            if(m_pMainDataObj->m_sd1->hasData() && m_pMainDataObj->m_sd3->hasData() && m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd3->isText())
+                pTotalDiffStatus->setTextEqualAC(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::C, m_pMainDataObj->m_sd3->getLineDataForDisplay(), m_pMainDataObj->m_sd1->getLineDataForDisplay(), eIgnoreFlags));
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd2->getSizeLines(), e_SrcSelector::B);
+            m_pMainDataObj->m_diff3LineList.debugLineCheck(m_pMainDataObj->m_sd3->getSizeLines(), e_SrcSelector::C);
 
             pp.setInformation(i18n("Linediff: A <-> B"));
-            if(m_sd1->hasData() && m_sd2->hasData() && m_sd1->isText() && m_sd2->isText())
-                pTotalDiffStatus->setTextEqualAB(m_diff3LineList.fineDiff(e_SrcSelector::A, m_sd1->getLineDataForDisplay(), m_sd2->getLineDataForDisplay(), eIgnoreFlags));
+            if(m_pMainDataObj->m_sd1->hasData() && m_pMainDataObj->m_sd2->hasData() && m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd2->isText())
+                pTotalDiffStatus->setTextEqualAB(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::A, m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd2->getLineDataForDisplay(), eIgnoreFlags));
             pp.step();
 
             pp.setInformation(i18n("Linediff: B <-> C"));
-            if(m_sd3->hasData() && m_sd2->hasData() && m_sd3->isText() && m_sd2->isText())
-                pTotalDiffStatus->setTextEqualBC(m_diff3LineList.fineDiff(e_SrcSelector::B, m_sd2->getLineDataForDisplay(), m_sd3->getLineDataForDisplay(), eIgnoreFlags));
+            if(m_pMainDataObj->m_sd3->hasData() && m_pMainDataObj->m_sd2->hasData() && m_pMainDataObj->m_sd3->isText() && m_pMainDataObj->m_sd2->isText())
+                pTotalDiffStatus->setTextEqualBC(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::B, m_pMainDataObj->m_sd2->getLineDataForDisplay(), m_pMainDataObj->m_sd3->getLineDataForDisplay(), eIgnoreFlags));
             pp.step();
 
             pp.setInformation(i18n("Linediff: A <-> C"));
-            if(m_sd1->hasData() && m_sd3->hasData() && m_sd1->isText() && m_sd3->isText())
-                pTotalDiffStatus->setTextEqualAC(m_diff3LineList.fineDiff(e_SrcSelector::C, m_sd3->getLineDataForDisplay(), m_sd1->getLineDataForDisplay(), eIgnoreFlags));
+            if(m_pMainDataObj->m_sd1->hasData() && m_pMainDataObj->m_sd3->hasData() && m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd3->isText())
+                pTotalDiffStatus->setTextEqualAC(m_pMainDataObj->m_diff3LineList.fineDiff(e_SrcSelector::C, m_pMainDataObj->m_sd3->getLineDataForDisplay(), m_pMainDataObj->m_sd1->getLineDataForDisplay(), eIgnoreFlags));
             pp.step();
-            if(m_sd1->getSizeBytes() == 0)
+            if(m_pMainDataObj->m_sd1->getSizeBytes() == 0)
             {
                 pTotalDiffStatus->setTextEqualAB(false);
                 pTotalDiffStatus->setTextEqualAC(false);
             }
-            if(m_sd2->getSizeBytes() == 0)
+            if(m_pMainDataObj->m_sd2->getSizeBytes() == 0)
             {
                 pTotalDiffStatus->setTextEqualAB(false);
                 pTotalDiffStatus->setTextEqualBC(false);
             }
         }
-        errors.append(m_sd3->getErrors());
+        errors.append(m_pMainDataObj->m_sd3->getErrors());
     }
     else
     {
         pp.clear();
     }
 
-    if(errors.isEmpty() && m_sd1->isText() && m_sd2->isText())
+    if(errors.isEmpty() && m_pMainDataObj->m_sd1->isText() && m_pMainDataObj->m_sd2->isText())
     {
-        m_diffBufferInfo->init(&m_diff3LineList, &m_diff3LineVector,
-                               m_sd1->getLineDataForDiff(), m_sd1->getSizeLines(),
-                               m_sd2->getLineDataForDiff(), m_sd2->getSizeLines(),
-                               m_sd3->getLineDataForDiff(), m_sd3->getSizeLines());
-        Diff3Line::m_pDiffBufferInfo = m_diffBufferInfo;
+        m_pMainDataObj->m_diffBufferInfo->init(&m_pMainDataObj->m_diff3LineList, &m_pMainDataObj->m_diff3LineVector,
+                                               m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd1->getSizeLines(),
+                                               m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd2->getSizeLines(),
+                                               m_pMainDataObj->m_sd3->getLineDataForDiff(), m_pMainDataObj->m_sd3->getSizeLines());
+        Diff3Line::m_pDiffBufferInfo = m_pMainDataObj->m_diffBufferInfo;
 
-        m_diff3LineList.calcWhiteDiff3Lines(m_sd1->getLineDataForDiff(), m_sd2->getLineDataForDiff(), m_sd3->getLineDataForDiff(), m_pOptions->ignoreComments());
-        m_diff3LineList.calcDiff3LineVector(m_diff3LineVector);
+        m_pMainDataObj->m_diff3LineList.calcWhiteDiff3Lines(m_pMainDataObj->m_sd1->getLineDataForDiff(), m_pMainDataObj->m_sd2->getLineDataForDiff(), m_pMainDataObj->m_sd3->getLineDataForDiff(), m_pOptions->ignoreComments());
+        m_pMainDataObj->m_diff3LineList.calcDiff3LineVector(m_pMainDataObj->m_diff3LineVector);
     }
 
     // Calc needed lines for display
-    m_neededLines = m_diff3LineList.size();
+    m_neededLines = m_pMainDataObj->m_diff3LineList.size();
 
     QList<int> oldHeights;
     if(m_pDirectoryMergeSplitter->isVisible())
@@ -383,27 +385,27 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
     m_pMainWidget->setVisible(bGUI);
 
-    m_bTripleDiff = !m_sd3->isEmpty();
+    m_bTripleDiff = !m_pMainDataObj->m_sd3->isEmpty();
 
-    m_pMergeResultWindowTitle->setEncodings(m_sd1->getEncoding(), m_sd2->getEncoding(), m_sd3->getEncoding());
+    m_pMergeResultWindowTitle->setEncodings(m_pMainDataObj->m_sd1->getEncoding(), m_pMainDataObj->m_sd2->getEncoding(), m_pMainDataObj->m_sd3->getEncoding());
     if(!m_pOptions->m_bAutoSelectOutEncoding)
         m_pMergeResultWindowTitle->setEncoding(m_pOptions->m_pEncodingOut);
 
-    m_pMergeResultWindowTitle->setLineEndStyles(m_sd1->getLineEndStyle(), m_sd2->getLineEndStyle(), m_sd3->getLineEndStyle());
+    m_pMergeResultWindowTitle->setLineEndStyles(m_pMainDataObj->m_sd1->getLineEndStyle(), m_pMainDataObj->m_sd2->getLineEndStyle(), m_pMainDataObj->m_sd3->getLineEndStyle());
 
     if(bGUI)
     {
-        const ManualDiffHelpList* pMDHL = &m_manualDiffHelpList;
-        m_pDiffTextWindow1->init(m_sd1->getAliasName(), m_sd1->getEncoding(), m_sd1->getLineEndStyle(),
-                                 m_sd1->getLineDataForDisplay(), m_sd1->getSizeLines(), &m_diff3LineVector, pMDHL);
+        const ManualDiffHelpList* pMDHL = &m_pMainDataObj->m_manualDiffHelpList;
+        m_pDiffTextWindow1->init(m_pMainDataObj->m_sd1->getAliasName(), m_pMainDataObj->m_sd1->getEncoding(), m_pMainDataObj->m_sd1->getLineEndStyle(),
+                                 m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd1->getSizeLines(), &m_pMainDataObj->m_diff3LineVector, pMDHL);
         m_pDiffTextWindowFrame1->init();
 
-        m_pDiffTextWindow2->init(m_sd2->getAliasName(), m_sd2->getEncoding(), m_sd2->getLineEndStyle(),
-                                 m_sd2->getLineDataForDisplay(), m_sd2->getSizeLines(), &m_diff3LineVector, pMDHL);
+        m_pDiffTextWindow2->init(m_pMainDataObj->m_sd2->getAliasName(), m_pMainDataObj->m_sd2->getEncoding(), m_pMainDataObj->m_sd2->getLineEndStyle(),
+                                 m_pMainDataObj->m_sd2->getLineDataForDisplay(), m_pMainDataObj->m_sd2->getSizeLines(), &m_pMainDataObj->m_diff3LineVector, pMDHL);
         m_pDiffTextWindowFrame2->init();
 
-        m_pDiffTextWindow3->init(m_sd3->getAliasName(), m_sd3->getEncoding(), m_sd3->getLineEndStyle(),
-                                 m_sd3->getLineDataForDisplay(), m_sd3->getSizeLines(), &m_diff3LineVector, pMDHL);
+        m_pDiffTextWindow3->init(m_pMainDataObj->m_sd3->getAliasName(), m_pMainDataObj->m_sd3->getEncoding(), m_pMainDataObj->m_sd3->getLineEndStyle(),
+                                 m_pMainDataObj->m_sd3->getLineDataForDisplay(), m_pMainDataObj->m_sd3->getSizeLines(), &m_pMainDataObj->m_diff3LineVector, pMDHL);
         m_pDiffTextWindowFrame3->init();
 
         m_pDiffTextWindowFrame3->setVisible(m_bTripleDiff);
@@ -417,10 +419,10 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
     //
     // Мерж происходит там внутри - в "окошке"
     m_pMergeResultWindow->init(
-        m_sd1->getLineDataForDisplay(), m_sd1->getSizeLines(),
-        m_sd2->getLineDataForDisplay(), m_sd2->getSizeLines(),
-        m_bTripleDiff ? m_sd3->getLineDataForDisplay() : nullptr, m_sd3->getSizeLines(),
-        &m_diff3LineList,
+        m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd1->getSizeLines(),
+        m_pMainDataObj->m_sd2->getLineDataForDisplay(), m_pMainDataObj->m_sd2->getSizeLines(),
+        m_bTripleDiff ? m_pMainDataObj->m_sd3->getLineDataForDisplay() : nullptr, m_pMainDataObj->m_sd3->getSizeLines(),
+        &m_pMainDataObj->m_diff3LineList,
         pTotalDiffStatus, bAutoSolve);
 
 
@@ -430,7 +432,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
 
 
-    m_pMergeResultWindowTitle->setFileName(m_outputFilename.isEmpty() ? QString("unnamed.txt") : m_outputFilename);
+    m_pMergeResultWindowTitle->setFileName(m_pMainDataObj->m_outputFilename.isEmpty() ? QString("unnamed.txt") : m_pMainDataObj->m_outputFilename);
 
 
 
@@ -440,7 +442,7 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
     if(bGUI)
     {
-        m_pOverview->init(&m_diff3LineList);
+        m_pOverview->init(&m_pMainDataObj->m_diff3LineList);
         DiffTextWindow::mVScrollBar->setValue(0);
         m_pHScrollBar->setValue(0);
         MergeResultWindow::mVScrollBar->setValue(0);
@@ -493,9 +495,9 @@ void KDiff3App::createCaption()
     // Try to create a meaningful but not too long caption
     // 1. If the filenames are equal then show only one filename
     QString caption;
-    QString f1 = m_sd1->getAliasName();
-    QString f2 = m_sd2->getAliasName();
-    QString f3 = m_sd3->getAliasName();
+    QString f1 = m_pMainDataObj->m_sd1->getAliasName();
+    QString f2 = m_pMainDataObj->m_sd2->getAliasName();
+    QString f3 = m_pMainDataObj->m_sd3->getAliasName();
     int p;
 
     if((p = f1.lastIndexOf('/')) >= 0 || (p = f1.lastIndexOf('\\')) >= 0)
@@ -661,11 +663,11 @@ void KDiff3App::initView()
     chk_connect(this, &KDiff3App::showWhiteSpaceToggled, m_pOverview, &Overview::slotRedraw);
     chk_connect(this, &KDiff3App::changeOverViewMode, m_pOverview, &Overview::setOverviewMode);
 
-    m_pDiffTextWindowFrame1 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::A, m_sd1);
+    m_pDiffTextWindowFrame1 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::A, m_pMainDataObj->m_sd1);
     m_pDiffWindowSplitter->addWidget(m_pDiffTextWindowFrame1);
-    m_pDiffTextWindowFrame2 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::B, m_sd2);
+    m_pDiffTextWindowFrame2 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::B, m_pMainDataObj->m_sd2);
     m_pDiffWindowSplitter->addWidget(m_pDiffTextWindowFrame2);
-    m_pDiffTextWindowFrame3 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::C, m_sd3);
+    m_pDiffTextWindowFrame3 = new DiffTextWindowFrame(m_pDiffWindowSplitter, m_pOptionDialog->getOptions(), e_SrcSelector::C, m_pMainDataObj->m_sd3);
     m_pDiffWindowSplitter->addWidget(m_pDiffTextWindowFrame3);
     m_pDiffTextWindow1 = m_pDiffTextWindowFrame1->getDiffTextWindow();
     m_pDiffTextWindow2 = m_pDiffTextWindowFrame2->getDiffTextWindow();
@@ -688,15 +690,7 @@ void KDiff3App::initView()
     m_pMergeResultWindowTitle = new WindowTitleWidget(m_pOptionDialog->getOptions());
     pMergeVLayout->addWidget(m_pMergeResultWindowTitle);
 
-    m_pMergeDataObj = new MergeDataObj();
-    m_pMergeResultWindow = new MergeResultWindow(m_pMergeDataObj, m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
-
-
-
-
-
-
-
+    m_pMergeResultWindow = new MergeResultWindow(new MergeDataObj(), m_pMergeWindowFrame, m_pOptionDialog->getOptions(), statusBar());
 
     pMergeVLayout->addWidget(m_pMergeResultWindow, 1);
 
@@ -790,8 +784,8 @@ void KDiff3App::slotFinishMainInit()
     m_pOverview->setRange(DiffTextWindow::mVScrollBar->value(), DiffTextWindow::mVScrollBar->pageStep());
 
     int d3l = -1;
-    if(!m_manualDiffHelpList.empty())
-        d3l = m_manualDiffHelpList.front().calcManualDiffFirstDiff3LineIdx(m_diff3LineVector);
+    if(!m_pMainDataObj->m_manualDiffHelpList.empty())
+        d3l = m_pMainDataObj->m_manualDiffHelpList.front().calcManualDiffFirstDiff3LineIdx(m_pMainDataObj->m_diff3LineVector);
     if(d3l >= 0 && m_pDiffTextWindow1)
     {
         int line = m_pDiffTextWindow1->convertDiff3LineIdxToLine(d3l);
@@ -800,7 +794,7 @@ void KDiff3App::slotFinishMainInit()
     else
     {
         m_pMergeResultWindow->slotGoTop();
-        if(!m_outputFilename.isEmpty() && !m_pMergeResultWindow->isUnsolvedConflictAtCurrent())
+        if(!m_pMainDataObj->m_outputFilename.isEmpty() && !m_pMergeResultWindow->isUnsolvedConflictAtCurrent())
             m_pMergeResultWindow->slotGoNextUnsolvedConflict();
     }
 
@@ -810,7 +804,7 @@ void KDiff3App::slotFinishMainInit()
     slotUpdateAvailabilities();
     setUpdatesEnabled(true);
 
-    bool bVisibleMergeResultWindow = !m_outputFilename.isEmpty();
+    bool bVisibleMergeResultWindow = !m_pMainDataObj->m_outputFilename.isEmpty();
 
     if(m_bLoadFiles)
     {
@@ -818,27 +812,27 @@ void KDiff3App::slotFinishMainInit()
             m_pMergeResultWindow->showNrOfConflicts();
         else if(
             // Avoid showing this message during startup without parameters.
-            !(m_sd1->getAliasName().isEmpty() && m_sd2->getAliasName().isEmpty() && m_sd3->getAliasName().isEmpty()) &&
-            (m_sd1->isValid() && m_sd2->isValid() && m_sd3->isValid()))
+            !(m_pMainDataObj->m_sd1->getAliasName().isEmpty() && m_pMainDataObj->m_sd2->getAliasName().isEmpty() && m_pMainDataObj->m_sd3->getAliasName().isEmpty()) &&
+            (m_pMainDataObj->m_sd1->isValid() && m_pMainDataObj->m_sd2->isValid() && m_pMainDataObj->m_sd3->isValid()))
         {
             QString totalInfo;
-            if(m_totalDiffStatus->isBinaryEqualAB() && m_totalDiffStatus->isBinaryEqualAC())
+            if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAB() && m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAC())
                 totalInfo += i18n("All input files are binary equal.");
-            else if(m_totalDiffStatus->isTextEqualAB() && m_totalDiffStatus->isTextEqualAC())
+            else if(m_pMainDataObj->m_totalDiffStatus->isTextEqualAB() && m_pMainDataObj->m_totalDiffStatus->isTextEqualAC())
                 totalInfo += i18n("All input files contain the same text, but are not binary equal.");
             else
             {
-                if(m_totalDiffStatus->isBinaryEqualAB())
+                if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAB())
                     totalInfo += i18n("Files %1 and %2 are binary equal.\n", i18n("A"), i18n("B"));
-                else if(m_totalDiffStatus->isTextEqualAB())
+                else if(m_pMainDataObj->m_totalDiffStatus->isTextEqualAB())
                     totalInfo += i18n("Files %1 and %2 have equal text, but are not binary equal. \n", i18n("A"), i18n("B"));
-                if(m_totalDiffStatus->isBinaryEqualAC())
+                if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualAC())
                     totalInfo += i18n("Files %1 and %2 are binary equal.\n", i18n("A"), i18n("C"));
-                else if(m_totalDiffStatus->isTextEqualAC())
+                else if(m_pMainDataObj->m_totalDiffStatus->isTextEqualAC())
                     totalInfo += i18n("Files %1 and %2 have equal text, but are not binary equal. \n", i18n("A"), i18n("C"));
-                if(m_totalDiffStatus->isBinaryEqualBC())
+                if(m_pMainDataObj->m_totalDiffStatus->isBinaryEqualBC())
                     totalInfo += i18n("Files %1 and %2 are binary equal.\n", i18n("B"), i18n("C"));
-                else if(m_totalDiffStatus->isTextEqualBC())
+                else if(m_pMainDataObj->m_totalDiffStatus->isTextEqualBC())
                     totalInfo += i18n("Files %1 and %2 have equal text, but are not binary equal. \n", i18n("B"), i18n("C"));
             }
 
@@ -846,21 +840,21 @@ void KDiff3App::slotFinishMainInit()
                 KMessageBox::information(this, totalInfo);
         }
 
-        if(bVisibleMergeResultWindow && (!m_sd1->isText() || !m_sd2->isText() || !m_sd3->isText()))
+        if(bVisibleMergeResultWindow && (!m_pMainDataObj->m_sd1->isText() || !m_pMainDataObj->m_sd2->isText() || !m_pMainDataObj->m_sd3->isText()))
         {
             KMessageBox::information(this, i18n(
                                                "Some input files do not seem to be pure text files.\n"
                                                "Note that the KDiff3 merge was not meant for binary data.\n"
                                                "Continue at your own risk."));
         }
-        if(m_sd1->isIncompleteConversion() || m_sd2->isIncompleteConversion() || m_sd3->isIncompleteConversion())
+        if(m_pMainDataObj->m_sd1->isIncompleteConversion() || m_pMainDataObj->m_sd2->isIncompleteConversion() || m_pMainDataObj->m_sd3->isIncompleteConversion())
         {
             QString files;
-            if(m_sd1->isIncompleteConversion())
+            if(m_pMainDataObj->m_sd1->isIncompleteConversion())
                 files += i18n("A");
-            if(m_sd2->isIncompleteConversion())
+            if(m_pMainDataObj->m_sd2->isIncompleteConversion())
                 files += files.isEmpty() ? i18n("B") : i18n(", B");
-            if(m_sd3->isIncompleteConversion())
+            if(m_pMainDataObj->m_sd3->isIncompleteConversion())
                 files += files.isEmpty() ? i18n("C") : i18n(", C");
 
             KMessageBox::information(this, i18n("Some input characters could not be converted to valid unicode.\n"
@@ -943,7 +937,7 @@ void KDiff3App::keyPressEvent(QKeyEvent* keyEvent)
 void KDiff3App::slotFinishDrop()
 {
     raise();
-    mainInit(m_totalDiffStatus);
+    mainInit(m_pMainDataObj->m_totalDiffStatus);
 }
 
 void KDiff3App::slotFileOpen()
@@ -966,36 +960,36 @@ void KDiff3App::slotFileOpen()
     for(;;)
     {
         QPointer<OpenDialog> d = QPointer<OpenDialog>(new OpenDialog(this,
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirA().prettyAbsPath() : m_sd1->isFromBuffer() ? QString("") : m_sd1->getAliasName()),
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirB().prettyAbsPath() : m_sd2->isFromBuffer() ? QString("") : m_sd2->getAliasName()),
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirC().prettyAbsPath() : m_sd3->isFromBuffer() ? QString("") : m_sd3->getAliasName()),
-                     m_bDirCompare ? !gDirInfo->destDir().prettyAbsPath().isEmpty() : !m_outputFilename.isEmpty(),
-                     QDir::toNativeSeparators(m_bDefaultFilename ? QString("") : m_outputFilename), m_pOptionDialog->getOptions()));
+                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirA().prettyAbsPath() : m_pMainDataObj->m_sd1->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd1->getAliasName()),
+                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirB().prettyAbsPath() : m_pMainDataObj->m_sd2->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd2->getAliasName()),
+                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirC().prettyAbsPath() : m_pMainDataObj->m_sd3->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd3->getAliasName()),
+                     m_bDirCompare ? !gDirInfo->destDir().prettyAbsPath().isEmpty() : !m_pMainDataObj->m_outputFilename.isEmpty(),
+                     QDir::toNativeSeparators(m_pMainDataObj->m_bDefaultFilename ? QString("") : m_pMainDataObj->m_outputFilename), m_pOptionDialog->getOptions()));
 
         int status = d->exec();
         if(status == QDialog::Accepted)
         {
-            m_sd1->setFilename(d->getFileA());
-            m_sd2->setFilename(d->getFileB());
-            m_sd3->setFilename(d->getFileC());
+            m_pMainDataObj->m_sd1->setFilename(d->getFileA());
+            m_pMainDataObj->m_sd2->setFilename(d->getFileB());
+            m_pMainDataObj->m_sd3->setFilename(d->getFileC());
 
             if(d->merge())
             {
                 if(d->getOutputFile().isEmpty())
                 {
-                    m_outputFilename = "unnamed.txt";
-                    m_bDefaultFilename = true;
+                    m_pMainDataObj->m_outputFilename = "unnamed.txt";
+                    m_pMainDataObj->m_bDefaultFilename = true;
                 }
                 else
                 {
-                    m_outputFilename = d->getOutputFile();
-                    m_bDefaultFilename = false;
+                    m_pMainDataObj->m_outputFilename = d->getOutputFile();
+                    m_pMainDataObj->m_bDefaultFilename = false;
                 }
             }
             else
-                m_outputFilename = "";
+                m_pMainDataObj->m_outputFilename = "";
 
-            m_bDirCompare = m_sd1->isDir();
+            m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
 
             if(m_bDirCompare)
             {
@@ -1012,20 +1006,20 @@ void KDiff3App::slotFileOpen()
                 improveFilenames();
 
                 m_pDirectoryMergeSplitter->hide();
-                mainInit(m_totalDiffStatus);
+                mainInit(m_pMainDataObj->m_totalDiffStatus);
 
-                if((!m_sd1->getErrors().isEmpty()) ||
-                   (!m_sd2->getErrors().isEmpty()) ||
-                   (!m_sd3->getErrors().isEmpty()))
+                if((!m_pMainDataObj->m_sd1->getErrors().isEmpty()) ||
+                   (!m_pMainDataObj->m_sd2->getErrors().isEmpty()) ||
+                   (!m_pMainDataObj->m_sd3->getErrors().isEmpty()))
                 {
                     QString text(i18n("Opening of these files failed:"));
                     text += "\n\n";
-                    if(!m_sd1->getErrors().isEmpty())
-                        text += " - " + m_sd1->getAliasName() + '\n' + m_sd1->getErrors().join('\n') + '\n';
-                    if(!m_sd2->getErrors().isEmpty())
-                        text += " - " + m_sd2->getAliasName() + '\n' + m_sd2->getErrors().join('\n') + '\n';
-                    if(!m_sd3->getErrors().isEmpty())
-                        text += " - " + m_sd3->getAliasName() + '\n' + m_sd3->getErrors().join('\n') + '\n';
+                    if(!m_pMainDataObj->m_sd1->getErrors().isEmpty())
+                        text += " - " + m_pMainDataObj->m_sd1->getAliasName() + '\n' + m_pMainDataObj->m_sd1->getErrors().join('\n') + '\n';
+                    if(!m_pMainDataObj->m_sd2->getErrors().isEmpty())
+                        text += " - " + m_pMainDataObj->m_sd2->getAliasName() + '\n' + m_pMainDataObj->m_sd2->getErrors().join('\n') + '\n';
+                    if(!m_pMainDataObj->m_sd3->getErrors().isEmpty())
+                        text += " - " + m_pMainDataObj->m_sd3->getAliasName() + '\n' + m_pMainDataObj->m_sd3->getErrors().join('\n') + '\n';
 
                     KMessageBox::sorry(this, text, i18n("File open error"));
 
@@ -1052,48 +1046,48 @@ void KDiff3App::slotFileOpen2(QStringList &errors, const QString& fn1, const QSt
     }
 
     slotStatusMsg(i18n("Opening files..."));
-    m_sd1->reset();
-    m_sd2->reset();
-    m_sd3->reset();
+    m_pMainDataObj->m_sd1->reset();
+    m_pMainDataObj->m_sd2->reset();
+    m_pMainDataObj->m_sd3->reset();
 
-    m_sd1->setFilename(fn1);
-    m_sd2->setFilename(fn2);
-    m_sd3->setFilename(fn3);
+    m_pMainDataObj->m_sd1->setFilename(fn1);
+    m_pMainDataObj->m_sd2->setFilename(fn2);
+    m_pMainDataObj->m_sd3->setFilename(fn3);
 
-    m_sd1->setAliasName(an1);
-    m_sd2->setAliasName(an2);
-    m_sd3->setAliasName(an3);
+    m_pMainDataObj->m_sd1->setAliasName(an1);
+    m_pMainDataObj->m_sd2->setAliasName(an2);
+    m_pMainDataObj->m_sd3->setAliasName(an3);
 
     if(!ofn.isEmpty())
     {
-        m_outputFilename = ofn;
-        m_bDefaultFilename = false;
+        m_pMainDataObj->m_outputFilename = ofn;
+        m_pMainDataObj->m_bDefaultFilename = false;
     }
     else
     {
-        m_outputFilename = "";
-        m_bDefaultFilename = true;
+        m_pMainDataObj->m_outputFilename = "";
+        m_pMainDataObj->m_bDefaultFilename = true;
     }
 
-    if(!m_sd1->isDir())
+    if(!m_pMainDataObj->m_sd1->isDir())
     {
         improveFilenames();
         //KDiff3App::slotFileOpen2 needs to handle both GUI and non-GUI diffs.
         if(pTotalDiffStatus == nullptr)
-            mainInit(m_totalDiffStatus);
+            mainInit(m_pMainDataObj->m_totalDiffStatus);
         else
             mainInit(pTotalDiffStatus, InitFlag::loadFiles | InitFlag::autoSolve);
 
         if(m_bDirCompare)
         {
-            errors.append(m_sd1->getErrors());
-            errors.append(m_sd2->getErrors());
-            errors.append(m_sd3->getErrors());
+            errors.append(m_pMainDataObj->m_sd1->getErrors());
+            errors.append(m_pMainDataObj->m_sd2->getErrors());
+            errors.append(m_pMainDataObj->m_sd3->getErrors());
 
             return;
         }
 
-        if(m_sd1->isValid() && m_sd2->isValid() && m_sd3->isValid())
+        if(m_pMainDataObj->m_sd1->isValid() && m_pMainDataObj->m_sd2->isValid() && m_pMainDataObj->m_sd3->isValid())
         {
             if(m_pDirectoryMergeWindow != nullptr && m_pDirectoryMergeWindow->isVisible() && !dirShowBoth->isChecked())
             {
@@ -1110,12 +1104,12 @@ void KDiff3App::slotFileOpen2(QStringList &errors, const QString& fn1, const QSt
 void KDiff3App::slotFileNameChanged(const QString& fileName, e_SrcSelector winIdx)
 {
     QStringList errors;
-    QString fn1 = m_sd1->getFilename();
-    QString an1 = m_sd1->getAliasName();
-    QString fn2 = m_sd2->getFilename();
-    QString an2 = m_sd2->getAliasName();
-    QString fn3 = m_sd3->getFilename();
-    QString an3 = m_sd3->getAliasName();
+    QString fn1 = m_pMainDataObj->m_sd1->getFilename();
+    QString an1 = m_pMainDataObj->m_sd1->getAliasName();
+    QString fn2 = m_pMainDataObj->m_sd2->getFilename();
+    QString an2 = m_pMainDataObj->m_sd2->getAliasName();
+    QString fn3 = m_pMainDataObj->m_sd3->getFilename();
+    QString an3 = m_pMainDataObj->m_sd3->getAliasName();
     if(winIdx == e_SrcSelector::A)
     {
         fn1 = fileName;
@@ -1132,7 +1126,7 @@ void KDiff3App::slotFileNameChanged(const QString& fileName, e_SrcSelector winId
         an3 = "";
     }
 
-    slotFileOpen2(errors, fn1, fn2, fn3, m_outputFilename, an1, an2, an3, nullptr);
+    slotFileOpen2(errors, fn1, fn2, fn3, m_pMainDataObj->m_outputFilename, an1, an2, an3, nullptr);
 }
 
 void KDiff3App::slotEditCut()
@@ -1168,17 +1162,17 @@ void KDiff3App::slotEditPaste()
 
             if(m_pDiffTextWindow1->hasFocus())
             {
-                error = m_sd1->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
+                error = m_pMainDataObj->m_sd1->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
                 do_init = true;
             }
             else if(m_pDiffTextWindow2->hasFocus())
             {
-                error = m_sd2->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
+                error = m_pMainDataObj->m_sd2->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
                 do_init = true;
             }
             else if(m_pDiffTextWindow3->hasFocus())
             {
-                error = m_sd3->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
+                error = m_pMainDataObj->m_sd3->setData(QApplication::clipboard()->text(QClipboard::Clipboard));
                 do_init = true;
             }
 
@@ -1189,7 +1183,7 @@ void KDiff3App::slotEditPaste()
 
             if(do_init)
             {
-                mainInit(m_totalDiffStatus);
+                mainInit(m_pMainDataObj->m_totalDiffStatus);
             }
         }
     }
@@ -1512,11 +1506,11 @@ void KDiff3App::recalcWordWrap(int visibleTextWidthForPrinting)
 
     g_pProgressDialog->clearCancelState(); // clear cancelled state if previously set
 
-    if(!m_diff3LineList.empty())
+    if(!m_pMainDataObj->m_diff3LineList.empty())
     {
         if(m_pOptions->wordWrapOn())
         {
-            m_diff3LineList.recalcWordWrap(true);
+            m_pMainDataObj->m_diff3LineList.recalcWordWrap(true);
 
             // Let every window calc how many lines will be needed.
             if(m_pDiffTextWindow1)
@@ -1534,7 +1528,7 @@ void KDiff3App::recalcWordWrap(int visibleTextWidthForPrinting)
         }
         else
         {
-            m_neededLines = m_diff3LineVector.size();
+            m_neededLines = m_pMainDataObj->m_diff3LineVector.size();
             if(m_pDiffTextWindow1)
                 m_pDiffTextWindow1->recalcWordWrap(false, 0, 0);
             if(m_pDiffTextWindow2)
@@ -1584,11 +1578,11 @@ void KDiff3App::slotFinishRecalcWordWrap(int visibleTextWidthForPrinting)
 
     const bool bPrinting = visibleTextWidthForPrinting >= 0;
 
-    if(!m_diff3LineList.empty())
+    if(!m_pMainDataObj->m_diff3LineList.empty())
     {
         if(m_pOptions->wordWrapOn())
         {
-            LineCount sumOfLines = m_diff3LineList.recalcWordWrap(false);
+            LineCount sumOfLines = m_pMainDataObj->m_diff3LineList.recalcWordWrap(false);
 
             // Finish the word wrap
             if(m_pDiffTextWindow1)
@@ -1659,10 +1653,10 @@ void KDiff3App::slotShowLineNumbersToggled()
 /// Return true for success, else false
 bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
 {
-    FileAccess f1(m_sd1->getFilename());
-    FileAccess f2(m_sd2->getFilename());
-    FileAccess f3(m_sd3->getFilename());
-    FileAccess f4(m_outputFilename);
+    FileAccess f1(m_pMainDataObj->m_sd1->getFilename());
+    FileAccess f2(m_pMainDataObj->m_sd2->getFilename());
+    FileAccess f3(m_pMainDataObj->m_sd3->getFilename());
+    FileAccess f4(m_pMainDataObj->m_outputFilename);
 
     Q_ASSERT(f1.isDir());
 
@@ -1677,7 +1671,7 @@ bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
 
         FileAccess destDir;
 
-        if(!m_bDefaultFilename) destDir = f4;
+        if(!m_pMainDataObj->m_bDefaultFilename) destDir = f4;
         m_pDirectoryMergeSplitter->show();
         m_pMainWidget->hide();
         setUpdatesEnabled(true);
@@ -1685,25 +1679,25 @@ bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
         (*gDirInfo) = DirectoryInfo(f1, f2, f3, destDir);
         bool bSuccess = m_pDirectoryMergeWindow->init(
             gDirInfo,
-            !m_outputFilename.isEmpty());
+            !m_pMainDataObj->m_outputFilename.isEmpty());
         //This is a bug if it still happens.
         Q_ASSERT(m_bDirCompare == bDirCompare);
 
         if(bSuccess)
         {
-            m_sd1->reset();
+            m_pMainDataObj->m_sd1->reset();
             if(m_pDiffTextWindow1 != nullptr)
             {
                 m_pDiffTextWindow1->init(QString(""), nullptr, eLineEndStyleDos, nullptr, 0, nullptr, nullptr);
                 m_pDiffTextWindowFrame1->init();
             }
-            m_sd2->reset();
+            m_pMainDataObj->m_sd2->reset();
             if(m_pDiffTextWindow2 != nullptr)
             {
                 m_pDiffTextWindow2->init(QString(""), nullptr, eLineEndStyleDos, nullptr, 0, nullptr, nullptr);
                 m_pDiffTextWindowFrame2->init();
             }
-            m_sd3->reset();
+            m_pMainDataObj->m_sd3->reset();
             if(m_pDiffTextWindow3 != nullptr)
             {
                 m_pDiffTextWindow3->init(QString(""), nullptr, eLineEndStyleDos, nullptr, 0, nullptr, nullptr);
@@ -1723,10 +1717,10 @@ bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
 */
 void KDiff3App::improveFilenames()
 {
-    FileAccess f1(m_sd1->getFilename());
-    FileAccess f2(m_sd2->getFilename());
-    FileAccess f3(m_sd3->getFilename());
-    FileAccess f4(m_outputFilename);
+    FileAccess f1(m_pMainDataObj->m_sd1->getFilename());
+    FileAccess f2(m_pMainDataObj->m_sd2->getFilename());
+    FileAccess f3(m_pMainDataObj->m_sd3->getFilename());
+    FileAccess f4(m_pMainDataObj->m_outputFilename);
 
     if(f1.isFile() && f1.exists())
     {
@@ -1734,19 +1728,19 @@ void KDiff3App::improveFilenames()
         {
             f2.addPath(f1.fileName());
             if(f2.isFile() && f2.exists())
-                m_sd2->setFileAccess(f2);
+                m_pMainDataObj->m_sd2->setFileAccess(f2);
         }
         if(f3.isDir())
         {
             f3.addPath(f1.fileName());
             if(f3.isFile() && f3.exists())
-                m_sd3->setFileAccess(f3);
+                m_pMainDataObj->m_sd3->setFileAccess(f3);
         }
         if(f4.isDir())
         {
             f4.addPath(f1.fileName());
             if(f4.isFile() && f4.exists())
-                m_outputFilename = f4.absoluteFilePath();
+                m_pMainDataObj->m_outputFilename = f4.absoluteFilePath();
         }
     }
 }
@@ -1755,7 +1749,7 @@ void KDiff3App::slotReload()
 {
     if(!shouldContinue()) return;
 
-    mainInit(m_totalDiffStatus);
+    mainInit(m_pMainDataObj->m_totalDiffStatus);
 }
 
 bool KDiff3App::canContinue()
@@ -1796,7 +1790,7 @@ void KDiff3App::slotDirShowBoth()
     }
     else
     {
-        bool bTextDataAvailable = (m_sd1->hasData() || m_sd2->hasData() || m_sd3->hasData());
+        bool bTextDataAvailable = (m_pMainDataObj->m_sd1->hasData() || m_pMainDataObj->m_sd2->hasData() || m_pMainDataObj->m_sd3->hasData());
         if(bTextDataAvailable)
         {
             m_pMainWidget->show();
@@ -1973,27 +1967,27 @@ void KDiff3App::slotMergeCurrentFile()
     {
         if(!shouldContinue()) return;
 
-        if(m_outputFilename.isEmpty())
+        if(m_pMainDataObj->m_outputFilename.isEmpty())
         {
-            if(!m_sd3->isEmpty() && !m_sd3->isFromBuffer())
+            if(!m_pMainDataObj->m_sd3->isEmpty() && !m_pMainDataObj->m_sd3->isFromBuffer())
             {
-                m_outputFilename = m_sd3->getFilename();
+                m_pMainDataObj->m_outputFilename = m_pMainDataObj->m_sd3->getFilename();
             }
-            else if(!m_sd2->isEmpty() && !m_sd2->isFromBuffer())
+            else if(!m_pMainDataObj->m_sd2->isEmpty() && !m_pMainDataObj->m_sd2->isFromBuffer())
             {
-                m_outputFilename = m_sd2->getFilename();
+                m_pMainDataObj->m_outputFilename = m_pMainDataObj->m_sd2->getFilename();
             }
-            else if(!m_sd1->isEmpty() && !m_sd1->isFromBuffer())
+            else if(!m_pMainDataObj->m_sd1->isEmpty() && !m_pMainDataObj->m_sd1->isFromBuffer())
             {
-                m_outputFilename = m_sd1->getFilename();
+                m_pMainDataObj->m_outputFilename = m_pMainDataObj->m_sd1->getFilename();
             }
             else
             {
-                m_outputFilename = "unnamed.txt";
-                m_bDefaultFilename = true;
+                m_pMainDataObj->m_outputFilename = "unnamed.txt";
+                m_pMainDataObj->m_bDefaultFilename = true;
             }
         }
-        mainInit(m_totalDiffStatus);
+        mainInit(m_pMainDataObj->m_totalDiffStatus);
     }
 }
 
@@ -2098,7 +2092,7 @@ void KDiff3App::slotOverviewBC()
 
 void KDiff3App::slotNoRelevantChangesDetected()
 {
-    if(m_bTripleDiff && !m_outputFilename.isEmpty())
+    if(m_bTripleDiff && !m_pMainDataObj->m_outputFilename.isEmpty())
     {
         //KMessageBox::information( this, "No relevant changes detected", "KDiff3" );
         if(!m_pOptions->m_IrrelevantMergeCmd.isEmpty())
@@ -2143,24 +2137,24 @@ void KDiff3App::slotAddManualDiffHelp()
         KMessageBox::information(this, i18n("Nothing is selected in either diff input window."), i18n("Error while adding manual diff range"));
     else
     {
-        m_manualDiffHelpList.insertEntry(winIdx, firstLine, lastLine);
+        m_pMainDataObj->m_manualDiffHelpList.insertEntry(winIdx, firstLine, lastLine);
 
-        mainInit(m_totalDiffStatus, InitFlag::autoSolve | InitFlag::initGUI); // Init without reload
+        mainInit(m_pMainDataObj->m_totalDiffStatus, InitFlag::autoSolve | InitFlag::initGUI); // Init without reload
         slotRefresh();
     }
 }
 
 void KDiff3App::slotClearManualDiffHelpList()
 {
-    m_manualDiffHelpList.clear();
-    mainInit(m_totalDiffStatus, InitFlag::autoSolve | InitFlag::initGUI); // Init without reload
+    m_pMainDataObj->m_manualDiffHelpList.clear();
+    mainInit(m_pMainDataObj->m_totalDiffStatus, InitFlag::autoSolve | InitFlag::initGUI); // Init without reload
     slotRefresh();
 }
 
 void KDiff3App::slotEncodingChanged(QTextCodec* c)
 {
     encodingChanged(c);
-    mainInit(m_totalDiffStatus, InitFlag::loadFiles | InitFlag::useCurrentEncoding | InitFlag::autoSolve ); // Init with reload
+    mainInit(m_pMainDataObj->m_totalDiffStatus, InitFlag::loadFiles | InitFlag::useCurrentEncoding | InitFlag::autoSolve ); // Init with reload
     slotRefresh();
 }
 
@@ -2169,7 +2163,7 @@ void KDiff3App::slotUpdateAvailabilities()
     if(m_pMainSplitter == nullptr || m_pDiffTextWindow2 == nullptr || m_pDiffTextWindow1 == nullptr || m_pDiffTextWindow3 == nullptr)
         return;
 
-    bool bTextDataAvailable = (m_sd1->hasData() || m_sd2->hasData() || m_sd3->hasData());
+    bool bTextDataAvailable = (m_pMainDataObj->m_sd1->hasData() || m_pMainDataObj->m_sd2->hasData() || m_pMainDataObj->m_sd3->hasData());
 
     if(dirShowBoth->isChecked())
     {
