@@ -133,20 +133,20 @@ class MergeResultWindow : public QWidget
     // DONE
     void choose(e_SrcSelector selector);
 
-    // DONE
-    // работа с селекшеном, т.к. он в UI то и метод в UI
-    void resetSelection();
+
 
     // ?
     // Не понял - там какая то логика, но где она нужна непонятно - надо смотреть места вызова
+    // Это про всю группу коммент
     bool isDeltaAboveCurrent();
-
     bool isDeltaBelowCurrent();
-
     bool isUnsolvedConflictAboveCurrent();
     bool isUnsolvedConflictBelowCurrent();
+    bool isUnsolvedConflictAtCurrent();
     bool isConflictAboveCurrent();
     bool isConflictBelowCurrent();
+
+
 
     // DONE
     // Вроде это просто UI-ная штука. Оно бегает по внутренностям данных мержа и измеряет ширину текста
@@ -163,11 +163,24 @@ class MergeResultWindow : public QWidget
     // а тут просто получать этот объект и рисовать по нему это окошка (типа модель будет = вью модели этлого окошка поидее)
     void showNrOfConflicts();
 
-    bool isUnsolvedConflictAtCurrent();
 
+    // DONE
+    // ui
+    // Похоже это чисто какая то uiная штука - находит по строке текст как я понял где-то внутри мерж окошка - это нужно чтобы далее сделать выделение после этого этого текста
     bool findString(const QString& s, LineRef& d3vLine, int& posInLine, bool bDirDown, bool bCaseSensitive);
+
+
+
+
+    // DONE
+    // работа с селекшеном, т.к. он в UI то и метод в UI
+    void resetSelection();
     void setSelection(int firstLine, int startPos, int lastLine, int endPos);
 
+
+
+    // DONE
+    // что-то ui-ное, там внутри изменяются состояния action-ов
     void slotUpdateAvailabilities();
 
 
