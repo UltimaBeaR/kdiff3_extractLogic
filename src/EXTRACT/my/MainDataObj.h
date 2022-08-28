@@ -79,6 +79,8 @@ class MainDataObj
         QString l3
         );
 
+    void mainInit(TotalDiffStatus* pTotalDiffStatus);
+
     // Данные пока в public пока в процессе рефакторинга потом перенести в private что нужно
   public:
     TotalDiffStatus *m_totalDiffStatus = new TotalDiffStatus();

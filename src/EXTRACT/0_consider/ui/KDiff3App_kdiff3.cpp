@@ -152,7 +152,6 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
 
     m_pOptionDialog->readOptions(KSharedConfig::openConfig());
 
-    auto cmdParser = KDiff3Shell::getParser();
     auto cmdArgs = KDiff3Shell::getParser()->positionalArguments();
 
     // Option handling: Only when pParent==0 (no parent)

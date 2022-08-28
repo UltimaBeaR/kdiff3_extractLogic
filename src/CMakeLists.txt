@@ -8,6 +8,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Parts WidgetsAddons)
 set(
         kdiff3part_PART_SRCS
         kdiff3_part.cpp
+        EXTRACT/0_consider/ui/ReversibleScrollBar.cpp
         EXTRACT/0_consider/ui/KDiff3App_kdiff3.cpp
         DirectoryInfo.cpp
         directorymergewindow.cpp

@@ -173,3 +173,8 @@ void MainDataObj::init(
         m_bDefaultFilename = false;
     }
 }
+
+void MainDataObj::mainInit(TotalDiffStatus* pTotalDiffStatus)
+{
+
+}

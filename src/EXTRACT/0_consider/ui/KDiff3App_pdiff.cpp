@@ -146,6 +146,9 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
 
 
+    m_pMainDataObj->mainInit(pTotalDiffStatus);
+
+
 
 
 

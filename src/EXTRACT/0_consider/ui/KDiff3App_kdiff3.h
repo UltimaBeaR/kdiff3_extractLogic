@@ -9,6 +9,9 @@
 #ifndef KDIFF3_H
 #define KDIFF3_H
 
+#include "EXTRACT/0_consider/ui/ReversibleScrollBar.h"
+#include "EXTRACT/0_consider/InitFlags.h"
+
 #include "EXTRACT/my/MyOptions.h"
 
 #include "EXTRACT/2_final/defmac.h"
@@ -61,63 +64,6 @@ class MainWindow;
 class KDiff3Part;
 class DirectoryMergeWindow;
 class DirectoryMergeInfo;
-
-class ReversibleScrollBar : public QScrollBar
-{
-    Q_OBJECT
-    bool* m_pbRightToLeftLanguage;
-    int m_realVal;
-
-  public:
-    ReversibleScrollBar(Qt::Orientation o, bool* pbRightToLeftLanguage)
-        : QScrollBar(o)
-    {
-        m_pbRightToLeftLanguage = pbRightToLeftLanguage;
-        m_realVal = 0;
-        chk_connect(this, &ReversibleScrollBar::valueChanged, this, &ReversibleScrollBar::slotValueChanged);
-    }
-    void setAgain() { setValue(m_realVal); }
-
-    void setValue(int i)
-    {
-        if(m_pbRightToLeftLanguage != nullptr && *m_pbRightToLeftLanguage)
-            QScrollBar::setValue(maximum() - (i - minimum()));
-        else
-            QScrollBar::setValue(i);
-    }
-
-    int value() const
-    {
-        return m_realVal;
-    }
-  public Q_SLOTS:
-    void slotValueChanged(int i)
-    {
-        m_realVal = i;
-        if(m_pbRightToLeftLanguage != nullptr && *m_pbRightToLeftLanguage)
-            m_realVal = maximum() - (i - minimum());
-        Q_EMIT valueChanged2(m_realVal);
-    }
-
-  Q_SIGNALS:
-    void valueChanged2(int);
-};
-
-/*
-  InitFlag
-*/
-
-enum class InitFlag
-{
-    loadFiles = 1,
-    useCurrentEncoding = 2,
-    autoSolve = 4,
-    initGUI = 8,
-    defaultFlags = loadFiles | autoSolve | initGUI
-};
-
-Q_DECLARE_FLAGS(InitFlags, InitFlag);
-Q_DECLARE_OPERATORS_FOR_FLAGS(InitFlags);
 
 class KDiff3App : public QSplitter
 {
