@@ -30,6 +30,8 @@ Optimizations: Skip unneeded steps.
 */
 #include "EXTRACT/2_final/SourceData.h"
 
+#include "EXTRACT/my/MyOptions.h"
+
 #include "EXTRACT/2_final/CommentParser.h"
 
 #include "EXTRACT/2_final/Logging.h"
@@ -95,11 +97,6 @@ bool SourceData::hasData() const
 bool SourceData::isValid() const
 {
     return isEmpty() || hasData();
-}
-
-void SourceData::setOptions(const QSharedPointer<Options> &pOptions)
-{
-    m_pOptions = pOptions;
 }
 
 QString SourceData::getFilename() const
@@ -346,12 +343,24 @@ QTextCodec* SourceData::detectEncoding(const QString& fileName, QTextCodec* pFal
     return pFallbackCodec;
 }
 
-void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicode)
+void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicode, MyOptions* pMyOptions)
 {
     // Илья: насколько я понял - тут считывается файл при этом могут запускаться какие-то препроцессоры - видимо это внешние программы которые обрабатывают
     // как то эти файлы зачем-то перед мержем. Это видно т.к. тут процессы создаются и ожидаются завершения.
     // Еще как я понял тут же файл не обязательно текстовой и kdiff3 вроде мержить умеет всякое говно. Мне по сути только текстовая часть интересует.
     // TODO: Надо еще проверить не ли тут какого-то анализа контента файла - типа синтаксического анализа языка программирования, т.к. если мерж зависит от таких вещей - это печально, т.к. я не хочу чтобы такая логика была.
+
+
+
+
+
+
+
+
+
+
+
+
 
     m_pEncoding = pEncoding;
     QTemporaryFile fileIn1, fileOut1;
@@ -415,7 +424,7 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
     if(faIn.exists())
     {
         // Run the first preprocessor
-        if(m_pOptions->m_PreProcessorCmd.isEmpty())
+        if(pMyOptions->preProcessorCmd().isEmpty())
         {
             // No preprocessing: Read the file directly:
             if(!m_normalData.readFile(faIn))
@@ -429,16 +438,16 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
             QTemporaryFile tmpInPPFile;
             QString fileNameInPP = fileNameIn1;
 
-            if(pEncoding1 != m_pOptions->m_pEncodingPP)
+            if(pEncoding1 != pMyOptions->encodingPP())
             {
                 // Before running the preprocessor convert to the format that the preprocessor expects.
                 FileAccess::createTempFile(tmpInPPFile);
                 fileNameInPP = tmpInPPFile.fileName();
-                pEncoding1 = m_pOptions->m_pEncodingPP;
+                pEncoding1 = pMyOptions->encodingPP();
                 convertFileEncoding(fileNameIn1, pEncoding, fileNameInPP, pEncoding1);
             }
 
-            QString ppCmd = m_pOptions->m_PreProcessorCmd;
+            QString ppCmd = pMyOptions->preProcessorCmd();
             FileAccess::createTempFile(fileOut1);
             fileNameOut1 = fileOut1.fileName();
 
@@ -470,7 +479,7 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
                     i18n("Preprocessing possibly failed. Check this command:\n\n  %1"
                          "\n\nThe preprocessing command will be disabled now.", ppCmd) +
                     errorReason);
-                m_pOptions->m_PreProcessorCmd = "";
+                pMyOptions->clear_preProcessorCmd();
 
                 pEncoding1 = m_pEncoding;
             }
@@ -486,22 +495,22 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
             return;
 
         // LineMatching Preprocessor
-        if(!m_pOptions->m_LineMatchingPreProcessorCmd.isEmpty())
+        if(!pMyOptions->lineMatchingPreProcessorCmd().isEmpty())
         {
             QTemporaryFile tempOut2, fileInPP;
             fileNameIn2 = fileNameOut1.isEmpty() ? fileNameIn1 : fileNameOut1;
             QString fileNameInPP = fileNameIn2;
             pEncoding2 = pEncoding1;
-            if(pEncoding2 != m_pOptions->m_pEncodingPP)
+            if(pEncoding2 != pMyOptions->encodingPP())
             {
                 // Before running the preprocessor convert to the format that the preprocessor expects.
                 FileAccess::createTempFile(fileInPP);
                 fileNameInPP = fileInPP.fileName();
-                pEncoding2 = m_pOptions->m_pEncodingPP;
+                pEncoding2 = pMyOptions->encodingPP();
                 convertFileEncoding(fileNameIn2, pEncoding1, fileNameInPP, pEncoding2);
             }
 
-            QString ppCmd = m_pOptions->m_LineMatchingPreProcessorCmd;
+            QString ppCmd = pMyOptions->lineMatchingPreProcessorCmd();
             FileAccess::createTempFile(tempOut2);
             fileNameOut2 = tempOut2.fileName();
             QProcess ppProcess;
@@ -525,7 +534,7 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
                     i18n("The line-matching-preprocessing possibly failed. Check this command:\n\n  %1"
                          "\n\nThe line-matching-preprocessing command will be disabled now.", ppCmd) +
                     errorReason);
-                m_pOptions->m_LineMatchingPreProcessorCmd = "";
+                pMyOptions->clear_lineMatchingPreProcessorCmd();
                 if(!m_lmppData.readFile(fileNameIn2))
                 {
                     mErrors.append(i18n("Failed to read file: %1", fileNameIn2));
@@ -533,7 +542,7 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
                 }
             }
         }
-        else if(m_pOptions->ignoreComments() || m_pOptions->m_bIgnoreCase)
+        else if(pMyOptions->ignoreComments() || pMyOptions->ignoreCase())
         {
             // We need a copy of the normal data.
             m_lmppData.copyBufFrom(m_normalData);
@@ -565,7 +574,7 @@ void SourceData::readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicod
     }
 
     // Ignore comments
-    if(m_pOptions->ignoreComments() && hasData())
+    if(pMyOptions->ignoreComments() && hasData())
     {
         qint64 vSize = std::min(m_normalData.lineCount(), m_lmppData.lineCount());
         Q_ASSERT(vSize < TYPE_MAX(qint32));

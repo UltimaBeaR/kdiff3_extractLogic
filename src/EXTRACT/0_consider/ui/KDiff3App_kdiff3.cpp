@@ -202,6 +202,13 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
         }
     }
 
+#ifdef ENABLE_AUTO
+    m_bAutoFlag = hasArgs && KDiff3Shell::getParser()->isSet("auto") && !KDiff3Shell::getParser()->isSet("noauto");
+#else
+    m_bAutoFlag = false;
+#endif
+
+    m_bAutoMode = m_bAutoFlag || m_pOptions->m_bAutoSaveAndQuitOnMergeWithoutConflicts;
 
 
 
@@ -220,17 +227,6 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
     // Но возможно получится как то разделить
 
 
-    m_pMainDataObj->m_sd1->setOptions(m_pOptions);
-    m_pMainDataObj->m_sd2->setOptions(m_pOptions);
-    m_pMainDataObj->m_sd3->setOptions(m_pOptions);
-
-#ifdef ENABLE_AUTO
-    m_bAutoFlag = hasArgs && KDiff3Shell::getParser()->isSet("auto") && !KDiff3Shell::getParser()->isSet("noauto");
-#else
-    m_bAutoFlag = false;
-#endif
-
-    m_bAutoMode = m_bAutoFlag || m_pOptions->m_bAutoSaveAndQuitOnMergeWithoutConflicts;
     if(hasArgs) {
         m_pMainDataObj->m_outputFilename = KDiff3Shell::getParser()->value("output");
 
@@ -314,6 +310,10 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
     }
 
 
+
+
+
+    
 
 
 

@@ -143,9 +143,9 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
         // Чтение файла 1
         if(bUseCurrentEncoding)
-            m_pMainDataObj->m_sd1->readAndPreprocess(m_pMainDataObj->m_sd1->getEncoding(), false);
+            m_pMainDataObj->m_sd1->readAndPreprocess(m_pMainDataObj->m_sd1->getEncoding(), false, m_pMyOptions);
         else
-            m_pMainDataObj->m_sd1->readAndPreprocess(m_pOptions->m_pEncodingA, m_pOptions->m_bAutoDetectUnicodeA);
+            m_pMainDataObj->m_sd1->readAndPreprocess(m_pOptions->m_pEncodingA, m_pOptions->m_bAutoDetectUnicodeA, m_pMyOptions);
 
 
 
@@ -168,9 +168,9 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
         // Чтение файла 2
         if(bUseCurrentEncoding)
-            m_pMainDataObj->m_sd2->readAndPreprocess(m_pMainDataObj->m_sd2->getEncoding(), false);
+            m_pMainDataObj->m_sd2->readAndPreprocess(m_pMainDataObj->m_sd2->getEncoding(), false, m_pMyOptions);
         else
-            m_pMainDataObj->m_sd2->readAndPreprocess(m_pOptions->m_pEncodingB, m_pOptions->m_bAutoDetectUnicodeB);
+            m_pMainDataObj->m_sd2->readAndPreprocess(m_pOptions->m_pEncodingB, m_pOptions->m_bAutoDetectUnicodeB, m_pMyOptions);
 
         pp.step();
         errors.append(m_pMainDataObj->m_sd1->getErrors());
@@ -230,9 +230,9 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
                 // Чтение файла 3
                 if(bUseCurrentEncoding)
-                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pMainDataObj->m_sd3->getEncoding(), false);
+                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pMainDataObj->m_sd3->getEncoding(), false, m_pMyOptions);
                 else
-                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pOptions->m_pEncodingC, m_pOptions->m_bAutoDetectUnicodeC);
+                    m_pMainDataObj->m_sd3->readAndPreprocess(m_pOptions->m_pEncodingC, m_pOptions->m_bAutoDetectUnicodeC, m_pMyOptions);
 
                 pp.step();
             }

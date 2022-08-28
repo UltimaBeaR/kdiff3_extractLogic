@@ -11,6 +11,8 @@
 
 #include "EXTRACT/2_final/LineRef.h"
 #include "EXTRACT/2_final/file_access/fileaccess.h"
+
+// Он тут нужен ради энама e_LineEndStyle а не самих опций
 #include "EXTRACT/2_final/options.h"
 
 #include <boost/signals2.hpp>
@@ -20,6 +22,8 @@
 #include <QString>
 #include <QVector>
 
+class MyOptions;
+
 class LineData;
 class SourceData
 {
@@ -28,8 +32,6 @@ class SourceData
     // Илья: Я тут поменял - передаю сигнал по ссылке, до этого ничего не передавалось и внутри тянулось напрямую из KDiff3App статическое поле с этим событием (или сигналом, хз че эт).
     // теперь в месте вызова просто это событие передается сюда в параметр. Так я убрался от зависимости тут от KDiff3App, но не уверен что все будет правильно работать, т.к. немного забыл C++
     void setupConnections(boost::signals2::signal<void (QTextCodec*)> &encodingChanged);
-
-    void setOptions(const QSharedPointer<Options> &pOptions);
 
     Q_REQUIRED_RESULT LineRef getSizeLines() const;
     Q_REQUIRED_RESULT qint64 getSizeBytes() const;
@@ -52,7 +54,7 @@ class SourceData
     Q_REQUIRED_RESULT bool isValid() const; // Either no file is specified or reading was successful
 
     // Returns a list of error messages if anything went wrong
-    void readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicode);
+    void readAndPreprocess(QTextCodec* pEncoding, bool bAutoDetectUnicode, MyOptions* pMyOptions);
     bool saveNormalDataAs(const QString& fileName);
 
     Q_REQUIRED_RESULT bool isBinaryEqualWith(const QSharedPointer<SourceData>& other) const;
@@ -72,14 +74,17 @@ class SourceData
     bool convertFileEncoding(const QString& fileNameIn, QTextCodec* pCodecIn,
                                 const QString& fileNameOut, QTextCodec* pCodecOut);
 
+    // Детектит является ли данные файла UTF8 или нет. Просто смотрит есть ли там невалидные символы если попытаться открыть это как UTF8. Это вызывается если нет UTF8 BOM.
     static QTextCodec* dectectUTF8(const QByteArray& data);
+
+    // Анализирует буффер символов и пыается узнать кодировку. Анализирует UTF8 BOM и т.п. Также пытается спарсить кодировку из xml и html тегов, если видет там подобные вещи.
     static QTextCodec* detectEncoding(const char* buf, qint64 size, qint64& skipBytes);
+
     static QTextCodec* getEncodingFromTag(const QByteArray& s, const QByteArray& encodingTag);
 
     QTextCodec* detectEncoding(const QString& fileName, QTextCodec* pFallbackCodec);
     QString m_aliasName;
     FileAccess m_fileAccess;
-    QSharedPointer<Options> m_pOptions;
     QString m_tempInputFileName;
     QTemporaryFile m_tempFile; //Created from clipboard content.
 
