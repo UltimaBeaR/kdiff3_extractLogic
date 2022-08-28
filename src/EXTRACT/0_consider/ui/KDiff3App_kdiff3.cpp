@@ -111,7 +111,7 @@ bool KDiff3App::isFileSaved() const
 
 bool KDiff3App::isDirComparison() const
 {
-    return m_bDirCompare;
+    return m_pMainDataObj->m_bDirCompare;
 }
 
 /*
@@ -150,24 +150,32 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
     m_pOptions = m_pOptionDialog->getOptions();
     m_pMyOptions = new MyOptions(m_pOptions);
 
-    m_pMainDataObj = new MainDataObj(m_pMyOptions);
-
     m_pOptionDialog->readOptions(KSharedConfig::openConfig());
 
+    auto cmdParser = KDiff3Shell::getParser();
+    auto cmdArgs = KDiff3Shell::getParser()->positionalArguments();
+
     // Option handling: Only when pParent==0 (no parent)
-    int argCount = KDiff3Shell::getParser()->optionNames().count() + KDiff3Shell::getParser()->positionalArguments().count();
+    int argCount = KDiff3Shell::getParser()->optionNames().count() + cmdArgs.count();
+
+    auto cmdIsSetConfigHelp = KDiff3Shell::getParser()->isSet("confighelp");
+    auto cmdValuesCs = KDiff3Shell::getParser()->values("cs");
+
+    auto cmdAuto = KDiff3Shell::getParser()->isSet("auto");
+    auto cmdNoAuto = KDiff3Shell::getParser()->isSet("noauto");
+
     bool hasArgs = !isPart() && argCount > 0;
     if(hasArgs) {
         QString s;
         QString title;
-        if(KDiff3Shell::getParser()->isSet("confighelp"))
+        if(cmdIsSetConfigHelp)
         {
             s = m_pOptionDialog->calcOptionHelp();
             title = i18n("Current Configuration:");
         }
         else
         {
-            s = m_pOptionDialog->parseOptions(KDiff3Shell::getParser()->values("cs"));
+            s = m_pOptionDialog->parseOptions(cmdValuesCs);
             title = i18n("Config Option Error:");
         }
         if(!s.isEmpty())
@@ -203,125 +211,47 @@ KDiff3App::KDiff3App(QWidget* pParent, const QString& name, KDiff3Part* pKDiff3P
     }
 
 #ifdef ENABLE_AUTO
-    m_bAutoFlag = hasArgs && KDiff3Shell::getParser()->isSet("auto") && !KDiff3Shell::getParser()->isSet("noauto");
+    m_bAutoFlag = hasArgs && cmdAuto && !cmdNoAuto;
 #else
     m_bAutoFlag = false;
 #endif
 
-    m_bAutoMode = m_bAutoFlag || m_pOptions->m_bAutoSaveAndQuitOnMergeWithoutConflicts;
+    QString cmdOutput = KDiff3Shell::getParser()->value("output");
+    if (cmdOutput.isEmpty())
+        cmdOutput = KDiff3Shell::getParser()->value("out");
 
+    bool cmdMerge = KDiff3Shell::getParser()->isSet("merge");
 
+    bool cmdHasFileName1 = cmdArgs.count() > 0;
+    QString cmdFileName1 = cmdHasFileName1 ? cmdArgs[0] : "";
 
+    bool cmdHasFileName2 = cmdArgs.count() > 1;
+    QString cmdFileName2 = cmdHasFileName2 ? cmdArgs[1] : "";
 
+    bool cmdHasFileName3 = cmdArgs.count() > 2;
+    QString cmdFileName3 = cmdHasFileName3 ? cmdArgs[2] : "";
 
+    QString cmdBase = KDiff3Shell::getParser()->value("base");
+    QStringList cmdFName = KDiff3Shell::getParser()->values("fname");
+    QString cmdL1 = KDiff3Shell::getParser()->value("L1");
+    QString cmdL2 = KDiff3Shell::getParser()->value("L2");
+    QString cmdL3 = KDiff3Shell::getParser()->value("L3");
 
+    m_pMainDataObj = new MainDataObj();
+    m_pMainDataObj->init(
+        m_pMyOptions,
+        hasArgs, m_bAutoFlag,
+        cmdOutput,
+        cmdMerge,
+        cmdHasFileName1, cmdFileName1,
+        cmdHasFileName2, cmdFileName2,
+        cmdHasFileName3, cmdFileName3,
+        cmdBase,
+        cmdFName,
+        cmdL1, cmdL2, cmdL3
+        );
 
-
-
-
-    // TODO: непонятно как тут это вытащить в кусок данных, т.к. это все очень тесно переплетено со всякими консольными аргументами и прочим что явно не относится к данным.
-    // Видимо надо как то зарефакторить и превратить это в набор параметров и сделать что то типа метода init() у объекта данных куда передавать эти параметры так чтобы вся логика описанная
-    // тут выполнялась так же
-    //
-    // Еще тут про сравнение директорий что-то. В итоге мне эта логика не нужжна, однако тут тесно оно переплетено все и в том числе SourceData используется для проверок папка или нет
-    // Но возможно получится как то разделить
-
-
-    if(hasArgs) {
-        m_pMainDataObj->m_outputFilename = KDiff3Shell::getParser()->value("output");
-
-        if(m_pMainDataObj->m_outputFilename.isEmpty())
-            m_pMainDataObj->m_outputFilename = KDiff3Shell::getParser()->value("out");
-
-        if(!m_pMainDataObj->m_outputFilename.isEmpty())
-            m_pMainDataObj->m_outputFilename = FileAccess(m_pMainDataObj->m_outputFilename, true).absoluteFilePath();
-
-        if(m_bAutoMode && m_pMainDataObj->m_outputFilename.isEmpty())
-        {
-            if(m_bAutoFlag)
-            {
-                QTextStream(stderr) << i18n("Option --auto used, but no output file specified.") << "\n";
-            }
-            m_bAutoMode = false;
-        }
-
-        if(m_pMainDataObj->m_outputFilename.isEmpty() && KDiff3Shell::getParser()->isSet("merge"))
-        {
-            m_pMainDataObj->m_outputFilename = "unnamed.txt";
-            m_pMainDataObj->m_bDefaultFilename = true;
-        }
-        else
-        {
-            m_pMainDataObj->m_bDefaultFilename = false;
-        }
-
-        QStringList args = KDiff3Shell::getParser()->positionalArguments();
-
-        m_pMainDataObj->m_sd1->setFilename(KDiff3Shell::getParser()->value("base"));
-        if(m_pMainDataObj->m_sd1->isEmpty()) {
-            if(args.count() > 0) m_pMainDataObj->m_sd1->setFilename(args[0]); // args->arg(0)
-            if(args.count() > 1) m_pMainDataObj->m_sd2->setFilename(args[1]);
-            if(args.count() > 2) m_pMainDataObj->m_sd3->setFilename(args[2]);
-        }
-        else
-        {
-            if(args.count() > 0) m_pMainDataObj->m_sd2->setFilename(args[0]);
-            if(args.count() > 1) m_pMainDataObj->m_sd3->setFilename(args[1]);
-        }
-        //Set m_bDirCompare flag
-        m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
-
-        QStringList aliasList = KDiff3Shell::getParser()->values( "fname" );
-        QStringList::Iterator ali = aliasList.begin();
-
-        QString an1 = KDiff3Shell::getParser()->value("L1");
-        if(!an1.isEmpty()) {
-            m_pMainDataObj->m_sd1->setAliasName(an1);
-        }
-        else if(ali != aliasList.end())
-        {
-            m_pMainDataObj->m_sd1->setAliasName(*ali);
-            ++ali;
-        }
-
-        QString an2 = KDiff3Shell::getParser()->value("L2");
-        if(!an2.isEmpty()) {
-            m_pMainDataObj->m_sd2->setAliasName(an2);
-        }
-        else if(ali != aliasList.end())
-        {
-            m_pMainDataObj->m_sd2->setAliasName(*ali);
-            ++ali;
-        }
-
-        QString an3 = KDiff3Shell::getParser()->value("L3");
-        if(!an3.isEmpty()) {
-            m_pMainDataObj->m_sd3->setAliasName(an3);
-        }
-        else if(ali != aliasList.end())
-        {
-            m_pMainDataObj->m_sd3->setAliasName(*ali);
-            ++ali;
-        }
-    }
-    else
-    {
-        m_pMainDataObj->m_bDefaultFilename = false;
-    }
-
-
-
-
-
-    
-
-
-
-
-
-
-
-    g_pProgressDialog->setStayHidden(m_bAutoMode);
+    g_pProgressDialog->setStayHidden(m_pMainDataObj->m_bAutoMode);
 
     ///////////////////////////////////////////////////////////////////
     // call inits to invoke all other construction parts
@@ -424,7 +354,7 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
 {
     if(!fn1.isEmpty()) {
         m_pMainDataObj->m_sd1->setFilename(fn1);
-        m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
+        m_pMainDataObj->m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
     }
     if(!fn2.isEmpty()) {
         m_pMainDataObj->m_sd2->setFilename(fn2);
@@ -434,16 +364,16 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
     }
 
     //should not happen now.
-    Q_ASSERT(m_bDirCompare == m_pMainDataObj->m_sd1->isDir());
+    Q_ASSERT(m_pMainDataObj->m_bDirCompare == m_pMainDataObj->m_sd1->isDir());
 
-    if(m_bAutoFlag && m_bAutoMode && m_bDirCompare)
+    if(m_bAutoFlag && m_pMainDataObj->m_bAutoMode && m_pMainDataObj->m_bDirCompare)
     {
         QTextStream(stderr) << i18n("Option --auto ignored for folder comparison.") << "\n";
-        m_bAutoMode = false;
+        m_pMainDataObj->m_bAutoMode = false;
     }
 
     bool bSuccess = true;
-    if(m_bDirCompare)
+    if(m_pMainDataObj->m_bDirCompare)
         bSuccess = doDirectoryCompare(false);
     else
     {
@@ -451,7 +381,7 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
         m_pDirectoryMergeSplitter->hide();
 
         mainInit(m_pMainDataObj->m_totalDiffStatus);
-        if(m_bAutoMode)
+        if(m_pMainDataObj->m_bAutoMode)
         {
             QSharedPointer<SourceData> pSD = nullptr;
             if(m_pMainDataObj->m_sd3->isEmpty()) {
@@ -494,7 +424,7 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
             }
         }
     }
-    m_bAutoMode = false;
+    m_pMainDataObj->m_bAutoMode = false;
 
     if(!isPart() && m_pOptions->isFullScreen())
         m_pKDiff3Shell->showFullScreen();
@@ -529,7 +459,7 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
 
     slotUpdateAvailabilities();
 
-    if(!m_bDirCompare && m_pKDiff3Shell != nullptr)
+    if(!m_pMainDataObj->m_bDirCompare && m_pKDiff3Shell != nullptr)
     {
         bool bFileOpenError = false;
         if((!m_pMainDataObj->m_sd1->getErrors().isEmpty()) ||
@@ -716,7 +646,7 @@ void KDiff3App::initStatusBar()
 
 void KDiff3App::saveOptions(KSharedConfigPtr config)
 {
-    if(!m_bAutoMode)
+    if(!m_pMainDataObj->m_bAutoMode)
     {
         if(!isPart())
         {
@@ -792,7 +722,7 @@ void KDiff3App::slotFileSave()
         {
             m_bFileSaved = true;
             m_bOutputModified = false;
-            if(m_bDirCompare)
+            if(m_pMainDataObj->m_bDirCompare)
                 m_pDirectoryMergeWindow->mergeResultSaved(m_pMainDataObj->m_outputFilename);
         }
 
@@ -812,7 +742,7 @@ void KDiff3App::slotFileSaveAs()
         if(bSuccess)
         {
             m_bOutputModified = false;
-            if(m_bDirCompare)
+            if(m_pMainDataObj->m_bDirCompare)
                 m_pDirectoryMergeWindow->mergeResultSaved(m_pMainDataObj->m_outputFilename);
         }
         //setWindowTitle(url.fileName(),doc->isModified());

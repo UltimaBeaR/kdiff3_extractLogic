@@ -53,8 +53,31 @@ class KActionCollection;
 
 class MainDataObj
 {
+    // TODO: мне не нравится что тут становится слишком много всего, в частности m_bDirCompare - т.к. он часто где я смотрю юзается а мне этот функционал вообще не интересен.
+    // Я думаю что стоит потом разделить этот класс тоже на некую общую часть и на часть непосредственно связанную с диффами файлов.
+
+
   public:
-    MainDataObj(MyOptions* pMyOptions);
+    MainDataObj();
+
+    void init(
+        MyOptions* pMyOptions,
+        bool hasArgs,
+        bool autoFlag,
+        QString output,
+        bool merge,
+        bool hasFileName1,
+        QString fileName1,
+        bool hasFileName2,
+        QString fileName2,
+        bool hasFileName3,
+        QString fileName3,
+        QString base,
+        QStringList fName,
+        QString l1,
+        QString l2,
+        QString l3
+        );
 
     // Данные пока в public пока в процессе рефакторинга потом перенести в private что нужно
   public:
@@ -80,6 +103,14 @@ class MainDataObj
     Diff3LineList m_diff3LineList;
     Diff3LineVector m_diff3LineVector;
     ManualDiffHelpList m_manualDiffHelpList;
+
+
+
+
+
+    bool m_bDirCompare = false;
+    bool m_bAutoMode = false;
+
   private:
     MyOptions* m_pMyOptions;
 };

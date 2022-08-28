@@ -960,10 +960,10 @@ void KDiff3App::slotFileOpen()
     for(;;)
     {
         QPointer<OpenDialog> d = QPointer<OpenDialog>(new OpenDialog(this,
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirA().prettyAbsPath() : m_pMainDataObj->m_sd1->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd1->getAliasName()),
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirB().prettyAbsPath() : m_pMainDataObj->m_sd2->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd2->getAliasName()),
-                     QDir::toNativeSeparators(m_bDirCompare ? gDirInfo->dirC().prettyAbsPath() : m_pMainDataObj->m_sd3->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd3->getAliasName()),
-                     m_bDirCompare ? !gDirInfo->destDir().prettyAbsPath().isEmpty() : !m_pMainDataObj->m_outputFilename.isEmpty(),
+                     QDir::toNativeSeparators(m_pMainDataObj->m_bDirCompare ? gDirInfo->dirA().prettyAbsPath() : m_pMainDataObj->m_sd1->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd1->getAliasName()),
+                     QDir::toNativeSeparators(m_pMainDataObj->m_bDirCompare ? gDirInfo->dirB().prettyAbsPath() : m_pMainDataObj->m_sd2->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd2->getAliasName()),
+                     QDir::toNativeSeparators(m_pMainDataObj->m_bDirCompare ? gDirInfo->dirC().prettyAbsPath() : m_pMainDataObj->m_sd3->isFromBuffer() ? QString("") : m_pMainDataObj->m_sd3->getAliasName()),
+                                                                     m_pMainDataObj->m_bDirCompare ? !gDirInfo->destDir().prettyAbsPath().isEmpty() : !m_pMainDataObj->m_outputFilename.isEmpty(),
                      QDir::toNativeSeparators(m_pMainDataObj->m_bDefaultFilename ? QString("") : m_pMainDataObj->m_outputFilename), m_pOptionDialog->getOptions()));
 
         int status = d->exec();
@@ -989,9 +989,9 @@ void KDiff3App::slotFileOpen()
             else
                 m_pMainDataObj->m_outputFilename = "";
 
-            m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
+            m_pMainDataObj->m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
 
-            if(m_bDirCompare)
+            if(m_pMainDataObj->m_bDirCompare)
             {
                 bool bSuccess = doDirectoryCompare(false);
                 if(bSuccess)
@@ -1078,7 +1078,7 @@ void KDiff3App::slotFileOpen2(QStringList &errors, const QString& fn1, const QSt
         else
             mainInit(pTotalDiffStatus, InitFlag::loadFiles | InitFlag::autoSolve);
 
-        if(m_bDirCompare)
+        if(m_pMainDataObj->m_bDirCompare)
         {
             errors.append(m_pMainDataObj->m_sd1->getErrors());
             errors.append(m_pMainDataObj->m_sd2->getErrors());
@@ -1667,7 +1667,7 @@ bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
     else
     {
         //Only a debugging aid now. Used to insure m_bDirCompare is not changed
-        const bool bDirCompare = m_bDirCompare;
+        const bool bDirCompare = m_pMainDataObj->m_bDirCompare;
 
         FileAccess destDir;
 
@@ -1681,7 +1681,7 @@ bool KDiff3App::doDirectoryCompare(const bool bCreateNewInstance)
             gDirInfo,
             !m_pMainDataObj->m_outputFilename.isEmpty());
         //This is a bug if it still happens.
-        Q_ASSERT(m_bDirCompare == bDirCompare);
+        Q_ASSERT(m_pMainDataObj->m_bDirCompare == bDirCompare);
 
         if(bSuccess)
         {
@@ -1784,7 +1784,7 @@ void KDiff3App::slotDirShowBoth()
     if(dirShowBoth->isChecked())
     {
         if(m_pDirectoryMergeSplitter)
-            m_pDirectoryMergeSplitter->setVisible(m_bDirCompare);
+            m_pDirectoryMergeSplitter->setVisible(m_pMainDataObj->m_bDirCompare);
 
         m_pMainWidget->show();
     }
@@ -1796,7 +1796,7 @@ void KDiff3App::slotDirShowBoth()
             m_pMainWidget->show();
             m_pDirectoryMergeSplitter->hide();
         }
-        else if(m_bDirCompare)
+        else if(m_pMainDataObj->m_bDirCompare)
         {
             m_pDirectoryMergeSplitter->show();
         }
@@ -1807,7 +1807,7 @@ void KDiff3App::slotDirShowBoth()
 
 void KDiff3App::slotDirViewToggle()
 {
-    if(m_bDirCompare)
+    if(m_pMainDataObj->m_bDirCompare)
     {
         if(!m_pDirectoryMergeSplitter->isVisible())
         {
@@ -1959,7 +1959,7 @@ void KDiff3App::slotEditFindNext()
 
 void KDiff3App::slotMergeCurrentFile()
 {
-    if(m_bDirCompare && m_pDirectoryMergeWindow->isVisible() && m_pDirectoryMergeWindow->isFileSelected())
+    if(m_pMainDataObj->m_bDirCompare && m_pDirectoryMergeWindow->isVisible() && m_pDirectoryMergeWindow->isFileSelected())
     {
         m_pDirectoryMergeWindow->mergeCurrentFile();
     }
@@ -2004,7 +2004,7 @@ void KDiff3App::slotWinFocusNext()
     if(m_pDiffTextWindow2 && m_pDiffTextWindow2->isVisible()) visibleWidgetList.push_back(m_pDiffTextWindow2);
     if(m_pDiffTextWindow3 && m_pDiffTextWindow3->isVisible()) visibleWidgetList.push_back(m_pDiffTextWindow3);
     if(m_pMergeResultWindow && m_pMergeResultWindow->isVisible()) visibleWidgetList.push_back(m_pMergeResultWindow);
-    if(m_bDirCompare /*m_pDirectoryMergeWindow->isVisible()*/) visibleWidgetList.push_back(m_pDirectoryMergeWindow);
+    if(m_pMainDataObj->m_bDirCompare /*m_pDirectoryMergeWindow->isVisible()*/) visibleWidgetList.push_back(m_pDirectoryMergeWindow);
     //if ( m_pDirectoryMergeInfo->isVisible() ) visibleWidgetList.push_back(m_pDirectoryMergeInfo->getInfoList());
     if(visibleWidgetList.empty())
         return;
@@ -2034,7 +2034,7 @@ void KDiff3App::slotWinFocusPrev()
     if(m_pDiffTextWindow2 && m_pDiffTextWindow2->isVisible()) visibleWidgetList.push_back(m_pDiffTextWindow2);
     if(m_pDiffTextWindow3 && m_pDiffTextWindow3->isVisible()) visibleWidgetList.push_back(m_pDiffTextWindow3);
     if(m_pMergeResultWindow && m_pMergeResultWindow->isVisible()) visibleWidgetList.push_back(m_pMergeResultWindow);
-    if(m_bDirCompare /* m_pDirectoryMergeWindow->isVisible() */) visibleWidgetList.push_back(m_pDirectoryMergeWindow);
+    if(m_pMainDataObj->m_bDirCompare /* m_pDirectoryMergeWindow->isVisible() */) visibleWidgetList.push_back(m_pDirectoryMergeWindow);
     //if ( m_pDirectoryMergeInfo->isVisible() ) visibleWidgetList.push_back(m_pDirectoryMergeInfo->getInfoList());
     if(visibleWidgetList.empty())
         return;
@@ -2168,7 +2168,7 @@ void KDiff3App::slotUpdateAvailabilities()
     if(dirShowBoth->isChecked())
     {
         if(m_pDirectoryMergeSplitter != nullptr)
-            m_pDirectoryMergeSplitter->setVisible(m_bDirCompare);
+            m_pDirectoryMergeSplitter->setVisible(m_pMainDataObj->m_bDirCompare);
 
         if( !m_pMainWidget->isVisible() &&
            bTextDataAvailable && !m_pDirectoryMergeWindow->isScanning())
@@ -2178,11 +2178,11 @@ void KDiff3App::slotUpdateAvailabilities()
     bool bDiffWindowVisible =  m_pMainWidget->isVisible();
     bool bMergeEditorVisible = m_pMergeWindowFrame != nullptr && m_pMergeWindowFrame->isVisible() && m_pMergeResultWindow != nullptr;
 
-    m_pDirectoryMergeWindow->updateAvailabilities(bMergeEditorVisible, m_bDirCompare, bDiffWindowVisible, chooseA, chooseB, chooseC);
+    m_pDirectoryMergeWindow->updateAvailabilities(bMergeEditorVisible, m_pMainDataObj->m_bDirCompare, bDiffWindowVisible, chooseA, chooseB, chooseC);
 
-    dirShowBoth->setEnabled(m_bDirCompare);
+    dirShowBoth->setEnabled(m_pMainDataObj->m_bDirCompare);
     dirViewToggle->setEnabled(
-        m_bDirCompare &&
+        m_pMainDataObj->m_bDirCompare &&
         ( m_pDirectoryMergeSplitter != nullptr &&
          ((!m_pDirectoryMergeSplitter->isVisible() && m_pMainWidget->isVisible()) ||
           (m_pDirectoryMergeSplitter->isVisible() && !m_pMainWidget->isVisible() && bTextDataAvailable))));

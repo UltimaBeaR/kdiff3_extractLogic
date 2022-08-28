@@ -69,7 +69,107 @@
 
 // --------------------------------------------------------------------
 
-MainDataObj::MainDataObj(MyOptions* pMyOptions)
+MainDataObj::MainDataObj()
+{
+}
+
+void MainDataObj::init(
+    MyOptions* pMyOptions,
+    bool hasArgs,
+    bool autoFlag,
+    QString output,
+    bool merge,
+    bool hasFileName1,
+    QString fileName1,
+    bool hasFileName2,
+    QString fileName2,
+    bool hasFileName3,
+    QString fileName3,
+    QString base,
+    QStringList fName,
+    QString l1,
+    QString l2,
+    QString l3
+)
 {
     m_pMyOptions = pMyOptions;
+
+    m_bAutoMode = autoFlag || m_pMyOptions->autoSaveAndQuitOnMergeWithoutConflicts();
+
+    if(hasArgs) {
+        m_outputFilename = output;
+
+        if(!m_outputFilename.isEmpty())
+            m_outputFilename = FileAccess(m_outputFilename, true).absoluteFilePath();
+
+        if(m_bAutoMode && m_outputFilename.isEmpty())
+        {
+            if(autoFlag)
+            {
+                QTextStream(stderr) << i18n("Option --auto used, but no output file specified.") << "\n";
+            }
+            m_bAutoMode = false;
+        }
+
+        if(m_outputFilename.isEmpty() && merge)
+        {
+            m_outputFilename = "unnamed.txt";
+            m_bDefaultFilename = true;
+        }
+        else
+        {
+            m_bDefaultFilename = false;
+        }
+
+        m_sd1->setFilename(base);
+        if(m_sd1->isEmpty()) {
+            if(hasFileName1) m_sd1->setFilename(fileName1);
+            if(hasFileName2) m_sd2->setFilename(fileName2);
+            if(hasFileName3) m_sd3->setFilename(fileName3);
+        }
+        else
+        {
+            if(hasFileName1) m_sd2->setFilename(fileName1);
+            if(hasFileName2) m_sd3->setFilename(fileName2);
+        }
+        //Set m_bDirCompare flag
+        m_bDirCompare = m_sd1->isDir();
+
+        QStringList aliasList = fName;
+        QStringList::Iterator ali = aliasList.begin();
+
+        QString an1 = l1;
+        if(!an1.isEmpty()) {
+            m_sd1->setAliasName(an1);
+        }
+        else if(ali != aliasList.end())
+        {
+            m_sd1->setAliasName(*ali);
+            ++ali;
+        }
+
+        QString an2 = l2;
+        if(!an2.isEmpty()) {
+            m_sd2->setAliasName(an2);
+        }
+        else if(ali != aliasList.end())
+        {
+            m_sd2->setAliasName(*ali);
+            ++ali;
+        }
+
+        QString an3 = l3;
+        if(!an3.isEmpty()) {
+            m_sd3->setAliasName(an3);
+        }
+        else if(ali != aliasList.end())
+        {
+            m_sd3->setAliasName(*ali);
+            ++ali;
+        }
+    }
+    else
+    {
+        m_bDefaultFilename = false;
+    }
 }

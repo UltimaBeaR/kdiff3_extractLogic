@@ -435,7 +435,6 @@ public Q_SLOTS:
     QSplitter* m_pDirectoryMergeSplitter = nullptr;
     DirectoryMergeWindow* m_pDirectoryMergeWindow = nullptr;
     DirectoryMergeInfo* m_pDirectoryMergeInfo;
-    bool m_bDirCompare = false;
 
     Overview* m_pOverview = nullptr;
 
@@ -461,7 +460,6 @@ public Q_SLOTS:
     // Это флаг из командной строки что нужно сохранить и выйти если нету конфликтов видимо (есть еще что то такое в опциях и тоже проверяется вместе с этим флагом)
     bool m_bAutoFlag = false;
 
-    bool m_bAutoMode = false;
     bool m_bRecalcWordWrapPosted = false;
 
     int m_firstD3LIdx;                 // only needed during recalcWordWrap

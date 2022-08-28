@@ -18,7 +18,7 @@ class MyOptions
     int whiteSpace2FileMergeDefault() { return m_pOptions->m_whiteSpace2FileMergeDefault; }
     int whiteSpace3FileMergeDefault() { return m_pOptions->m_whiteSpace3FileMergeDefault; }
 
-    // --------------- MainDataObj -----------------
+    // --------------- SourceData -----------------
 
     // clear*** для команд - это во время чтения файлов вызывается. Хз зачем так, но оно так.
 
@@ -33,8 +33,9 @@ class MyOptions
 
     QTextCodec* encodingPP() { return m_pOptions->m_pEncodingPP; }
 
+    // -------------- MainDataObj --------------------
 
-
+    bool autoSaveAndQuitOnMergeWithoutConflicts() { return m_pOptions->m_bAutoSaveAndQuitOnMergeWithoutConflicts; }
 
   private:
     QSharedPointer<Options> m_pOptions;
