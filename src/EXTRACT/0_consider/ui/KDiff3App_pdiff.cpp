@@ -55,7 +55,6 @@ void addWidget(L* layout, W* widget)
     layout->addWidget(widget);
 }
 
-// Диффы по сути происходят тут. На вход 3 еще не считанных файла, но у них уже есть имена(пути). В переменных m_sd1, m_sd2, m_sd3
 void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFlags)
 {
     qInfo() << "============== mainInit() ===============";
@@ -123,10 +122,34 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         setLockPainting(true);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //insure merge result window never has stale iterators.
     if(m_pMergeResultWindow) m_pMergeResultWindow->m_pMergeDataObj->clearMergeList();
     m_pMainDataObj->m_diff3LineList.clear();
     m_pMainDataObj->m_diff3LineVector.clear();
+
+
+
+
+
+
+
+
+
+
 
     if(bLoadFiles)
     {
@@ -359,6 +382,31 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
     // Calc needed lines for display
     m_neededLines = m_pMainDataObj->m_diff3LineList.size();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Поидее тут диффы уже закончились, дальше идут UI-ные штуки и вызов мержа
+
+
+
+
+
+
+
+
+
+
+
     QList<int> oldHeights;
     if(m_pDirectoryMergeSplitter->isVisible())
         oldHeights = m_pMainSplitter->sizes();
@@ -385,13 +433,32 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
 
     m_pMainWidget->setVisible(bGUI);
 
+
+
+
+
+
+
+
     m_bTripleDiff = !m_pMainDataObj->m_sd3->isEmpty();
+
+
+
+
+
+
 
     m_pMergeResultWindowTitle->setEncodings(m_pMainDataObj->m_sd1->getEncoding(), m_pMainDataObj->m_sd2->getEncoding(), m_pMainDataObj->m_sd3->getEncoding());
     if(!m_pOptions->m_bAutoSelectOutEncoding)
         m_pMergeResultWindowTitle->setEncoding(m_pOptions->m_pEncodingOut);
 
     m_pMergeResultWindowTitle->setLineEndStyles(m_pMainDataObj->m_sd1->getLineEndStyle(), m_pMainDataObj->m_sd2->getLineEndStyle(), m_pMainDataObj->m_sd3->getLineEndStyle());
+
+
+
+
+
+
 
     if(bGUI)
     {
@@ -411,12 +478,19 @@ void KDiff3App::mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFl
         m_pDiffTextWindowFrame3->setVisible(m_bTripleDiff);
     }
 
+
+
+
+
+
+
     m_bOutputModified = bVisibleMergeResultWindow;
 
-    // TODO: можно попробовать пойти от противного и изучить сначала код мержа и какие данные ему требуются - сначала
-    // вытаскиваю наружу логику мержа из этого окошка ебучего и делаю ее независимым модулем/объектом.
-    // Потом уже имея это и знаю какие там конкретно данные нужны для мержа - я смогу этот метод (mainInit) разделить на то что мне нужно а что тут лишнее.
-    //
+
+
+
+
+
     // Мерж происходит там внутри - в "окошке"
     m_pMergeResultWindow->init(
         m_pMainDataObj->m_sd1->getLineDataForDisplay(), m_pMainDataObj->m_sd1->getSizeLines(),

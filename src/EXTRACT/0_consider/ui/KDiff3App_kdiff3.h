@@ -121,7 +121,11 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(InitFlags);
 
 class KDiff3App : public QSplitter
 {
-    // Сначала вызывается конструктор, потом (не из конструктора) completeInit()
+    // Сначала вызывается конструктор,
+    // потом (не из конструктора) completeInit(),
+    // внутри него вызывается mainInit() при условии что это файлы а не папки сравниваются.
+    //
+    // Также mainInit() может вызываться еще в других местах при разных действиях но я так понимаю что это все сценарии когда надо пере-сравнивать все файлы.
 
 
     Q_OBJECT
@@ -321,7 +325,9 @@ public Q_SLOTS:
     void initView();
 
   private:
+    // Диффы по сути происходят тут. На вход 3 еще не считанных файла, но у них уже есть имена(пути). В переменных m_sd1, m_sd2, m_sd3
     void mainInit(TotalDiffStatus* pTotalDiffStatus, const InitFlags inFlags = InitFlag::defaultFlags);
+
     void mainWindowEnable(bool bEnable);
     void wheelEvent(QWheelEvent* pWheelEvent) override;
     void keyPressEvent(QKeyEvent* event) override;

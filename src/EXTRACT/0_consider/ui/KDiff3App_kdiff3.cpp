@@ -352,6 +352,24 @@ void KDiff3App::slotFocusChanged(QWidget* old, QWidget* now)
 
 void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QString& fn3)
 {
+
+
+
+
+
+
+
+
+
+    // TODO: похоже этот кусок хороший кандидат на перенос в объект данных
+    // Однако возможно сделать не так - там внутри есть mainInit() который сам по себе надо разносить в данные и не в данные
+    // Думаю тут можно разделить этот кусок на несколько частей и тут же вызывать mainInit
+
+
+
+
+
+
     if(!fn1.isEmpty()) {
         m_pMainDataObj->m_sd1->setFilename(fn1);
         m_pMainDataObj->m_bDirCompare = m_pMainDataObj->m_sd1->isDir();
@@ -426,6 +444,23 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
     }
     m_pMainDataObj->m_bAutoMode = false;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if(!isPart() && m_pOptions->isFullScreen())
         m_pKDiff3Shell->showFullScreen();
     else if(!isPart() && m_pOptions->isMaximised())
@@ -458,6 +493,8 @@ void KDiff3App::completeInit(const QString& fn1, const QString& fn2, const QStri
     slotClipboardChanged(); // For initialisation.
 
     slotUpdateAvailabilities();
+
+    // Тут просто формируется текст ошибки, если файлы не смогли открыться - это в данные наверно не стоит пихать.
 
     if(!m_pMainDataObj->m_bDirCompare && m_pKDiff3Shell != nullptr)
     {
