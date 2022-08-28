@@ -10,6 +10,8 @@
 #include "EXTRACT/2_final/diff.h"
 #include "combiners.h"
 
+#include "EXTRACT/2_final/ui/progress.h"
+
 #include <boost/signals2.hpp>
 
 // include files for Qt
@@ -79,7 +81,14 @@ class MainDataObj
         QString l3
         );
 
-    void mainInit(TotalDiffStatus* pTotalDiffStatus);
+    void mainInit(
+        TotalDiffStatus* pTotalDiffStatus,
+        ProgressProxy &pp,
+        QStringList errors,
+        bool bLoadFiles,
+        bool bUseCurrentEncoding,
+        IgnoreFlags eIgnoreFlags
+        );
 
     // Данные пока в public пока в процессе рефакторинга потом перенести в private что нужно
   public:
